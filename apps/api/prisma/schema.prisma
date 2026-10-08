@@ -1,0 +1,322 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+enum SectionType {
+  STARTUPS
+  RESIDENTS
+  INFRASTRUCTURE
+  GENERAL
+}
+enum StartupStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+  ARCHIVED
+}
+enum ResidentStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  ARCHIVED
+}
+enum InfrastructureType {
+  ROOM
+  EQUIPMENT
+}
+enum InfrastructureStatus {
+  AVAILABLE
+  IN_USE
+  REPAIR
+  BROKEN
+  WRITTEN_OFF
+}
+enum QuarterStatus {
+  NOT_STARTED
+  WAITING
+  RECEIVED
+  CHECKED
+  MISSING
+}
+enum UserApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+enum LeadStatus {
+  NEW
+  CONTACTED
+  REPLIED
+  FOLLOW_UP
+  MEETING_PLANNED
+  INTERESTED
+  NOT_INTERESTED
+  NO_RESPONSE
+}
+
+model User {
+  id       String @id @default(cuid())
+  name     String
+  surname  String?
+  email    String @unique
+  password String
+  role     String?
+  position String?
+  approvalStatus UserApprovalStatus @default(APPROVED)
+  isActive       Boolean            @default(true)
+
+  createdTasks  Task[]        @relation("TaskCreator")
+  assignedTasks Task[]        @relation("TaskAssignee")
+  documents     Document[]
+  activities    ActivityLog[]
+  taskComments  TaskComment[]
+
+  ownedLeads        Lead[]              @relation("LeadOwner")
+  createdLeads      Lead[]              @relation("LeadCreator")
+  outreachCampaigns OutreachCampaign[] @relation("OutreachCampaignCreator")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Task {
+  id          String       @id @default(cuid())
+  title       String
+  description String?
+  status      TaskStatus   @default(TODO)
+  priority    TaskPriority @default(MEDIUM)
+  dueDate     DateTime?
+  completedAt DateTime?
+  creatorId String
+  creator   User @relation("TaskCreator", fields: [creatorId], references: [id])
+  assigneeId String?
+  assignee   User? @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  startupId String?
+  startup   Startup? @relation(fields: [startupId], references: [id])
+  residentId String?
+  resident   Resident? @relation(fields: [residentId], references: [id])
+  infrastructureId String?
+  infrastructure   Infrastructure? @relation(fields: [infrastructureId], references: [id])
+  comments    TaskComment[]
+  attachments TaskAttachment[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TaskComment {
+  id String @id @default(cuid())
+  content String
+  taskId String
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model TaskAttachment {
+  id String @id @default(cuid())
+  fileName String
+  fileUrl String
+  fileSize Int?
+  taskId String
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model Startup {
+  id String @id @default(cuid())
+  name String
+  founderName String?
+  phone String?
+  email String?
+  stage String?
+  status StartupStatus @default(ACTIVE)
+  joinedAt DateTime?
+  notes String?
+  tasks Task[]
+  documents Document[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Resident {
+  id String @id @default(cuid())
+  companyName String
+  tin String? @unique
+  activity String?
+  exporter Boolean @default(false)
+  founderCountry String?
+  region String?
+  district String?
+  residentSince DateTime?
+  focalPoint String?
+  broughtBy String?
+  status ResidentStatus @default(ACTIVE)
+  notes String?
+  quarterReports QuarterReport[]
+  tasks Task[]
+  documents Document[]
+  infrastructure Infrastructure[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model QuarterReport {
+  id String @id @default(cuid())
+  year Int
+  quarter Int
+  status QuarterStatus @default(NOT_STARTED)
+  receivedAt DateTime?
+  checkedAt DateTime?
+  notes String?
+  residentId String
+  resident Resident @relation(fields: [residentId], references: [id], onDelete: Cascade)
+  documentId String?
+  document Document? @relation(fields: [documentId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([residentId, year, quarter])
+}
+
+model Infrastructure {
+  id String @id @default(cuid())
+  name String
+  type InfrastructureType
+  status InfrastructureStatus @default(AVAILABLE)
+  roomNumber String?
+  inventoryNo String? @unique
+  description String?
+  location String?
+  quantity Int @default(1)
+  capacity Int?
+  residentId String?
+  resident Resident? @relation(fields: [residentId], references: [id])
+  tasks Task[]
+  documents Document[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Space {
+  id String @id @default(cuid())
+  name String
+  description String?
+  section SectionType
+  folders Folder[]
+  documents Document[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Folder {
+  id String @id @default(cuid())
+  name String
+  spaceId String
+  space Space @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+  parentId String?
+  parent Folder? @relation("FolderChildren", fields: [parentId], references: [id])
+  children Folder[] @relation("FolderChildren")
+  documents Document[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Document {
+  id String @id @default(cuid())
+  fileName String
+  originalName String?
+  fileUrl String
+  storageKey String
+  mimeType String?
+  fileSize Int?
+  description String?
+  section SectionType
+  uploadedById String
+  uploadedBy User @relation(fields: [uploadedById], references: [id])
+  spaceId String?
+  space Space? @relation(fields: [spaceId], references: [id])
+  folderId String?
+  folder Folder? @relation(fields: [folderId], references: [id])
+  startupId String?
+  startup Startup? @relation(fields: [startupId], references: [id])
+  residentId String?
+  resident Resident? @relation(fields: [residentId], references: [id])
+  infrastructureId String?
+  infrastructure Infrastructure? @relation(fields: [infrastructureId], references: [id])
+  quarterReports QuarterReport[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ActivityLog {
+  id String @id @default(cuid())
+  action String
+  entityType String
+  entityId String?
+  description String?
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model OutreachCampaign {
+  id            String   @id @default(cuid())
+  name          String
+  country       String
+  city          String?
+  startDate     DateTime?
+  endDate       DateTime?
+  targetSectors String?
+  description   String?
+  createdById String?
+  createdBy User? @relation("OutreachCampaignCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  leads Lead[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Lead {
+  id          String     @id @default(cuid())
+  companyName String
+  country     String
+  city        String?
+  industry    String?
+  website         String?
+  companyLinkedIn String?
+  contactName     String?
+  contactPosition String?
+  contactEmail    String?
+  contactPhone    String?
+  contactLinkedIn String?
+  source  String?
+  channel String?
+  status LeadStatus @default(NEW)
+  lastContactAt  DateTime?
+  nextFollowUpAt DateTime?
+  notes String?
+  campaignId String?
+  campaign OutreachCampaign? @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  ownerId String?
+  owner User? @relation("LeadOwner", fields: [ownerId], references: [id], onDelete: SetNull)
+  createdById String?
+  createdBy User? @relation("LeadCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

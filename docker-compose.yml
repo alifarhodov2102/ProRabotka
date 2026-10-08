@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: prorabotka-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: prorabotka
+      POSTGRES_PASSWORD: prorabotka
+      POSTGRES_DB: prorabotka
+    ports:
+      - "55432:5432"
+    volumes:
+      - prorabotka_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  prorabotka_postgres_data:
