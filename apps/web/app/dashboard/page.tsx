@@ -17,10 +17,10 @@ import {
 
 import {
   useRouter,
-  useSearchParams,
 } from 'next/navigation';
 
 import AppShell from '@/components/app-shell';
+
 import ConfirmModal from '@/components/ui/confirm-modal';
 
 import TaskBoard from '@/components/tasks/task-board';
@@ -68,14 +68,21 @@ export default function DashboardPage() {
   const router =
     useRouter();
 
-  const searchParams =
-    useSearchParams();
+  const [
+    tasks,
+    setTasks,
+  ] =
+    useState<TaskItem[]>(
+      [],
+    );
 
-  const [tasks, setTasks] =
-    useState<TaskItem[]>([]);
-
-  const [users, setUsers] =
-    useState<TaskUser[]>([]);
+  const [
+    users,
+    setUsers,
+  ] =
+    useState<TaskUser[]>(
+      [],
+    );
 
   const [
     currentUserId,
@@ -92,24 +99,35 @@ export default function DashboardPage() {
       'ALL',
     );
 
-  const [loading, setLoading] =
+  const [
+    loading,
+    setLoading,
+  ] =
     useState(true);
 
-  const [error, setError] =
+  const [
+    error,
+    setError,
+  ] =
     useState('');
 
-  const [search, setSearch] =
+  const [
+    search,
+    setSearch,
+  ] =
     useState('');
 
   const [
     assigneeFilter,
     setAssigneeFilter,
-  ] = useState('ALL');
+  ] =
+    useState('ALL');
 
   const [
     modalOpen,
     setModalOpen,
-  ] = useState(false);
+  ] =
+    useState(false);
 
   const [
     editingTask,
@@ -127,12 +145,18 @@ export default function DashboardPage() {
       null,
     );
 
-  const [form, setForm] =
+  const [
+    form,
+    setForm,
+  ] =
     useState<TaskFormValue>(
       emptyForm,
     );
 
-  const [saving, setSaving] =
+  const [
+    saving,
+    setSaving,
+  ] =
     useState(false);
 
   const [
@@ -154,7 +178,8 @@ export default function DashboardPage() {
   const [
     deleteLoading,
     setDeleteLoading,
-  ] = useState(false);
+  ] =
+    useState(false);
 
   useEffect(() => {
     const stored =
@@ -168,7 +193,9 @@ export default function DashboardPage() {
 
     try {
       const user: StoredUser =
-        JSON.parse(stored);
+        JSON.parse(
+          stored,
+        );
 
       setCurrentUserId(
         user.id,
@@ -179,8 +206,13 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => {
+    const params =
+      new URLSearchParams(
+        window.location.search,
+      );
+
     const taskId =
-      searchParams.get(
+      params.get(
         'task',
       );
 
@@ -189,37 +221,52 @@ export default function DashboardPage() {
         taskId,
       );
     }
-  }, [searchParams]);
+  }, []);
 
   async function loadData() {
     try {
-      setLoading(true);
+      setLoading(
+        true,
+      );
+
       setError('');
 
       const [
         tasksData,
         usersData,
-      ] = await Promise.all([
-        apiFetch<TaskItem[]>(
-          '/tasks',
-        ),
+      ] =
+        await Promise.all([
+          apiFetch<TaskItem[]>(
+            '/tasks',
+          ),
 
-        apiFetch<TaskUser[]>(
-          '/users',
-        ),
-      ]);
+          apiFetch<TaskUser[]>(
+            '/users',
+          ),
+        ]);
 
-      setTasks(tasksData);
-      setUsers(usersData);
+      setTasks(
+        tasksData,
+      );
+
+      setUsers(
+        usersData,
+      );
     } catch (err) {
       if (
-        err instanceof ApiError &&
-        err.status !== 401
+        err instanceof
+          ApiError &&
+        err.status !==
+          401
       ) {
-        setError(err.message);
+        setError(
+          err.message,
+        );
       }
     } finally {
-      setLoading(false);
+      setLoading(
+        false,
+      );
     }
   }
 
@@ -230,29 +277,37 @@ export default function DashboardPage() {
           TaskItem[]
         >('/tasks');
 
-      setTasks(tasksData);
+      setTasks(
+        tasksData,
+      );
     } catch (err) {
       if (
-        err instanceof ApiError &&
-        err.status !== 401
+        err instanceof
+          ApiError &&
+        err.status !==
+          401
       ) {
-        setError(err.message);
+        setError(
+          err.message,
+        );
       }
     }
   }
 
   useEffect(() => {
-    loadData();
+    void loadData();
   }, []);
 
   const scopedTasks =
     useMemo(() => {
       if (
-        taskScope === 'MINE'
+        taskScope ===
+        'MINE'
       ) {
         return tasks.filter(
           (task) =>
-            task.assignee?.id ===
+            task.assignee
+              ?.id ===
             currentUserId,
         );
       }
@@ -276,10 +331,13 @@ export default function DashboardPage() {
           const matchesUser =
             assigneeFilter ===
               'ALL' ||
-            task.assignee?.id ===
+            task.assignee
+              ?.id ===
               assigneeFilter;
 
-          if (!matchesUser) {
+          if (
+            !matchesUser
+          ) {
             return false;
           }
 
@@ -290,19 +348,31 @@ export default function DashboardPage() {
           return [
             task.title,
             task.description,
-            task.assignee?.name,
-            task.creator?.name,
+            task.assignee
+              ?.name,
+            task.creator
+              ?.name,
             task.resident
               ?.companyName,
-            task.startup?.name,
+            task.startup
+              ?.name,
             task.infrastructure
               ?.name,
           ]
-            .filter(Boolean)
-            .some((value) =>
-              String(value)
-                .toLowerCase()
-                .includes(q),
+            .filter(
+              Boolean,
+            )
+            .some(
+              (
+                value,
+              ) =>
+                String(
+                  value,
+                )
+                  .toLowerCase()
+                  .includes(
+                    q,
+                  ),
             );
         },
       );
@@ -359,11 +429,17 @@ export default function DashboardPage() {
     ).length;
 
   function selectScope(
-    scope: TaskScope,
+    scope:
+      TaskScope,
   ) {
-    setTaskScope(scope);
+    setTaskScope(
+      scope,
+    );
 
-    if (scope === 'MINE') {
+    if (
+      scope ===
+      'MINE'
+    ) {
       setAssigneeFilter(
         'ALL',
       );
@@ -371,10 +447,13 @@ export default function DashboardPage() {
   }
 
   function openCreate(
-    status: TaskStatus =
+    status:
+      TaskStatus =
       'TODO',
   ) {
-    setEditingTask(null);
+    setEditingTask(
+      null,
+    );
 
     setForm({
       ...emptyForm,
@@ -388,11 +467,14 @@ export default function DashboardPage() {
           : '',
     });
 
-    setModalOpen(true);
+    setModalOpen(
+      true,
+    );
   }
 
   function openDetails(
-    task: TaskItem,
+    task:
+      TaskItem,
   ) {
     setDetailTaskId(
       task.id,
@@ -420,19 +502,24 @@ export default function DashboardPage() {
   }
 
   function openEdit(
-    task: TaskItem,
+    task:
+      TaskItem,
   ) {
-    setEditingTask(task);
+    setEditingTask(
+      task,
+    );
 
     setForm({
-      title: task.title,
+      title:
+        task.title,
 
       description:
         task.description ||
         '',
 
       assigneeId:
-        task.assignee?.id ||
+        task.assignee
+          ?.id ||
         '',
 
       priority:
@@ -450,17 +537,29 @@ export default function DashboardPage() {
           : '',
     });
 
-    setModalOpen(true);
+    setModalOpen(
+      true,
+    );
   }
 
   function closeModal() {
-    if (saving) {
+    if (
+      saving
+    ) {
       return;
     }
 
-    setModalOpen(false);
-    setEditingTask(null);
-    setForm(emptyForm);
+    setModalOpen(
+      false,
+    );
+
+    setEditingTask(
+      null,
+    );
+
+    setForm(
+      emptyForm,
+    );
   }
 
   async function saveTask() {
@@ -471,7 +570,10 @@ export default function DashboardPage() {
     }
 
     try {
-      setSaving(true);
+      setSaving(
+        true,
+      );
+
       setError('');
 
       const payload = {
@@ -497,49 +599,71 @@ export default function DashboardPage() {
           null,
       };
 
-      if (editingTask) {
+      if (
+        editingTask
+      ) {
         await apiFetch(
           `/tasks/${editingTask.id}`,
           {
-            method: 'PATCH',
+            method:
+              'PATCH',
 
-            body: JSON.stringify(
-              payload,
-            ),
+            body:
+              JSON.stringify(
+                payload,
+              ),
           },
         );
       } else {
         await apiFetch(
           '/tasks',
           {
-            method: 'POST',
+            method:
+              'POST',
 
-            body: JSON.stringify(
-              payload,
-            ),
+            body:
+              JSON.stringify(
+                payload,
+              ),
           },
         );
       }
 
-      setModalOpen(false);
-      setEditingTask(null);
-      setForm(emptyForm);
+      setModalOpen(
+        false,
+      );
+
+      setEditingTask(
+        null,
+      );
+
+      setForm(
+        emptyForm,
+      );
 
       await refreshTasks();
     } catch (err) {
       if (
-        err instanceof ApiError
+        err instanceof
+        ApiError
       ) {
-        setError(err.message);
+        setError(
+          err.message,
+        );
       }
     } finally {
-      setSaving(false);
+      setSaving(
+        false,
+      );
     }
   }
 
   async function moveTask(
-    task: TaskItem,
-    status: TaskStatus,
+    task:
+      TaskItem,
+
+    status:
+      TaskStatus,
   ) {
     const previousTasks =
       tasks;
@@ -558,17 +682,21 @@ export default function DashboardPage() {
         ),
     );
 
-    setDraggedTask(null);
+    setDraggedTask(
+      null,
+    );
 
     try {
       await apiFetch(
         `/tasks/${task.id}`,
         {
-          method: 'PATCH',
+          method:
+            'PATCH',
 
-          body: JSON.stringify({
-            status,
-          }),
+          body:
+            JSON.stringify({
+              status,
+            }),
         },
       );
     } catch (err) {
@@ -577,33 +705,44 @@ export default function DashboardPage() {
       );
 
       if (
-        err instanceof ApiError
+        err instanceof
+        ApiError
       ) {
-        setError(err.message);
+        setError(
+          err.message,
+        );
       }
     }
   }
 
   async function handleDelete() {
-    if (!deleteTask) {
+    if (
+      !deleteTask
+    ) {
       return;
     }
 
     try {
-      setDeleteLoading(true);
+      setDeleteLoading(
+        true,
+      );
+
       setError('');
 
       await apiFetch(
         `/tasks/${deleteTask.id}`,
         {
-          method: 'DELETE',
+          method:
+            'DELETE',
         },
       );
 
       const deletedId =
         deleteTask.id;
 
-      setDeleteTask(null);
+      setDeleteTask(
+        null,
+      );
 
       setTasks(
         (current) =>
@@ -622,12 +761,17 @@ export default function DashboardPage() {
       }
     } catch (err) {
       if (
-        err instanceof ApiError
+        err instanceof
+        ApiError
       ) {
-        setError(err.message);
+        setError(
+          err.message,
+        );
       }
     } finally {
-      setDeleteLoading(false);
+      setDeleteLoading(
+        false,
+      );
     }
   }
 
@@ -658,7 +802,11 @@ export default function DashboardPage() {
             }
             className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 text-sm font-medium text-white transition hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
           >
-            <Plus size={16} />
+            <Plus
+              size={
+                16
+              }
+            />
 
             New task
           </button>
@@ -678,7 +826,9 @@ export default function DashboardPage() {
             }
             icon={
               <ListTodo
-                size={18}
+                size={
+                  18
+                }
               />
             }
           />
@@ -690,7 +840,9 @@ export default function DashboardPage() {
             }
             icon={
               <Clock3
-                size={18}
+                size={
+                  18
+                }
               />
             }
           />
@@ -702,7 +854,9 @@ export default function DashboardPage() {
             }
             icon={
               <CheckCircle2
-                size={18}
+                size={
+                  18
+                }
               />
             }
           />
@@ -714,11 +868,14 @@ export default function DashboardPage() {
             }
             icon={
               <Clock3
-                size={18}
+                size={
+                  18
+                }
               />
             }
             danger={
-              overdueCount > 0
+              overdueCount >
+              0
             }
           />
         </section>
@@ -733,11 +890,14 @@ export default function DashboardPage() {
             }
             className={[
               'rounded-lg px-4 py-2 text-sm font-medium transition',
+
               taskScope ===
               'ALL'
                 ? 'bg-slate-900 text-white shadow-sm dark:bg-slate-100 dark:text-slate-900'
                 : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100',
-            ].join(' ')}
+            ].join(
+              ' ',
+            )}
           >
             All tasks
           </button>
@@ -751,11 +911,14 @@ export default function DashboardPage() {
             }
             className={[
               'rounded-lg px-4 py-2 text-sm font-medium transition',
+
               taskScope ===
               'MINE'
                 ? 'bg-slate-900 text-white shadow-sm dark:bg-slate-100 dark:text-slate-900'
                 : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100',
-            ].join(' ')}
+            ].join(
+              ' ',
+            )}
           >
             My tasks
           </button>
@@ -764,12 +927,16 @@ export default function DashboardPage() {
         <section className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-3 transition-colors dark:border-slate-800 dark:bg-slate-900 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex h-10 w-full items-center gap-2 rounded-lg bg-slate-50 px-3 transition-colors dark:bg-slate-800 sm:max-w-sm">
             <Search
-              size={16}
+              size={
+                16
+              }
               className="text-slate-400 dark:text-slate-500"
             />
 
             <input
-              value={search}
+              value={
+                search
+              }
               onChange={(
                 event,
               ) =>
@@ -785,7 +952,9 @@ export default function DashboardPage() {
 
           <div className="flex items-center gap-2">
             <UserRound
-              size={15}
+              size={
+                15
+              }
               className="hidden text-slate-400 dark:text-slate-500 sm:block"
             />
 
@@ -807,11 +976,14 @@ export default function DashboardPage() {
               }
               className={[
                 'h-10 min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-600 outline-none transition-colors dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 sm:min-w-[190px]',
+
                 taskScope ===
                 'MINE'
                   ? 'cursor-not-allowed opacity-50'
                   : '',
-              ].join(' ')}
+              ].join(
+                ' ',
+              )}
             >
               <option value="ALL">
                 {taskScope ===
@@ -821,7 +993,9 @@ export default function DashboardPage() {
               </option>
 
               {users.map(
-                (user) => (
+                (
+                  user,
+                ) => (
                   <option
                     key={
                       user.id
@@ -880,9 +1054,15 @@ export default function DashboardPage() {
           editingTask={
             editingTask
           }
-          value={form}
-          users={users}
-          saving={saving}
+          value={
+            form
+          }
+          users={
+            users
+          }
+          saving={
+            saving
+          }
           onChange={
             setForm
           }
@@ -954,10 +1134,17 @@ function SummaryCard({
   icon,
   danger = false,
 }: {
-  label: string;
-  value: number;
-  icon: React.ReactNode;
-  danger?: boolean;
+  label:
+    string;
+
+  value:
+    number;
+
+  icon:
+    React.ReactNode;
+
+  danger?:
+    boolean;
 }) {
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-4 transition-colors dark:border-slate-800 dark:bg-slate-900 sm:p-5">
@@ -970,10 +1157,13 @@ function SummaryCard({
           <p
             className={[
               'mt-2 text-2xl font-semibold sm:text-3xl',
+
               danger
                 ? 'text-red-600 dark:text-red-400'
                 : 'text-slate-900 dark:text-slate-100',
-            ].join(' ')}
+            ].join(
+              ' ',
+            )}
           >
             {value}
           </p>
@@ -982,10 +1172,13 @@ function SummaryCard({
         <div
           className={[
             'flex h-9 w-9 items-center justify-center rounded-lg',
+
             danger
               ? 'bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-400'
               : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400',
-          ].join(' ')}
+          ].join(
+            ' ',
+          )}
         >
           {icon}
         </div>
