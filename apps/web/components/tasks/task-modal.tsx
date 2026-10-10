@@ -71,8 +71,60 @@ export default function TaskModal({
   ) => void;
 
   onClose: () => void;
+
   onSave: () => void;
 }) {
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const previousOverflow =
+      document.body.style
+        .overflow;
+
+    document.body.style.overflow =
+      'hidden';
+
+    return () => {
+      document.body.style.overflow =
+        previousOverflow;
+    };
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    function handleKeyDown(
+      event: KeyboardEvent,
+    ) {
+      if (
+        event.key === 'Escape' &&
+        !saving
+      ) {
+        onClose();
+      }
+    }
+
+    window.addEventListener(
+      'keydown',
+      handleKeyDown,
+    );
+
+    return () => {
+      window.removeEventListener(
+        'keydown',
+        handleKeyDown,
+      );
+    };
+  }, [
+    open,
+    saving,
+    onClose,
+  ]);
+
   if (!open) {
     return null;
   }
@@ -145,7 +197,7 @@ export default function TaskModal({
   ];
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-start justify-center overflow-visible bg-slate-950/30 p-4 pt-[4vh] backdrop-blur-[2px] dark:bg-black/60 sm:p-5 sm:pt-[5vh]">
+    <div className="fixed inset-0 z-[100] flex items-end justify-center bg-slate-950/40 backdrop-blur-[2px] dark:bg-black/70 sm:items-center sm:p-5">
       <button
         type="button"
         onClick={() => {
@@ -157,16 +209,37 @@ export default function TaskModal({
         aria-label="Close task"
       />
 
-      <div className="relative z-10 w-full max-w-[620px] overflow-visible rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900">
-        <div className="flex items-start justify-between border-b border-slate-100 px-6 py-5 dark:border-slate-800">
-          <div>
+      <div
+        className="
+          relative z-10 flex
+          h-[calc(100dvh-12px)]
+          w-full
+          min-w-0
+          flex-col
+          overflow-hidden
+          rounded-t-[24px]
+          border
+          border-slate-200
+          bg-white
+          shadow-2xl
+          dark:border-slate-800
+          dark:bg-slate-900
+
+          sm:h-auto
+          sm:max-h-[calc(100dvh-40px)]
+          sm:max-w-[620px]
+          sm:rounded-2xl
+        "
+      >
+        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-slate-100 px-4 py-4 dark:border-slate-800 sm:px-6 sm:py-5">
+          <div className="min-w-0">
             <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
               {editingTask
                 ? 'Edit task'
                 : 'New task'}
             </h2>
 
-            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            <p className="mt-1 max-w-[430px] text-sm leading-5 text-slate-500 dark:text-slate-400">
               Assign work to a team
               member and track its
               progress.
@@ -177,179 +250,201 @@ export default function TaskModal({
             type="button"
             disabled={saving}
             onClick={onClose}
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 active:scale-95 disabled:opacity-50 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-200 sm:h-9 sm:w-9 sm:rounded-lg"
+            aria-label="Close"
           >
             <X size={18} />
           </button>
         </div>
 
-        <div className="space-y-5 p-6">
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
-              Task
-            </label>
-
-            <input
-              autoFocus
-              value={value.title}
-              onChange={(
-                event,
-              ) =>
-                update(
-                  'title',
-                  event.target
-                    .value,
-                )
-              }
-              placeholder="What needs to be done?"
-              className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-slate-400 focus:ring-2 focus:ring-slate-100 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500 dark:hover:border-slate-600 dark:focus:border-slate-500 dark:focus:ring-slate-800"
-            />
-          </div>
-
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
-              Description
-            </label>
-
-            <textarea
-              rows={4}
-              value={
-                value.description
-              }
-              onChange={(
-                event,
-              ) =>
-                update(
-                  'description',
-                  event.target
-                    .value,
-                )
-              }
-              placeholder="Add details if needed..."
-              className="w-full resize-none rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-slate-400 focus:ring-2 focus:ring-slate-100 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500 dark:hover:border-slate-600 dark:focus:border-slate-500 dark:focus:ring-slate-800"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+          <div className="space-y-5 p-4 pb-6 sm:p-6">
             <div>
               <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
-                Assign to
+                Task
               </label>
 
-              <CustomSelect
-                value={
-                  value.assigneeId
-                }
-                options={
-                  assigneeOptions
-                }
-                placeholder="Unassigned"
+              <input
+                autoFocus
+                value={value.title}
                 onChange={(
-                  next,
+                  event,
                 ) =>
                   update(
-                    'assigneeId',
+                    'title',
+                    event.target
+                      .value,
+                  )
+                }
+                placeholder="What needs to be done?"
+                className="h-12 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-[16px] text-slate-800 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-slate-400 focus:ring-2 focus:ring-slate-100 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500 dark:hover:border-slate-600 dark:focus:border-slate-500 dark:focus:ring-slate-800 sm:h-11 sm:text-sm"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
+                Description
+              </label>
+
+              <textarea
+                rows={4}
+                value={
+                  value.description
+                }
+                onChange={(
+                  event,
+                ) =>
+                  update(
+                    'description',
+                    event.target
+                      .value,
+                  )
+                }
+                placeholder="Add details if needed..."
+                className="min-h-[120px] w-full resize-none rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-[16px] leading-6 text-slate-800 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-slate-400 focus:ring-2 focus:ring-slate-100 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500 dark:hover:border-slate-600 dark:focus:border-slate-500 dark:focus:ring-slate-800 sm:text-sm"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="min-w-0">
+                <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Assign to
+                </label>
+
+                <CustomSelect
+                  value={
+                    value.assigneeId
+                  }
+                  options={
+                    assigneeOptions
+                  }
+                  placeholder="Unassigned"
+                  onChange={(
                     next,
-                  )
-                }
-              />
-            </div>
+                  ) =>
+                    update(
+                      'assigneeId',
+                      next,
+                    )
+                  }
+                />
+              </div>
 
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
-                Due date
-              </label>
+              <div className="min-w-0">
+                <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Due date
+                </label>
 
-              <DateField
-                value={
-                  value.dueDate
-                }
-                onChange={(
-                  next,
-                ) =>
-                  update(
-                    'dueDate',
+                <DateField
+                  value={
+                    value.dueDate
+                  }
+                  onChange={(
                     next,
-                  )
-                }
-              />
-            </div>
+                  ) =>
+                    update(
+                      'dueDate',
+                      next,
+                    )
+                  }
+                />
+              </div>
 
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
-                Priority
-              </label>
+              <div className="min-w-0">
+                <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Priority
+                </label>
 
-              <CustomSelect
-                value={
-                  value.priority
-                }
-                options={
-                  priorityOptions
-                }
-                onChange={(
-                  next,
-                ) =>
-                  update(
-                    'priority',
-                    next as TaskFormValue['priority'],
-                  )
-                }
-              />
-            </div>
+                <CustomSelect
+                  value={
+                    value.priority
+                  }
+                  options={
+                    priorityOptions
+                  }
+                  onChange={(
+                    next,
+                  ) =>
+                    update(
+                      'priority',
+                      next as TaskFormValue['priority'],
+                    )
+                  }
+                />
+              </div>
 
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
-                Status
-              </label>
+              <div className="min-w-0">
+                <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Status
+                </label>
 
-              <CustomSelect
-                value={
-                  value.status
-                }
-                options={
-                  statusOptions
-                }
-                onChange={(
-                  next,
-                ) =>
-                  update(
-                    'status',
-                    next as TaskFormValue['status'],
-                  )
-                }
-              />
+                <CustomSelect
+                  value={
+                    value.status
+                  }
+                  options={
+                    statusOptions
+                  }
+                  onChange={(
+                    next,
+                  ) =>
+                    update(
+                      'status',
+                      next as TaskFormValue['status'],
+                    )
+                  }
+                />
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="flex justify-end gap-2 border-t border-slate-100 bg-slate-50/60 px-6 py-4 dark:border-slate-800 dark:bg-slate-950/40">
-          <button
-            type="button"
-            disabled={saving}
-            onClick={onClose}
-            className="h-10 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-600 transition hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
-          >
-            Cancel
-          </button>
+        <div
+          className="
+            shrink-0
+            border-t
+            border-slate-100
+            bg-white/95
+            px-4
+            py-3
+            backdrop-blur
+            dark:border-slate-800
+            dark:bg-slate-900/95
 
-          <button
-            type="button"
-            disabled={
-              saving ||
-              !value.title.trim()
-            }
-            onClick={
-              onSave
-            }
-            className="h-10 rounded-lg bg-slate-900 px-5 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
-          >
-            {saving
-              ? 'Saving...'
-              : editingTask
-                ? 'Save changes'
-                : 'Create task'}
-          </button>
+            sm:bg-slate-50/60
+            sm:px-6
+            sm:py-4
+            dark:sm:bg-slate-950/40
+          "
+        >
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:justify-end">
+            <button
+              type="button"
+              disabled={saving}
+              onClick={onClose}
+              className="h-11 rounded-xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-600 transition hover:bg-slate-50 active:scale-[0.99] disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 sm:h-10 sm:rounded-lg"
+            >
+              Cancel
+            </button>
+
+            <button
+              type="button"
+              disabled={
+                saving ||
+                !value.title.trim()
+              }
+              onClick={
+                onSave
+              }
+              className="h-11 rounded-xl bg-slate-900 px-4 text-sm font-medium text-white transition hover:bg-slate-800 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white sm:h-10 sm:rounded-lg sm:px-5"
+            >
+              {saving
+                ? 'Saving...'
+                : editingTask
+                  ? 'Save changes'
+                  : 'Create task'}
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -363,20 +458,26 @@ function CustomSelect({
   onChange,
 }: {
   value: string;
+
   options: SelectOption[];
+
   placeholder?: string;
 
   onChange: (
     value: string,
   ) => void;
 }) {
-  const [open, setOpen] =
+  const [
+    open,
+    setOpen,
+  ] =
     useState(false);
 
   const [
     openUpward,
     setOpenUpward,
-  ] = useState(false);
+  ] =
+    useState(false);
 
   const wrapperRef =
     useRef<HTMLDivElement | null>(
@@ -386,12 +487,15 @@ function CustomSelect({
   const selected =
     options.find(
       (option) =>
-        option.value === value,
+        option.value ===
+        value,
     );
 
   useEffect(() => {
     function handleOutsideClick(
-      event: MouseEvent,
+      event:
+        MouseEvent |
+        TouchEvent,
     ) {
       if (
         wrapperRef.current &&
@@ -399,7 +503,9 @@ function CustomSelect({
           event.target as Node,
         )
       ) {
-        setOpen(false);
+        setOpen(
+          false,
+        );
       }
     }
 
@@ -408,9 +514,22 @@ function CustomSelect({
       handleOutsideClick,
     );
 
+    document.addEventListener(
+      'touchstart',
+      handleOutsideClick,
+      {
+        passive: true,
+      },
+    );
+
     return () => {
       document.removeEventListener(
         'mousedown',
+        handleOutsideClick,
+      );
+
+      document.removeEventListener(
+        'touchstart',
         handleOutsideClick,
       );
     };
@@ -418,7 +537,10 @@ function CustomSelect({
 
   function toggleDropdown() {
     if (open) {
-      setOpen(false);
+      setOpen(
+        false,
+      );
+
       return;
     }
 
@@ -456,13 +578,15 @@ function CustomSelect({
       );
     }
 
-    setOpen(true);
+    setOpen(
+      true,
+    );
   }
 
   return (
     <div
       ref={wrapperRef}
-      className="relative"
+      className="relative min-w-0"
     >
       <button
         type="button"
@@ -470,7 +594,8 @@ function CustomSelect({
           toggleDropdown
         }
         className={[
-          'flex h-11 w-full items-center justify-between rounded-xl border bg-white px-3.5 text-left text-sm outline-none transition dark:bg-slate-950',
+          'flex h-12 w-full min-w-0 items-center justify-between rounded-xl border bg-white px-3.5 text-left text-[16px] outline-none transition dark:bg-slate-950 sm:h-11 sm:text-sm',
+
           open
             ? 'border-slate-400 ring-2 ring-slate-100 dark:border-slate-500 dark:ring-slate-800'
             : 'border-slate-200 hover:border-slate-300 dark:border-slate-700 dark:hover:border-slate-600',
@@ -478,7 +603,8 @@ function CustomSelect({
       >
         <span
           className={[
-            'min-w-0 truncate',
+            'min-w-0 flex-1 truncate',
+
             selected
               ? 'text-slate-800 dark:text-slate-100'
               : 'text-slate-400 dark:text-slate-500',
@@ -493,6 +619,7 @@ function CustomSelect({
           strokeWidth={1.8}
           className={[
             'ml-3 shrink-0 text-slate-400 transition-transform duration-150 dark:text-slate-500',
+
             open
               ? 'rotate-180'
               : '',
@@ -503,15 +630,18 @@ function CustomSelect({
       {open && (
         <div
           className={[
-            'absolute left-0 right-0 z-[999] overflow-hidden rounded-xl border border-slate-200 bg-white p-1.5 shadow-2xl shadow-slate-900/15 dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/30',
+            'absolute left-0 right-0 z-[200] overflow-hidden rounded-xl border border-slate-200 bg-white p-1.5 shadow-2xl shadow-slate-900/15 dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/30',
+
             openUpward
               ? 'bottom-[calc(100%+6px)]'
               : 'top-[calc(100%+6px)]',
           ].join(' ')}
         >
-          <div className="max-h-[280px] overflow-y-auto">
+          <div className="max-h-[min(280px,42dvh)] overflow-y-auto overscroll-contain">
             {options.map(
-              (option) => {
+              (
+                option,
+              ) => {
                 const active =
                   option.value ===
                   value;
@@ -528,19 +658,23 @@ function CustomSelect({
                         option.value,
                       );
 
-                      setOpen(false);
+                      setOpen(
+                        false,
+                      );
                     }}
                     className={[
-                      'flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-left transition',
+                      'flex min-h-11 w-full items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-left transition',
+
                       active
                         ? 'bg-slate-100 dark:bg-slate-800'
-                        : 'hover:bg-slate-50 dark:hover:bg-slate-800/70',
+                        : 'hover:bg-slate-50 active:bg-slate-100 dark:hover:bg-slate-800/70 dark:active:bg-slate-800',
                     ].join(' ')}
                   >
                     <div className="min-w-0">
                       <p
                         className={[
                           'truncate text-sm',
+
                           active
                             ? 'font-medium text-slate-900 dark:text-slate-100'
                             : 'text-slate-700 dark:text-slate-300',
@@ -605,22 +739,28 @@ function DateField({
       input.showPicker();
     } catch {
       input.focus();
+      input.click();
     }
   }
 
   return (
-    <div className="relative">
+    <div className="relative min-w-0">
       <input
-        ref={inputRef}
+        ref={
+          inputRef
+        }
         type="date"
-        value={value}
+        value={
+          value
+        }
         min="2020-01-01"
         max="2099-12-31"
         onChange={(
           event,
         ) => {
           const next =
-            event.target.value;
+            event.target
+              .value;
 
           if (!next) {
             onChange('');
@@ -638,10 +778,47 @@ function DateField({
             year >= 2020 &&
             year <= 2099
           ) {
-            onChange(next);
+            onChange(
+              next,
+            );
           }
         }}
-        className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3.5 pr-11 text-sm text-slate-800 outline-none transition hover:border-slate-300 focus:border-slate-400 focus:ring-2 focus:ring-slate-100 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:hover:border-slate-600 dark:focus:border-slate-500 dark:focus:ring-slate-800 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-3 [&::-webkit-calendar-picker-indicator]:h-5 [&::-webkit-calendar-picker-indicator]:w-5 [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0"
+        className="
+          h-12
+          w-full
+          min-w-0
+          rounded-xl
+          border
+          border-slate-200
+          bg-white
+          px-3.5
+          pr-11
+          text-[16px]
+          text-slate-800
+          outline-none
+          transition
+          hover:border-slate-300
+          focus:border-slate-400
+          focus:ring-2
+          focus:ring-slate-100
+
+          dark:border-slate-700
+          dark:bg-slate-950
+          dark:text-slate-100
+          dark:hover:border-slate-600
+          dark:focus:border-slate-500
+          dark:focus:ring-slate-800
+
+          sm:h-11
+          sm:text-sm
+
+          [&::-webkit-calendar-picker-indicator]:absolute
+          [&::-webkit-calendar-picker-indicator]:right-3
+          [&::-webkit-calendar-picker-indicator]:h-5
+          [&::-webkit-calendar-picker-indicator]:w-5
+          [&::-webkit-calendar-picker-indicator]:cursor-pointer
+          [&::-webkit-calendar-picker-indicator]:opacity-0
+        "
       />
 
       <button
@@ -650,11 +827,14 @@ function DateField({
           openCalendar
         }
         tabIndex={-1}
-        className="absolute right-1.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+        className="absolute right-1.5 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 active:scale-95 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+        aria-label="Open calendar"
       >
         <CalendarDays
           size={17}
-          strokeWidth={1.8}
+          strokeWidth={
+            1.8
+          }
         />
       </button>
     </div>
