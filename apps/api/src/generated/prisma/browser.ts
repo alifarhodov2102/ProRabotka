@@ -43,6 +43,11 @@ export type TaskAttachment = Prisma.TaskAttachmentModel
  */
 export type Startup = Prisma.StartupModel
 /**
+ * Model StartupFunding
+ * 
+ */
+export type StartupFunding = Prisma.StartupFundingModel
+/**
  * Model Resident
  * 
  */

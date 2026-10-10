@@ -1,23 +1,52 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module.js';
+import {
+  NestFactory,
+} from '@nestjs/core';
+
+import {
+  NestExpressApplication,
+} from '@nestjs/platform-express';
+
+import {
+  join,
+} from 'path';
+
+import {
+  AppModule,
+} from './app.module.js';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app =
+    await NestFactory.create<NestExpressApplication>(
+      AppModule,
+    );
 
   app.enableCors({
     origin: (
-      origin: string | undefined,
+      origin:
+        | string
+        | undefined,
+
       callback: (
-        error: Error | null,
+        error:
+          | Error
+          | null,
+
         allow?: boolean,
       ) => void,
     ) => {
       if (
         !origin ||
-        origin === 'http://localhost:3000' ||
-        origin.endsWith('.vercel.app')
+        origin ===
+          'http://localhost:3000' ||
+        origin.endsWith(
+          '.vercel.app',
+        )
       ) {
-        callback(null, true);
+        callback(
+          null,
+          true,
+        );
+
         return;
       }
 
@@ -31,8 +60,21 @@ async function bootstrap() {
     credentials: true,
   });
 
+  app.useStaticAssets(
+    join(
+      process.cwd(),
+      'storage',
+      'startup-logos',
+    ),
+    {
+      prefix:
+        '/startup-logos/',
+    },
+  );
+
   await app.listen(
-    process.env.PORT ?? 4000,
+    process.env.PORT ??
+      4000,
   );
 }
 

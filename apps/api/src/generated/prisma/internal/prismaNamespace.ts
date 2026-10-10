@@ -402,6 +402,7 @@ export const ModelName = {
   TaskComment: 'TaskComment',
   TaskAttachment: 'TaskAttachment',
   Startup: 'Startup',
+  StartupFunding: 'StartupFunding',
   Resident: 'Resident',
   QuarterReport: 'QuarterReport',
   Infrastructure: 'Infrastructure',
@@ -426,7 +427,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "task" | "taskComment" | "taskAttachment" | "startup" | "resident" | "quarterReport" | "infrastructure" | "space" | "folder" | "document" | "activityLog" | "outreachCampaign" | "lead"
+    modelProps: "user" | "task" | "taskComment" | "taskAttachment" | "startup" | "startupFunding" | "resident" | "quarterReport" | "infrastructure" | "space" | "folder" | "document" | "activityLog" | "outreachCampaign" | "lead"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -797,6 +798,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.StartupCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.StartupCountAggregateOutputType> | number
+        }
+      }
+    }
+    StartupFunding: {
+      payload: Prisma.$StartupFundingPayload<ExtArgs>
+      fields: Prisma.StartupFundingFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.StartupFundingFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StartupFundingPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.StartupFundingFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StartupFundingPayload>
+        }
+        findFirst: {
+          args: Prisma.StartupFundingFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StartupFundingPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.StartupFundingFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StartupFundingPayload>
+        }
+        findMany: {
+          args: Prisma.StartupFundingFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StartupFundingPayload>[]
+        }
+        create: {
+          args: Prisma.StartupFundingCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StartupFundingPayload>
+        }
+        createMany: {
+          args: Prisma.StartupFundingCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.StartupFundingCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StartupFundingPayload>[]
+        }
+        delete: {
+          args: Prisma.StartupFundingDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StartupFundingPayload>
+        }
+        update: {
+          args: Prisma.StartupFundingUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StartupFundingPayload>
+        }
+        deleteMany: {
+          args: Prisma.StartupFundingDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.StartupFundingUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.StartupFundingUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StartupFundingPayload>[]
+        }
+        upsert: {
+          args: Prisma.StartupFundingUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StartupFundingPayload>
+        }
+        aggregate: {
+          args: Prisma.StartupFundingAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateStartupFunding>
+        }
+        groupBy: {
+          args: Prisma.StartupFundingGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StartupFundingGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.StartupFundingCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StartupFundingCountAggregateOutputType> | number
         }
       }
     }
@@ -1575,11 +1650,29 @@ export const StartupScalarFieldEnum = {
   status: 'status',
   joinedAt: 'joinedAt',
   notes: 'notes',
+  logoUrl: 'logoUrl',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type StartupScalarFieldEnum = (typeof StartupScalarFieldEnum)[keyof typeof StartupScalarFieldEnum]
+
+
+export const StartupFundingScalarFieldEnum = {
+  id: 'id',
+  startupId: 'startupId',
+  type: 'type',
+  amount: 'amount',
+  currency: 'currency',
+  source: 'source',
+  round: 'round',
+  fundedAt: 'fundedAt',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StartupFundingScalarFieldEnum = (typeof StartupFundingScalarFieldEnum)[keyof typeof StartupFundingScalarFieldEnum]
 
 
 export const ResidentScalarFieldEnum = {
@@ -1881,6 +1974,34 @@ export type ListEnumStartupStatusFieldRefInput<$PrismaModel> = FieldRefInputType
 
 
 /**
+ * Reference to a field of type 'StartupFundingType'
+ */
+export type EnumStartupFundingTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StartupFundingType'>
+    
+
+
+/**
+ * Reference to a field of type 'StartupFundingType[]'
+ */
+export type ListEnumStartupFundingTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StartupFundingType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Decimal'
+ */
+export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
+    
+
+
+/**
+ * Reference to a field of type 'Decimal[]'
+ */
+export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
+    
+
+
+/**
  * Reference to a field of type 'ResidentStatus'
  */
 export type EnumResidentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ResidentStatus'>
@@ -2133,6 +2254,7 @@ export type GlobalOmitConfig = {
   taskComment?: Prisma.TaskCommentOmit
   taskAttachment?: Prisma.TaskAttachmentOmit
   startup?: Prisma.StartupOmit
+  startupFunding?: Prisma.StartupFundingOmit
   resident?: Prisma.ResidentOmit
   quarterReport?: Prisma.QuarterReportOmit
   infrastructure?: Prisma.InfrastructureOmit

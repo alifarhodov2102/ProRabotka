@@ -48,6 +48,14 @@ export const StartupStatus = {
 export type StartupStatus = (typeof StartupStatus)[keyof typeof StartupStatus]
 
 
+export const StartupFundingType = {
+  INVESTMENT: 'INVESTMENT',
+  GRANT: 'GRANT'
+} as const
+
+export type StartupFundingType = (typeof StartupFundingType)[keyof typeof StartupFundingType]
+
+
 export const ResidentStatus = {
   ACTIVE: 'ACTIVE',
   INACTIVE: 'INACTIVE',

@@ -56,6 +56,7 @@ export const ModelName = {
   TaskComment: 'TaskComment',
   TaskAttachment: 'TaskAttachment',
   Startup: 'Startup',
+  StartupFunding: 'StartupFunding',
   Resident: 'Resident',
   QuarterReport: 'QuarterReport',
   Infrastructure: 'Infrastructure',
@@ -153,11 +154,29 @@ export const StartupScalarFieldEnum = {
   status: 'status',
   joinedAt: 'joinedAt',
   notes: 'notes',
+  logoUrl: 'logoUrl',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type StartupScalarFieldEnum = (typeof StartupScalarFieldEnum)[keyof typeof StartupScalarFieldEnum]
+
+
+export const StartupFundingScalarFieldEnum = {
+  id: 'id',
+  startupId: 'startupId',
+  type: 'type',
+  amount: 'amount',
+  currency: 'currency',
+  source: 'source',
+  round: 'round',
+  fundedAt: 'fundedAt',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StartupFundingScalarFieldEnum = (typeof StartupFundingScalarFieldEnum)[keyof typeof StartupFundingScalarFieldEnum]
 
 
 export const ResidentScalarFieldEnum = {

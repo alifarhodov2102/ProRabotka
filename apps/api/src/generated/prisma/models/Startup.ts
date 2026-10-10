@@ -34,6 +34,7 @@ export type StartupMinAggregateOutputType = {
   status: $Enums.StartupStatus | null
   joinedAt: Date | null
   notes: string | null
+  logoUrl: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -48,6 +49,7 @@ export type StartupMaxAggregateOutputType = {
   status: $Enums.StartupStatus | null
   joinedAt: Date | null
   notes: string | null
+  logoUrl: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -62,6 +64,7 @@ export type StartupCountAggregateOutputType = {
   status: number
   joinedAt: number
   notes: number
+  logoUrl: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -78,6 +81,7 @@ export type StartupMinAggregateInputType = {
   status?: true
   joinedAt?: true
   notes?: true
+  logoUrl?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -92,6 +96,7 @@ export type StartupMaxAggregateInputType = {
   status?: true
   joinedAt?: true
   notes?: true
+  logoUrl?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -106,6 +111,7 @@ export type StartupCountAggregateInputType = {
   status?: true
   joinedAt?: true
   notes?: true
+  logoUrl?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -193,6 +199,7 @@ export type StartupGroupByOutputType = {
   status: $Enums.StartupStatus
   joinedAt: Date | null
   notes: string | null
+  logoUrl: string | null
   createdAt: Date
   updatedAt: Date
   _count: StartupCountAggregateOutputType | null
@@ -228,10 +235,12 @@ export type StartupWhereInput = {
   status?: Prisma.EnumStartupStatusFilter<"Startup"> | $Enums.StartupStatus
   joinedAt?: Prisma.DateTimeNullableFilter<"Startup"> | Date | string | null
   notes?: Prisma.StringNullableFilter<"Startup"> | string | null
+  logoUrl?: Prisma.StringNullableFilter<"Startup"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Startup"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Startup"> | Date | string
   tasks?: Prisma.TaskListRelationFilter
   documents?: Prisma.DocumentListRelationFilter
+  funding?: Prisma.StartupFundingListRelationFilter
 }
 
 export type StartupOrderByWithRelationInput = {
@@ -244,10 +253,12 @@ export type StartupOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
+  logoUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   tasks?: Prisma.TaskOrderByRelationAggregateInput
   documents?: Prisma.DocumentOrderByRelationAggregateInput
+  funding?: Prisma.StartupFundingOrderByRelationAggregateInput
 }
 
 export type StartupWhereUniqueInput = Prisma.AtLeast<{
@@ -263,10 +274,12 @@ export type StartupWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.EnumStartupStatusFilter<"Startup"> | $Enums.StartupStatus
   joinedAt?: Prisma.DateTimeNullableFilter<"Startup"> | Date | string | null
   notes?: Prisma.StringNullableFilter<"Startup"> | string | null
+  logoUrl?: Prisma.StringNullableFilter<"Startup"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Startup"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Startup"> | Date | string
   tasks?: Prisma.TaskListRelationFilter
   documents?: Prisma.DocumentListRelationFilter
+  funding?: Prisma.StartupFundingListRelationFilter
 }, "id">
 
 export type StartupOrderByWithAggregationInput = {
@@ -279,6 +292,7 @@ export type StartupOrderByWithAggregationInput = {
   status?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
+  logoUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.StartupCountOrderByAggregateInput
@@ -299,6 +313,7 @@ export type StartupScalarWhereWithAggregatesInput = {
   status?: Prisma.EnumStartupStatusWithAggregatesFilter<"Startup"> | $Enums.StartupStatus
   joinedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Startup"> | Date | string | null
   notes?: Prisma.StringNullableWithAggregatesFilter<"Startup"> | string | null
+  logoUrl?: Prisma.StringNullableWithAggregatesFilter<"Startup"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Startup"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Startup"> | Date | string
 }
@@ -313,10 +328,12 @@ export type StartupCreateInput = {
   status?: $Enums.StartupStatus
   joinedAt?: Date | string | null
   notes?: string | null
+  logoUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tasks?: Prisma.TaskCreateNestedManyWithoutStartupInput
   documents?: Prisma.DocumentCreateNestedManyWithoutStartupInput
+  funding?: Prisma.StartupFundingCreateNestedManyWithoutStartupInput
 }
 
 export type StartupUncheckedCreateInput = {
@@ -329,10 +346,12 @@ export type StartupUncheckedCreateInput = {
   status?: $Enums.StartupStatus
   joinedAt?: Date | string | null
   notes?: string | null
+  logoUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutStartupInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutStartupInput
+  funding?: Prisma.StartupFundingUncheckedCreateNestedManyWithoutStartupInput
 }
 
 export type StartupUpdateInput = {
@@ -345,10 +364,12 @@ export type StartupUpdateInput = {
   status?: Prisma.EnumStartupStatusFieldUpdateOperationsInput | $Enums.StartupStatus
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tasks?: Prisma.TaskUpdateManyWithoutStartupNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutStartupNestedInput
+  funding?: Prisma.StartupFundingUpdateManyWithoutStartupNestedInput
 }
 
 export type StartupUncheckedUpdateInput = {
@@ -361,10 +382,12 @@ export type StartupUncheckedUpdateInput = {
   status?: Prisma.EnumStartupStatusFieldUpdateOperationsInput | $Enums.StartupStatus
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tasks?: Prisma.TaskUncheckedUpdateManyWithoutStartupNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutStartupNestedInput
+  funding?: Prisma.StartupFundingUncheckedUpdateManyWithoutStartupNestedInput
 }
 
 export type StartupCreateManyInput = {
@@ -377,6 +400,7 @@ export type StartupCreateManyInput = {
   status?: $Enums.StartupStatus
   joinedAt?: Date | string | null
   notes?: string | null
+  logoUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -391,6 +415,7 @@ export type StartupUpdateManyMutationInput = {
   status?: Prisma.EnumStartupStatusFieldUpdateOperationsInput | $Enums.StartupStatus
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -405,6 +430,7 @@ export type StartupUncheckedUpdateManyInput = {
   status?: Prisma.EnumStartupStatusFieldUpdateOperationsInput | $Enums.StartupStatus
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -424,6 +450,7 @@ export type StartupCountOrderByAggregateInput = {
   status?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
   notes?: Prisma.SortOrder
+  logoUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -438,6 +465,7 @@ export type StartupMaxOrderByAggregateInput = {
   status?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
   notes?: Prisma.SortOrder
+  logoUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -452,8 +480,14 @@ export type StartupMinOrderByAggregateInput = {
   status?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
   notes?: Prisma.SortOrder
+  logoUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type StartupScalarRelationFilter = {
+  is?: Prisma.StartupWhereInput
+  isNot?: Prisma.StartupWhereInput
 }
 
 export type StartupCreateNestedOneWithoutTasksInput = {
@@ -474,6 +508,20 @@ export type StartupUpdateOneWithoutTasksNestedInput = {
 
 export type EnumStartupStatusFieldUpdateOperationsInput = {
   set?: $Enums.StartupStatus
+}
+
+export type StartupCreateNestedOneWithoutFundingInput = {
+  create?: Prisma.XOR<Prisma.StartupCreateWithoutFundingInput, Prisma.StartupUncheckedCreateWithoutFundingInput>
+  connectOrCreate?: Prisma.StartupCreateOrConnectWithoutFundingInput
+  connect?: Prisma.StartupWhereUniqueInput
+}
+
+export type StartupUpdateOneRequiredWithoutFundingNestedInput = {
+  create?: Prisma.XOR<Prisma.StartupCreateWithoutFundingInput, Prisma.StartupUncheckedCreateWithoutFundingInput>
+  connectOrCreate?: Prisma.StartupCreateOrConnectWithoutFundingInput
+  upsert?: Prisma.StartupUpsertWithoutFundingInput
+  connect?: Prisma.StartupWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.StartupUpdateToOneWithWhereWithoutFundingInput, Prisma.StartupUpdateWithoutFundingInput>, Prisma.StartupUncheckedUpdateWithoutFundingInput>
 }
 
 export type StartupCreateNestedOneWithoutDocumentsInput = {
@@ -502,9 +550,11 @@ export type StartupCreateWithoutTasksInput = {
   status?: $Enums.StartupStatus
   joinedAt?: Date | string | null
   notes?: string | null
+  logoUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   documents?: Prisma.DocumentCreateNestedManyWithoutStartupInput
+  funding?: Prisma.StartupFundingCreateNestedManyWithoutStartupInput
 }
 
 export type StartupUncheckedCreateWithoutTasksInput = {
@@ -517,9 +567,11 @@ export type StartupUncheckedCreateWithoutTasksInput = {
   status?: $Enums.StartupStatus
   joinedAt?: Date | string | null
   notes?: string | null
+  logoUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutStartupInput
+  funding?: Prisma.StartupFundingUncheckedCreateNestedManyWithoutStartupInput
 }
 
 export type StartupCreateOrConnectWithoutTasksInput = {
@@ -548,9 +600,11 @@ export type StartupUpdateWithoutTasksInput = {
   status?: Prisma.EnumStartupStatusFieldUpdateOperationsInput | $Enums.StartupStatus
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   documents?: Prisma.DocumentUpdateManyWithoutStartupNestedInput
+  funding?: Prisma.StartupFundingUpdateManyWithoutStartupNestedInput
 }
 
 export type StartupUncheckedUpdateWithoutTasksInput = {
@@ -563,8 +617,94 @@ export type StartupUncheckedUpdateWithoutTasksInput = {
   status?: Prisma.EnumStartupStatusFieldUpdateOperationsInput | $Enums.StartupStatus
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  documents?: Prisma.DocumentUncheckedUpdateManyWithoutStartupNestedInput
+  funding?: Prisma.StartupFundingUncheckedUpdateManyWithoutStartupNestedInput
+}
+
+export type StartupCreateWithoutFundingInput = {
+  id?: string
+  name: string
+  founderName?: string | null
+  phone?: string | null
+  email?: string | null
+  stage?: string | null
+  status?: $Enums.StartupStatus
+  joinedAt?: Date | string | null
+  notes?: string | null
+  logoUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  tasks?: Prisma.TaskCreateNestedManyWithoutStartupInput
+  documents?: Prisma.DocumentCreateNestedManyWithoutStartupInput
+}
+
+export type StartupUncheckedCreateWithoutFundingInput = {
+  id?: string
+  name: string
+  founderName?: string | null
+  phone?: string | null
+  email?: string | null
+  stage?: string | null
+  status?: $Enums.StartupStatus
+  joinedAt?: Date | string | null
+  notes?: string | null
+  logoUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutStartupInput
+  documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutStartupInput
+}
+
+export type StartupCreateOrConnectWithoutFundingInput = {
+  where: Prisma.StartupWhereUniqueInput
+  create: Prisma.XOR<Prisma.StartupCreateWithoutFundingInput, Prisma.StartupUncheckedCreateWithoutFundingInput>
+}
+
+export type StartupUpsertWithoutFundingInput = {
+  update: Prisma.XOR<Prisma.StartupUpdateWithoutFundingInput, Prisma.StartupUncheckedUpdateWithoutFundingInput>
+  create: Prisma.XOR<Prisma.StartupCreateWithoutFundingInput, Prisma.StartupUncheckedCreateWithoutFundingInput>
+  where?: Prisma.StartupWhereInput
+}
+
+export type StartupUpdateToOneWithWhereWithoutFundingInput = {
+  where?: Prisma.StartupWhereInput
+  data: Prisma.XOR<Prisma.StartupUpdateWithoutFundingInput, Prisma.StartupUncheckedUpdateWithoutFundingInput>
+}
+
+export type StartupUpdateWithoutFundingInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  founderName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumStartupStatusFieldUpdateOperationsInput | $Enums.StartupStatus
+  joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tasks?: Prisma.TaskUpdateManyWithoutStartupNestedInput
+  documents?: Prisma.DocumentUpdateManyWithoutStartupNestedInput
+}
+
+export type StartupUncheckedUpdateWithoutFundingInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  founderName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumStartupStatusFieldUpdateOperationsInput | $Enums.StartupStatus
+  joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutStartupNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutStartupNestedInput
 }
 
@@ -578,9 +718,11 @@ export type StartupCreateWithoutDocumentsInput = {
   status?: $Enums.StartupStatus
   joinedAt?: Date | string | null
   notes?: string | null
+  logoUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tasks?: Prisma.TaskCreateNestedManyWithoutStartupInput
+  funding?: Prisma.StartupFundingCreateNestedManyWithoutStartupInput
 }
 
 export type StartupUncheckedCreateWithoutDocumentsInput = {
@@ -593,9 +735,11 @@ export type StartupUncheckedCreateWithoutDocumentsInput = {
   status?: $Enums.StartupStatus
   joinedAt?: Date | string | null
   notes?: string | null
+  logoUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutStartupInput
+  funding?: Prisma.StartupFundingUncheckedCreateNestedManyWithoutStartupInput
 }
 
 export type StartupCreateOrConnectWithoutDocumentsInput = {
@@ -624,9 +768,11 @@ export type StartupUpdateWithoutDocumentsInput = {
   status?: Prisma.EnumStartupStatusFieldUpdateOperationsInput | $Enums.StartupStatus
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tasks?: Prisma.TaskUpdateManyWithoutStartupNestedInput
+  funding?: Prisma.StartupFundingUpdateManyWithoutStartupNestedInput
 }
 
 export type StartupUncheckedUpdateWithoutDocumentsInput = {
@@ -639,9 +785,11 @@ export type StartupUncheckedUpdateWithoutDocumentsInput = {
   status?: Prisma.EnumStartupStatusFieldUpdateOperationsInput | $Enums.StartupStatus
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tasks?: Prisma.TaskUncheckedUpdateManyWithoutStartupNestedInput
+  funding?: Prisma.StartupFundingUncheckedUpdateManyWithoutStartupNestedInput
 }
 
 
@@ -652,11 +800,13 @@ export type StartupUncheckedUpdateWithoutDocumentsInput = {
 export type StartupCountOutputType = {
   tasks: number
   documents: number
+  funding: number
 }
 
 export type StartupCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tasks?: boolean | StartupCountOutputTypeCountTasksArgs
   documents?: boolean | StartupCountOutputTypeCountDocumentsArgs
+  funding?: boolean | StartupCountOutputTypeCountFundingArgs
 }
 
 /**
@@ -683,6 +833,13 @@ export type StartupCountOutputTypeCountDocumentsArgs<ExtArgs extends runtime.Typ
   where?: Prisma.DocumentWhereInput
 }
 
+/**
+ * StartupCountOutputType without action
+ */
+export type StartupCountOutputTypeCountFundingArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.StartupFundingWhereInput
+}
+
 
 export type StartupSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -694,10 +851,12 @@ export type StartupSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   status?: boolean
   joinedAt?: boolean
   notes?: boolean
+  logoUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   tasks?: boolean | Prisma.Startup$tasksArgs<ExtArgs>
   documents?: boolean | Prisma.Startup$documentsArgs<ExtArgs>
+  funding?: boolean | Prisma.Startup$fundingArgs<ExtArgs>
   _count?: boolean | Prisma.StartupCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["startup"]>
 
@@ -711,6 +870,7 @@ export type StartupSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   status?: boolean
   joinedAt?: boolean
   notes?: boolean
+  logoUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["startup"]>
@@ -725,6 +885,7 @@ export type StartupSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   status?: boolean
   joinedAt?: boolean
   notes?: boolean
+  logoUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["startup"]>
@@ -739,14 +900,16 @@ export type StartupSelectScalar = {
   status?: boolean
   joinedAt?: boolean
   notes?: boolean
+  logoUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type StartupOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "founderName" | "phone" | "email" | "stage" | "status" | "joinedAt" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["startup"]>
+export type StartupOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "founderName" | "phone" | "email" | "stage" | "status" | "joinedAt" | "notes" | "logoUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["startup"]>
 export type StartupInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tasks?: boolean | Prisma.Startup$tasksArgs<ExtArgs>
   documents?: boolean | Prisma.Startup$documentsArgs<ExtArgs>
+  funding?: boolean | Prisma.Startup$fundingArgs<ExtArgs>
   _count?: boolean | Prisma.StartupCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type StartupIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -757,6 +920,7 @@ export type $StartupPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   objects: {
     tasks: Prisma.$TaskPayload<ExtArgs>[]
     documents: Prisma.$DocumentPayload<ExtArgs>[]
+    funding: Prisma.$StartupFundingPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -768,6 +932,7 @@ export type $StartupPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     status: $Enums.StartupStatus
     joinedAt: Date | null
     notes: string | null
+    logoUrl: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["startup"]>
@@ -1166,6 +1331,7 @@ export interface Prisma__StartupClient<T, Null = never, ExtArgs extends runtime.
   readonly [Symbol.toStringTag]: "PrismaPromise"
   tasks<T extends Prisma.Startup$tasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Startup$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   documents<T extends Prisma.Startup$documentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Startup$documentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  funding<T extends Prisma.Startup$fundingArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Startup$fundingArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StartupFundingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1204,6 +1370,7 @@ export interface StartupFieldRefs {
   readonly status: Prisma.FieldRef<"Startup", 'StartupStatus'>
   readonly joinedAt: Prisma.FieldRef<"Startup", 'DateTime'>
   readonly notes: Prisma.FieldRef<"Startup", 'String'>
+  readonly logoUrl: Prisma.FieldRef<"Startup", 'String'>
   readonly createdAt: Prisma.FieldRef<"Startup", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Startup", 'DateTime'>
 }
@@ -1644,6 +1811,30 @@ export type Startup$documentsArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.DocumentScalarFieldEnum | Prisma.DocumentScalarFieldEnum[]
+}
+
+/**
+ * Startup.funding
+ */
+export type Startup$fundingArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the StartupFunding
+   */
+  select?: Prisma.StartupFundingSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the StartupFunding
+   */
+  omit?: Prisma.StartupFundingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StartupFundingInclude<ExtArgs> | null
+  where?: Prisma.StartupFundingWhereInput
+  orderBy?: Prisma.StartupFundingOrderByWithRelationInput | Prisma.StartupFundingOrderByWithRelationInput[]
+  cursor?: Prisma.StartupFundingWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.StartupFundingScalarFieldEnum | Prisma.StartupFundingScalarFieldEnum[]
 }
 
 /**
