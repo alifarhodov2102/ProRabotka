@@ -150,10 +150,13 @@ export default function AppSidebar({
       .split(' ')
       .filter(Boolean)
       .slice(0, 2)
-      .map((part) =>
-        part
-          .charAt(0)
-          .toUpperCase(),
+      .map(
+        (
+          part,
+        ) =>
+          part
+            .charAt(0)
+            .toUpperCase(),
       )
       .join('');
   }
@@ -191,48 +194,40 @@ export default function AppSidebar({
       >
         <div
           className={[
-            'flex h-16 items-center border-b border-slate-100 dark:border-slate-800',
+            'flex h-16 shrink-0 items-center border-b border-slate-100 dark:border-slate-800',
 
             collapsed
               ? 'lg:justify-center lg:px-2'
               : 'px-5',
           ].join(' ')}
         >
-          <div className="flex w-full items-center justify-between gap-3">
+          <div className="flex w-full min-w-0 items-center justify-between gap-3">
             <div className="min-w-0 flex-1">
               <div
                 className={[
-                  'flex items-center',
+                  'flex min-w-0 items-center',
 
                   collapsed
                     ? 'lg:justify-center'
                     : '',
                 ].join(' ')}
               >
-                <div
-                  className={[
-                    collapsed
-                      ? 'hidden lg:block'
-                      : '',
-                  ].join(' ')}
-                >
-                  {collapsed ? (
+                {collapsed ? (
+                  <>
                     <ProRabotkaLogo
                       compact
-                      className="w-9"
+                      className="hidden w-9 lg:flex"
                     />
-                  ) : (
-                    <ProRabotkaLogo
-                      className="w-[155px]"
-                    />
-                  )}
-                </div>
 
-                <div className="lg:hidden">
+                    <ProRabotkaLogo
+                      className="w-[155px] max-w-full lg:hidden"
+                    />
+                  </>
+                ) : (
                   <ProRabotkaLogo
-                    className="w-[155px]"
+                    className="w-[155px] max-w-full"
                   />
-                </div>
+                )}
               </div>
             </div>
 
@@ -241,17 +236,21 @@ export default function AppSidebar({
               onClick={
                 onMobileClose
               }
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-200 lg:hidden"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 active:scale-95 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-200 lg:hidden"
               aria-label="Close sidebar"
             >
-              <X size={18} />
+              <X
+                size={
+                  18
+                }
+              />
             </button>
           </div>
         </div>
 
         <div
           className={[
-            'pt-4',
+            'shrink-0 pt-4',
 
             collapsed
               ? 'lg:px-3'
@@ -274,7 +273,10 @@ export default function AppSidebar({
             }
           >
             <Search
-              size={16}
+              size={
+                16
+              }
+              className="shrink-0"
             />
 
             <span
@@ -297,7 +299,7 @@ export default function AppSidebar({
 
         <nav
           className={[
-            'flex-1 py-4',
+            'min-h-0 flex-1 overflow-y-auto py-4',
 
             collapsed
               ? 'lg:px-3'
@@ -318,7 +320,9 @@ export default function AppSidebar({
 
           <div className="space-y-1">
             {items.map(
-              (item) => {
+              (
+                item,
+              ) => {
                 const active =
                   pathname ===
                     item.href ||
@@ -358,20 +362,27 @@ export default function AppSidebar({
                     ].join(' ')}
                   >
                     <Icon
-                      size={18}
+                      size={
+                        18
+                      }
                       strokeWidth={
                         1.8
                       }
+                      className="shrink-0"
                     />
 
                     <span
-                      className={
+                      className={[
+                        'truncate',
+
                         collapsed
                           ? 'lg:hidden'
-                          : ''
-                      }
+                          : '',
+                      ].join(' ')}
                     >
-                      {item.name}
+                      {
+                        item.name
+                      }
                     </span>
                   </Link>
                 );
@@ -380,10 +391,10 @@ export default function AppSidebar({
           </div>
         </nav>
 
-        <div className="border-t border-slate-100 p-3 dark:border-slate-800">
+        <div className="shrink-0 border-t border-slate-100 p-3 dark:border-slate-800">
           <div
             className={[
-              'group flex items-center rounded-xl transition hover:bg-slate-50 dark:hover:bg-slate-800/70',
+              'group flex min-w-0 items-center rounded-xl transition hover:bg-slate-50 dark:hover:bg-slate-800/70',
 
               collapsed
                 ? 'lg:justify-center lg:px-0 lg:py-2.5'
@@ -419,7 +430,9 @@ export default function AppSidebar({
               </div>
 
               <div className="truncate text-xs text-slate-400 dark:text-slate-500">
-                {userPosition}
+                {
+                  userPosition
+                }
               </div>
             </div>
 
@@ -429,8 +442,9 @@ export default function AppSidebar({
                 handleLogout
               }
               title="Sign out"
+              aria-label="Sign out"
               className={[
-                'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 dark:text-slate-500 dark:hover:bg-slate-700 dark:hover:text-slate-200',
+                'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 active:scale-95 dark:text-slate-500 dark:hover:bg-slate-700 dark:hover:text-slate-200',
 
                 collapsed
                   ? 'lg:hidden'
@@ -438,7 +452,9 @@ export default function AppSidebar({
               ].join(' ')}
             >
               <LogOut
-                size={16}
+                size={
+                  16
+                }
                 strokeWidth={
                   1.8
                 }
