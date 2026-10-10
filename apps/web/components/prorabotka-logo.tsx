@@ -13,26 +13,26 @@ export default function ProRabotkaLogo({
     return (
       <div
         className={[
-          'flex items-center',
+          'flex min-w-0 items-center overflow-hidden',
           className,
         ].join(' ')}
       >
         <Image
           src="/brand/prorabotka-dark.png"
           alt="ProRabotka"
-          width={44}
-          height={44}
+          width={180}
+          height={60}
           priority
-          className="h-9 w-auto object-contain dark:hidden"
+          className="h-8 w-auto max-w-full object-contain object-left dark:hidden"
         />
 
         <Image
           src="/brand/prorabotka-light.png"
           alt="ProRabotka"
-          width={44}
-          height={44}
+          width={180}
+          height={60}
           priority
-          className="hidden h-9 w-auto object-contain dark:block"
+          className="hidden h-8 w-auto max-w-full object-contain object-left dark:block"
         />
       </div>
     );
@@ -41,7 +41,7 @@ export default function ProRabotkaLogo({
   return (
     <div
       className={[
-        'flex items-center',
+        'flex min-w-0 items-center overflow-hidden',
         className,
       ].join(' ')}
     >
@@ -51,7 +51,7 @@ export default function ProRabotkaLogo({
         width={220}
         height={74}
         priority
-        className="h-auto w-full object-contain object-left dark:hidden"
+        className="h-auto w-full max-w-full object-contain object-left dark:hidden"
       />
 
       <Image
@@ -60,7 +60,7 @@ export default function ProRabotkaLogo({
         width={220}
         height={74}
         priority
-        className="hidden h-auto w-full object-contain object-left dark:block"
+        className="hidden h-auto w-full max-w-full object-contain object-left dark:block"
       />
     </div>
   );

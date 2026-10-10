@@ -8,6 +8,7 @@ import {
 
 import {
   CheckCircle2,
+  ChevronDown,
   Clock3,
   ListTodo,
   Plus,
@@ -20,7 +21,6 @@ import {
 } from 'next/navigation';
 
 import AppShell from '@/components/app-shell';
-
 import ConfirmModal from '@/components/ui/confirm-modal';
 
 import TaskBoard from '@/components/tasks/task-board';
@@ -208,7 +208,8 @@ export default function DashboardPage() {
   useEffect(() => {
     const params =
       new URLSearchParams(
-        window.location.search,
+        window.location
+          .search,
       );
 
     const taskId =
@@ -216,7 +217,9 @@ export default function DashboardPage() {
         'task',
       );
 
-    if (taskId) {
+    if (
+      taskId
+    ) {
       setDetailTaskId(
         taskId,
       );
@@ -275,7 +278,9 @@ export default function DashboardPage() {
       const tasksData =
         await apiFetch<
           TaskItem[]
-        >('/tasks');
+        >(
+          '/tasks',
+        );
 
       setTasks(
         tasksData,
@@ -777,18 +782,18 @@ export default function DashboardPage() {
 
   return (
     <AppShell>
-      <div className="space-y-7">
-        <section className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <p className="text-sm text-slate-400 dark:text-slate-500">
+      <div className="min-w-0 space-y-5 sm:space-y-7">
+        <section className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0">
+            <p className="text-xs font-medium text-slate-400 dark:text-slate-500 sm:text-sm">
               Workspace
             </p>
 
-            <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+            <h1 className="mt-1 text-[26px] font-semibold tracking-tight text-slate-900 dark:text-slate-100 sm:text-2xl">
               Dashboard
             </h1>
 
-            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            <p className="mt-1 max-w-xl text-sm leading-5 text-slate-500 dark:text-slate-400">
               Assign tasks and keep
               track of the
               team&apos;s work.
@@ -800,11 +805,11 @@ export default function DashboardPage() {
             onClick={() =>
               openCreate()
             }
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 text-sm font-medium text-white transition hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
+            className="inline-flex h-11 w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 text-sm font-medium text-white transition active:scale-[0.99] hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white sm:h-10 sm:w-auto sm:rounded-lg"
           >
             <Plus
               size={
-                16
+                17
               }
             />
 
@@ -818,7 +823,7 @@ export default function DashboardPage() {
           </div>
         )}
 
-        <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <section className="grid grid-cols-2 gap-2.5 sm:gap-3 lg:grid-cols-4">
           <SummaryCard
             label="To do"
             value={
@@ -827,7 +832,7 @@ export default function DashboardPage() {
             icon={
               <ListTodo
                 size={
-                  18
+                  17
                 }
               />
             }
@@ -841,7 +846,7 @@ export default function DashboardPage() {
             icon={
               <Clock3
                 size={
-                  18
+                  17
                 }
               />
             }
@@ -855,7 +860,7 @@ export default function DashboardPage() {
             icon={
               <CheckCircle2
                 size={
-                  18
+                  17
                 }
               />
             }
@@ -869,7 +874,7 @@ export default function DashboardPage() {
             icon={
               <Clock3
                 size={
-                  18
+                  17
                 }
               />
             }
@@ -880,7 +885,7 @@ export default function DashboardPage() {
           />
         </section>
 
-        <section className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white p-1.5 transition-colors dark:border-slate-800 dark:bg-slate-900">
+        <section className="grid grid-cols-2 gap-1 rounded-xl border border-slate-200 bg-white p-1.5 transition-colors dark:border-slate-800 dark:bg-slate-900 sm:flex sm:w-fit">
           <button
             type="button"
             onClick={() =>
@@ -889,7 +894,7 @@ export default function DashboardPage() {
               )
             }
             className={[
-              'rounded-lg px-4 py-2 text-sm font-medium transition',
+              'min-w-0 rounded-lg px-3 py-2.5 text-sm font-medium transition sm:px-4 sm:py-2',
 
               taskScope ===
               'ALL'
@@ -910,7 +915,7 @@ export default function DashboardPage() {
               )
             }
             className={[
-              'rounded-lg px-4 py-2 text-sm font-medium transition',
+              'min-w-0 rounded-lg px-3 py-2.5 text-sm font-medium transition sm:px-4 sm:py-2',
 
               taskScope ===
               'MINE'
@@ -924,13 +929,13 @@ export default function DashboardPage() {
           </button>
         </section>
 
-        <section className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-3 transition-colors dark:border-slate-800 dark:bg-slate-900 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex h-10 w-full items-center gap-2 rounded-lg bg-slate-50 px-3 transition-colors dark:bg-slate-800 sm:max-w-sm">
+        <section className="grid min-w-0 gap-2.5 rounded-2xl border border-slate-200 bg-white p-3 transition-colors dark:border-slate-800 dark:bg-slate-900 sm:grid-cols-[minmax(0,1fr)_220px] sm:items-center">
+          <div className="flex h-11 min-w-0 items-center gap-2 rounded-xl bg-slate-50 px-3 transition-colors dark:bg-slate-800 sm:h-10 sm:max-w-md sm:rounded-lg">
             <Search
               size={
-                16
+                17
               }
-              className="text-slate-400 dark:text-slate-500"
+              className="shrink-0 text-slate-400 dark:text-slate-500"
             />
 
             <input
@@ -946,16 +951,16 @@ export default function DashboardPage() {
                 )
               }
               placeholder="Search tasks..."
-              className="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400 dark:text-slate-200 dark:placeholder:text-slate-500"
+              className="min-w-0 flex-1 bg-transparent text-[16px] text-slate-700 outline-none placeholder:text-slate-400 dark:text-slate-200 dark:placeholder:text-slate-500 sm:text-sm"
             />
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="relative min-w-0">
             <UserRound
               size={
                 15
               }
-              className="hidden text-slate-400 dark:text-slate-500 sm:block"
+              className="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-slate-400 dark:text-slate-500"
             />
 
             <select
@@ -975,12 +980,12 @@ export default function DashboardPage() {
                 )
               }
               className={[
-                'h-10 min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-600 outline-none transition-colors dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 sm:min-w-[190px]',
+                'h-11 w-full appearance-none rounded-xl border border-slate-200 bg-white pl-9 pr-9 text-[16px] text-slate-700 outline-none transition dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 sm:h-10 sm:rounded-lg sm:text-sm',
 
                 taskScope ===
                 'MINE'
                   ? 'cursor-not-allowed opacity-50'
-                  : '',
+                  : 'focus:border-slate-300 dark:focus:border-slate-600',
               ].join(
                 ' ',
               )}
@@ -1011,11 +1016,18 @@ export default function DashboardPage() {
                 ),
               )}
             </select>
+
+            <ChevronDown
+              size={
+                15
+              }
+              className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
+            />
           </div>
         </section>
 
         {loading ? (
-          <div className="py-24 text-center text-sm text-slate-400 dark:text-slate-500">
+          <div className="py-20 text-center text-sm text-slate-400 dark:text-slate-500 sm:py-24">
             Loading tasks...
           </div>
         ) : (
@@ -1134,29 +1146,22 @@ function SummaryCard({
   icon,
   danger = false,
 }: {
-  label:
-    string;
-
-  value:
-    number;
-
-  icon:
-    React.ReactNode;
-
-  danger?:
-    boolean;
+  label: string;
+  value: number;
+  icon: React.ReactNode;
+  danger?: boolean;
 }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 transition-colors dark:border-slate-800 dark:bg-slate-900 sm:p-5">
+    <div className="min-w-0 rounded-xl border border-slate-200 bg-white p-3.5 transition-colors dark:border-slate-800 dark:bg-slate-900 sm:p-5">
       <div className="flex items-start justify-between gap-2">
-        <div>
-          <p className="text-xs text-slate-500 dark:text-slate-400 sm:text-sm">
+        <div className="min-w-0">
+          <p className="truncate text-[11px] font-medium text-slate-500 dark:text-slate-400 sm:text-sm">
             {label}
           </p>
 
           <p
             className={[
-              'mt-2 text-2xl font-semibold sm:text-3xl',
+              'mt-2 text-2xl font-semibold tracking-tight sm:text-3xl',
 
               danger
                 ? 'text-red-600 dark:text-red-400'
@@ -1171,7 +1176,7 @@ function SummaryCard({
 
         <div
           className={[
-            'flex h-9 w-9 items-center justify-center rounded-lg',
+            'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg sm:h-9 sm:w-9',
 
             danger
               ? 'bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-400'

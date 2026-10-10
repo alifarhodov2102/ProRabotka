@@ -178,7 +178,7 @@ export default function AppSidebar({
 
       <aside
         className={[
-          'fixed inset-y-0 left-0 z-50 flex flex-col border-r border-slate-200 bg-white transition-all duration-200 dark:border-slate-800 dark:bg-slate-900',
+          'fixed inset-y-0 left-0 z-50 flex flex-col overflow-hidden border-r border-slate-200 bg-white transition-all duration-200 dark:border-slate-800 dark:bg-slate-900',
 
           collapsed
             ? 'lg:w-[72px]'
