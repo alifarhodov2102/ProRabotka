@@ -79,16 +79,51 @@ export default function TaskModal({
       return;
     }
 
-    const previousOverflow =
+    const bodyOverflow =
       document.body.style
         .overflow;
+
+    const bodyOverflowX =
+      document.body.style
+        .overflowX;
+
+    const htmlOverflow =
+      document.documentElement.style
+        .overflow;
+
+    const htmlOverflowX =
+      document.documentElement.style
+        .overflowX;
 
     document.body.style.overflow =
       'hidden';
 
+    document.body.style.overflowX =
+      'hidden';
+
+    document.documentElement.style.overflow =
+      'hidden';
+
+    document.documentElement.style.overflowX =
+      'hidden';
+
+    window.scrollTo({
+      left: 0,
+      top: window.scrollY,
+    });
+
     return () => {
       document.body.style.overflow =
-        previousOverflow;
+        bodyOverflow;
+
+      document.body.style.overflowX =
+        bodyOverflowX;
+
+      document.documentElement.style.overflow =
+        htmlOverflow;
+
+      document.documentElement.style.overflowX =
+        htmlOverflowX;
     };
   }, [open]);
 
@@ -197,7 +232,24 @@ export default function TaskModal({
   ];
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end justify-center bg-slate-950/40 backdrop-blur-[2px] dark:bg-black/70 sm:items-center sm:p-5">
+    <div
+      className="
+        fixed
+        inset-0
+        z-[100]
+        flex
+        w-screen
+        max-w-[100vw]
+        items-end
+        justify-center
+        overflow-x-hidden
+        bg-slate-950/40
+        backdrop-blur-[2px]
+        dark:bg-black/70
+        sm:items-center
+        sm:p-5
+      "
+    >
       <button
         type="button"
         onClick={() => {
@@ -211,9 +263,12 @@ export default function TaskModal({
 
       <div
         className="
-          relative z-10 flex
-          h-[calc(100dvh-12px)]
+          relative
+          z-10
+          flex
+          h-[calc(100dvh-8px)]
           w-full
+          max-w-full
           min-w-0
           flex-col
           overflow-hidden
@@ -230,16 +285,20 @@ export default function TaskModal({
           sm:max-w-[620px]
           sm:rounded-2xl
         "
+        style={{
+          touchAction:
+            'pan-y',
+        }}
       >
-        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-slate-100 px-4 py-4 dark:border-slate-800 sm:px-6 sm:py-5">
-          <div className="min-w-0">
+        <div className="flex min-w-0 shrink-0 items-start justify-between gap-3 border-b border-slate-100 px-4 py-4 dark:border-slate-800 sm:px-6 sm:py-5">
+          <div className="min-w-0 flex-1">
             <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
               {editingTask
                 ? 'Edit task'
                 : 'New task'}
             </h2>
 
-            <p className="mt-1 max-w-[430px] text-sm leading-5 text-slate-500 dark:text-slate-400">
+            <p className="mt-1 max-w-full text-sm leading-5 text-slate-500 dark:text-slate-400">
               Assign work to a team
               member and track its
               progress.
@@ -253,20 +312,25 @@ export default function TaskModal({
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 active:scale-95 disabled:opacity-50 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-200 sm:h-9 sm:w-9 sm:rounded-lg"
             aria-label="Close"
           >
-            <X size={18} />
+            <X
+              size={
+                18
+              }
+            />
           </button>
         </div>
 
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-          <div className="space-y-5 p-4 pb-6 sm:p-6">
-            <div>
+        <div className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-y-contain">
+          <div className="w-full min-w-0 max-w-full space-y-5 overflow-x-hidden p-4 pb-6 sm:p-6">
+            <div className="min-w-0">
               <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
                 Task
               </label>
 
               <input
-                autoFocus
-                value={value.title}
+                value={
+                  value.title
+                }
                 onChange={(
                   event,
                 ) =>
@@ -277,11 +341,11 @@ export default function TaskModal({
                   )
                 }
                 placeholder="What needs to be done?"
-                className="h-12 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-[16px] text-slate-800 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-slate-400 focus:ring-2 focus:ring-slate-100 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500 dark:hover:border-slate-600 dark:focus:border-slate-500 dark:focus:ring-slate-800 sm:h-11 sm:text-sm"
+                className="h-12 w-full min-w-0 max-w-full rounded-xl border border-slate-200 bg-white px-3.5 text-[16px] text-slate-800 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-slate-400 focus:ring-2 focus:ring-slate-100 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500 dark:hover:border-slate-600 dark:focus:border-slate-500 dark:focus:ring-slate-800 sm:h-11 sm:text-sm"
               />
             </div>
 
-            <div>
+            <div className="min-w-0">
               <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
                 Description
               </label>
@@ -301,11 +365,11 @@ export default function TaskModal({
                   )
                 }
                 placeholder="Add details if needed..."
-                className="min-h-[120px] w-full resize-none rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-[16px] leading-6 text-slate-800 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-slate-400 focus:ring-2 focus:ring-slate-100 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500 dark:hover:border-slate-600 dark:focus:border-slate-500 dark:focus:ring-slate-800 sm:text-sm"
+                className="min-h-[120px] w-full min-w-0 max-w-full resize-none rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-[16px] leading-6 text-slate-800 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-slate-400 focus:ring-2 focus:ring-slate-100 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500 dark:hover:border-slate-600 dark:focus:border-slate-500 dark:focus:ring-slate-800 sm:text-sm"
               />
             </div>
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="min-w-0">
                 <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
                   Assign to
@@ -399,30 +463,17 @@ export default function TaskModal({
           </div>
         </div>
 
-        <div
-          className="
-            shrink-0
-            border-t
-            border-slate-100
-            bg-white/95
-            px-4
-            py-3
-            backdrop-blur
-            dark:border-slate-800
-            dark:bg-slate-900/95
-
-            sm:bg-slate-50/60
-            sm:px-6
-            sm:py-4
-            dark:sm:bg-slate-950/40
-          "
-        >
-          <div className="grid grid-cols-2 gap-2 sm:flex sm:justify-end">
+        <div className="shrink-0 border-t border-slate-100 bg-white/95 px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-3 backdrop-blur dark:border-slate-800 dark:bg-slate-900/95 sm:bg-slate-50/60 sm:px-6 sm:py-4 dark:sm:bg-slate-950/40">
+          <div className="grid min-w-0 grid-cols-2 gap-2 sm:flex sm:justify-end">
             <button
               type="button"
-              disabled={saving}
-              onClick={onClose}
-              className="h-11 rounded-xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-600 transition hover:bg-slate-50 active:scale-[0.99] disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 sm:h-10 sm:rounded-lg"
+              disabled={
+                saving
+              }
+              onClick={
+                onClose
+              }
+              className="h-11 min-w-0 rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-600 transition hover:bg-slate-50 active:scale-[0.99] disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 sm:h-10 sm:rounded-lg sm:px-4"
             >
               Cancel
             </button>
@@ -436,7 +487,7 @@ export default function TaskModal({
               onClick={
                 onSave
               }
-              className="h-11 rounded-xl bg-slate-900 px-4 text-sm font-medium text-white transition hover:bg-slate-800 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white sm:h-10 sm:rounded-lg sm:px-5"
+              className="h-11 min-w-0 rounded-xl bg-slate-900 px-3 text-sm font-medium text-white transition hover:bg-slate-800 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white sm:h-10 sm:rounded-lg sm:px-5"
             >
               {saving
                 ? 'Saving...'
@@ -566,15 +617,12 @@ function CustomSelect({
       const availableAbove =
         rect.top;
 
-      const shouldOpenUpward =
+      setOpenUpward(
         availableBelow <
           estimatedMenuHeight +
             16 &&
-        availableAbove >
-          availableBelow;
-
-      setOpenUpward(
-        shouldOpenUpward,
+          availableAbove >
+            availableBelow,
       );
     }
 
@@ -585,8 +633,10 @@ function CustomSelect({
 
   return (
     <div
-      ref={wrapperRef}
-      className="relative min-w-0"
+      ref={
+        wrapperRef
+      }
+      className="relative min-w-0 max-w-full"
     >
       <button
         type="button"
@@ -594,7 +644,7 @@ function CustomSelect({
           toggleDropdown
         }
         className={[
-          'flex h-12 w-full min-w-0 items-center justify-between rounded-xl border bg-white px-3.5 text-left text-[16px] outline-none transition dark:bg-slate-950 sm:h-11 sm:text-sm',
+          'flex h-12 w-full min-w-0 max-w-full items-center justify-between overflow-hidden rounded-xl border bg-white px-3.5 text-left text-[16px] outline-none transition dark:bg-slate-950 sm:h-11 sm:text-sm',
 
           open
             ? 'border-slate-400 ring-2 ring-slate-100 dark:border-slate-500 dark:ring-slate-800'
@@ -615,8 +665,12 @@ function CustomSelect({
         </span>
 
         <ChevronDown
-          size={16}
-          strokeWidth={1.8}
+          size={
+            16
+          }
+          strokeWidth={
+            1.8
+          }
           className={[
             'ml-3 shrink-0 text-slate-400 transition-transform duration-150 dark:text-slate-500',
 
@@ -630,14 +684,14 @@ function CustomSelect({
       {open && (
         <div
           className={[
-            'absolute left-0 right-0 z-[200] overflow-hidden rounded-xl border border-slate-200 bg-white p-1.5 shadow-2xl shadow-slate-900/15 dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/30',
+            'absolute left-0 right-0 z-[200] max-w-full overflow-hidden rounded-xl border border-slate-200 bg-white p-1.5 shadow-2xl shadow-slate-900/15 dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/30',
 
             openUpward
               ? 'bottom-[calc(100%+6px)]'
               : 'top-[calc(100%+6px)]',
           ].join(' ')}
         >
-          <div className="max-h-[min(280px,42dvh)] overflow-y-auto overscroll-contain">
+          <div className="max-h-[min(280px,42dvh)] overflow-x-hidden overflow-y-auto overscroll-contain">
             {options.map(
               (
                 option,
@@ -663,14 +717,14 @@ function CustomSelect({
                       );
                     }}
                     className={[
-                      'flex min-h-11 w-full items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-left transition',
+                      'flex min-h-11 w-full min-w-0 items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-left transition',
 
                       active
                         ? 'bg-slate-100 dark:bg-slate-800'
                         : 'hover:bg-slate-50 active:bg-slate-100 dark:hover:bg-slate-800/70 dark:active:bg-slate-800',
                     ].join(' ')}
                   >
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                       <p
                         className={[
                           'truncate text-sm',
@@ -696,8 +750,12 @@ function CustomSelect({
 
                     {active && (
                       <Check
-                        size={15}
-                        strokeWidth={2}
+                        size={
+                          15
+                        }
+                        strokeWidth={
+                          2
+                        }
                         className="shrink-0 text-slate-700 dark:text-slate-300"
                       />
                     )}
@@ -744,7 +802,7 @@ function DateField({
   }
 
   return (
-    <div className="relative min-w-0">
+    <div className="relative min-w-0 max-w-full">
       <input
         ref={
           inputRef
@@ -775,8 +833,10 @@ function DateField({
             );
 
           if (
-            year >= 2020 &&
-            year <= 2099
+            year >=
+              2020 &&
+            year <=
+              2099
           ) {
             onChange(
               next,
@@ -787,6 +847,7 @@ function DateField({
           h-12
           w-full
           min-w-0
+          max-w-full
           rounded-xl
           border
           border-slate-200
@@ -797,6 +858,7 @@ function DateField({
           text-slate-800
           outline-none
           transition
+
           hover:border-slate-300
           focus:border-slate-400
           focus:ring-2
@@ -826,12 +888,16 @@ function DateField({
         onClick={
           openCalendar
         }
-        tabIndex={-1}
+        tabIndex={
+          -1
+        }
         className="absolute right-1.5 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 active:scale-95 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-200"
         aria-label="Open calendar"
       >
         <CalendarDays
-          size={17}
+          size={
+            17
+          }
           strokeWidth={
             1.8
           }
