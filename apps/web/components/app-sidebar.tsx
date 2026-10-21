@@ -187,6 +187,22 @@ export default function AppSidebar({
     );
   }
 
+  function handleLogoClick() {
+    onMobileClose();
+
+    if (
+      pathname ===
+      '/dashboard'
+    ) {
+      router.refresh();
+      return;
+    }
+
+    router.push(
+      '/dashboard',
+    );
+  }
+
   function getInitials(
     name?: string,
   ) {
@@ -251,9 +267,15 @@ export default function AppSidebar({
         >
           <div className="flex w-full min-w-0 items-center justify-between gap-3">
             <div className="min-w-0 flex-1">
-              <div
+              <button
+                type="button"
+                onClick={
+                  handleLogoClick
+                }
+                aria-label="Go to dashboard"
+                title="Dashboard"
                 className={[
-                  'flex min-w-0 items-center',
+                  'flex min-w-0 items-center rounded-lg outline-none transition active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-slate-300 dark:focus-visible:ring-slate-700',
 
                   collapsed
                     ? 'lg:justify-center'
@@ -276,7 +298,7 @@ export default function AppSidebar({
                     className="w-[155px] max-w-full"
                   />
                 )}
-              </div>
+              </button>
             </div>
 
             <button
