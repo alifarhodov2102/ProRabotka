@@ -1,0 +1,56 @@
+name: Deploy ProRabotka
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on:
+      - self-hosted
+      - Linux
+      - X64
+
+    steps:
+      - name: Update repository
+        run: |
+          cd /home/capone/ProRabotka
+          git fetch origin
+          git reset --hard origin/main
+
+      - name: Install API dependencies
+        run: |
+          cd /home/capone/ProRabotka/apps/api
+          npm ci
+
+      - name: Generate Prisma client
+        run: |
+          cd /home/capone/ProRabotka/apps/api
+          npx prisma generate
+
+      - name: Apply database migrations
+        run: |
+          cd /home/capone/ProRabotka/apps/api
+          npx prisma migrate deploy
+
+      - name: Build API
+        run: |
+          cd /home/capone/ProRabotka/apps/api
+          npm run build
+
+      - name: Install web dependencies
+        run: |
+          cd /home/capone/ProRabotka/apps/web
+          npm ci
+
+      - name: Build web
+        run: |
+          cd /home/capone/ProRabotka/apps/web
+          npm run build
+
+      - name: Restart applications
+        run: |
+          pm2 restart prorabotka-api
+          pm2 restart prorabotka-web
+          pm2 save
