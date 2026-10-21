@@ -17,6 +17,7 @@ import {
   Users,
   Rocket,
   Building2,
+  UserCheck,
   Warehouse,
   Files,
   Send,
@@ -29,45 +30,91 @@ import ProRabotkaLogo from './prorabotka-logo';
 
 const items = [
   {
-    name: 'Dashboard',
-    href: '/dashboard',
-    icon: LayoutDashboard,
+    name:
+      'Dashboard',
+
+    href:
+      '/dashboard',
+
+    icon:
+      LayoutDashboard,
   },
 
   {
-    name: 'Team',
-    href: '/team',
-    icon: Users,
+    name:
+      'Team',
+
+    href:
+      '/team',
+
+    icon:
+      Users,
   },
 
   {
-    name: 'Startups',
-    href: '/startups',
-    icon: Rocket,
+    name:
+      'Startups',
+
+    href:
+      '/startups',
+
+    icon:
+      Rocket,
   },
 
   {
-    name: 'Residents',
-    href: '/residents',
-    icon: Building2,
+    name:
+      'Residents',
+
+    href:
+      '/residents',
+
+    icon:
+      Building2,
   },
 
   {
-    name: 'Infrastructure',
-    href: '/infrastructure',
-    icon: Warehouse,
+    name:
+      'Talents',
+
+    href:
+      '/talents',
+
+    icon:
+      UserCheck,
   },
 
   {
-    name: 'Documents',
-    href: '/documents',
-    icon: Files,
+    name:
+      'Infrastructure',
+
+    href:
+      '/infrastructure',
+
+    icon:
+      Warehouse,
   },
 
   {
-    name: 'Outreach',
-    href: '/outreach',
-    icon: Send,
+    name:
+      'Documents',
+
+    href:
+      '/documents',
+
+    icon:
+      Files,
+  },
+
+  {
+    name:
+      'Outreach',
+
+    href:
+      '/outreach',
+
+    icon:
+      Send,
   },
 ];
 
@@ -86,7 +133,8 @@ export default function AppSidebar({
 }: {
   collapsed: boolean;
   mobileOpen: boolean;
-  onMobileClose: () => void;
+  onMobileClose:
+    () => void;
 }) {
   const pathname =
     usePathname();
@@ -240,9 +288,7 @@ export default function AppSidebar({
               aria-label="Close sidebar"
             >
               <X
-                size={
-                  18
-                }
+                size={18}
               />
             </button>
           </div>
@@ -273,9 +319,7 @@ export default function AppSidebar({
             }
           >
             <Search
-              size={
-                16
-              }
+              size={16}
               className="shrink-0"
             />
 
@@ -362,9 +406,7 @@ export default function AppSidebar({
                     ].join(' ')}
                   >
                     <Icon
-                      size={
-                        18
-                      }
+                      size={18}
                       strokeWidth={
                         1.8
                       }
@@ -452,9 +494,7 @@ export default function AppSidebar({
               ].join(' ')}
             >
               <LogOut
-                size={
-                  16
-                }
+                size={16}
                 strokeWidth={
                   1.8
                 }

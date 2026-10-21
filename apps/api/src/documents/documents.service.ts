@@ -4,32 +4,67 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import { promises as fs } from 'node:fs';
+import {
+  promises as fs,
+} from 'node:fs';
+
 import path from 'node:path';
 
-import { PrismaService } from '../prisma/prisma.service.js';
+import {
+  PrismaService,
+} from '../prisma/prisma.service.js';
 
 @Injectable()
 export class DocumentsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma:
+      PrismaService,
+  ) {}
 
   findAll(filters: {
     section?: string;
     spaceId?: string;
     folderId?: string;
+    startupId?: string;
+    residentId?: string;
+    infrastructureId?: string;
+    talentId?: string;
   }) {
     return this.prisma.document.findMany({
       where: {
         ...(filters.section && {
-          section: filters.section as any,
+          section:
+            filters.section as any,
         }),
 
         ...(filters.spaceId && {
-          spaceId: filters.spaceId,
+          spaceId:
+            filters.spaceId,
         }),
 
         ...(filters.folderId && {
-          folderId: filters.folderId,
+          folderId:
+            filters.folderId,
+        }),
+
+        ...(filters.startupId && {
+          startupId:
+            filters.startupId,
+        }),
+
+        ...(filters.residentId && {
+          residentId:
+            filters.residentId,
+        }),
+
+        ...(filters.infrastructureId && {
+          infrastructureId:
+            filters.infrastructureId,
+        }),
+
+        ...(filters.talentId && {
+          talentId:
+            filters.talentId,
         }),
       },
 
@@ -54,17 +89,168 @@ export class DocumentsService {
             name: true,
           },
         },
+
+        startup: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+
+        resident: {
+          select: {
+            id: true,
+            companyName: true,
+          },
+        },
+
+        infrastructure: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+
+        talent: {
+          select: {
+            id: true,
+            fullName: true,
+            position: true,
+          },
+        },
       },
 
       orderBy: {
-        createdAt: 'desc',
+        createdAt:
+          'desc',
       },
     });
   }
 
-  async findOne(id: string) {
-    const document = await this.prisma.document.findUnique({
-      where: { id },
+  async findOne(
+    id: string,
+  ) {
+    const document =
+      await this.prisma.document.findUnique({
+        where: {
+          id,
+        },
+
+        include: {
+          uploadedBy: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+
+          space: true,
+          folder: true,
+
+          startup: true,
+          resident: true,
+          infrastructure: true,
+          talent: true,
+        },
+      });
+
+    if (!document) {
+      throw new NotFoundException(
+        'Document not found',
+      );
+    }
+
+    return document;
+  }
+
+  async create(
+    file:
+      Express.Multer.File,
+
+    userId: string,
+
+    data: {
+      section: string;
+      spaceId?: string;
+      folderId?: string;
+
+      residentId?: string;
+      startupId?: string;
+      infrastructureId?: string;
+      talentId?: string;
+
+      description?: string;
+    },
+  ) {
+    if (!file) {
+      throw new BadRequestException(
+        'File is required',
+      );
+    }
+
+    if (
+      !data.section
+    ) {
+      throw new BadRequestException(
+        'Document section is required',
+      );
+    }
+
+    return this.prisma.document.create({
+      data: {
+        fileName:
+          file.filename,
+
+        originalName:
+          file.originalname,
+
+        fileUrl:
+          `/documents/${file.filename}`,
+
+        storageKey:
+          file.path,
+
+        mimeType:
+          file.mimetype,
+
+        fileSize:
+          file.size,
+
+        description:
+          data.description
+            ?.trim() ||
+          null,
+
+        section:
+          data.section as any,
+
+        uploadedById:
+          userId,
+
+        spaceId:
+          data.spaceId ||
+          null,
+
+        folderId:
+          data.folderId ||
+          null,
+
+        residentId:
+          data.residentId ||
+          null,
+
+        startupId:
+          data.startupId ||
+          null,
+
+        infrastructureId:
+          data.infrastructureId ||
+          null,
+
+        talentId:
+          data.talentId ||
+          null,
+      },
 
       include: {
         uploadedBy: {
@@ -74,75 +260,150 @@ export class DocumentsService {
           },
         },
 
-        space: true,
-        folder: true,
+        talent: {
+          select: {
+            id: true,
+            fullName: true,
+            position: true,
+          },
+        },
       },
     });
-
-    if (!document) {
-      throw new NotFoundException('Document not found');
-    }
-
-    return document;
   }
 
-  async create(
-    file: Express.Multer.File,
-    userId: string,
+  async update(
+    id: string,
+
     data: {
-      section: string;
-      spaceId?: string;
-      folderId?: string;
-      residentId?: string;
-      startupId?: string;
-      infrastructureId?: string;
-      description?: string;
+      originalName?: string;
+      description?:
+        | string
+        | null;
     },
   ) {
-    if (!file) {
-      throw new BadRequestException('File is required');
+    const document =
+      await this.findOne(
+        id,
+      );
+
+    const updateData:
+      Record<
+        string,
+        any
+      > = {};
+
+    if (
+      data.originalName !==
+      undefined
+    ) {
+      const originalName =
+        data.originalName.trim();
+
+      if (!originalName) {
+        throw new BadRequestException(
+          'File name is required',
+        );
+      }
+
+      const currentName =
+        document.originalName ||
+        document.fileName;
+
+      const currentExtension =
+        path.extname(
+          currentName,
+        );
+
+      const newExtension =
+        path.extname(
+          originalName,
+        );
+
+      let finalName =
+        originalName;
+
+      if (
+        currentExtension &&
+        !newExtension
+      ) {
+        finalName =
+          `${originalName}${currentExtension}`;
+      }
+
+      if (
+        currentExtension &&
+        newExtension &&
+        currentExtension.toLowerCase() !==
+          newExtension.toLowerCase()
+      ) {
+        throw new BadRequestException(
+          `File extension must remain ${currentExtension}`,
+        );
+      }
+
+      updateData.originalName =
+        finalName;
     }
 
-    return this.prisma.document.create({
-      data: {
-        fileName: file.filename,
-        originalName: file.originalname,
-        fileUrl: `/documents/download/${file.filename}`,
-        storageKey: file.path,
-        mimeType: file.mimetype,
-        fileSize: file.size,
+    if (
+      data.description !==
+      undefined
+    ) {
+      updateData.description =
+        data.description
+          ?.trim() ||
+        null;
+    }
 
-        description:
-          data.description?.trim() || null,
+    return this.prisma.document.update({
+      where: {
+        id,
+      },
 
-        section: data.section as any,
+      data:
+        updateData,
 
-        uploadedById: userId,
+      include: {
+        uploadedBy: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
 
-        spaceId: data.spaceId || null,
-        folderId: data.folderId || null,
+        space: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
 
-        residentId:
-          data.residentId || null,
-
-        startupId:
-          data.startupId || null,
-
-        infrastructureId:
-          data.infrastructureId || null,
+        folder: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
   }
 
-  async remove(id: string) {
-    const document = await this.findOne(id);
+  async remove(
+    id: string,
+  ) {
+    const document =
+      await this.findOne(
+        id,
+      );
 
     try {
       await fs.unlink(
-        path.resolve(document.storageKey),
+        path.resolve(
+          document.storageKey,
+        ),
       );
     } catch {
-      // File may already be missing.
+      // Stored file may already be missing.
     }
 
     await this.prisma.document.delete({

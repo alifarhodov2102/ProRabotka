@@ -72,6 +72,18 @@ async function bootstrap() {
     },
   );
 
+  app.useStaticAssets(
+    join(
+      process.cwd(),
+      'storage',
+      'talent-photos',
+    ),
+    {
+      prefix:
+        '/talent-photos/',
+    },
+  );
+
   await app.listen(
     process.env.PORT ??
       4000,

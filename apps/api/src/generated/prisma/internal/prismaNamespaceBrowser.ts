@@ -58,6 +58,9 @@ export const ModelName = {
   Startup: 'Startup',
   StartupFunding: 'StartupFunding',
   Resident: 'Resident',
+  Talent: 'Talent',
+  TalentSkill: 'TalentSkill',
+  TalentLanguage: 'TalentLanguage',
   QuarterReport: 'QuarterReport',
   Infrastructure: 'Infrastructure',
   Space: 'Space',
@@ -200,6 +203,52 @@ export const ResidentScalarFieldEnum = {
 export type ResidentScalarFieldEnum = (typeof ResidentScalarFieldEnum)[keyof typeof ResidentScalarFieldEnum]
 
 
+export const TalentScalarFieldEnum = {
+  id: 'id',
+  fullName: 'fullName',
+  position: 'position',
+  phone: 'phone',
+  email: 'email',
+  telegram: 'telegram',
+  location: 'location',
+  currentCompany: 'currentCompany',
+  experienceYears: 'experienceYears',
+  salaryExpectation: 'salaryExpectation',
+  salaryCurrency: 'salaryCurrency',
+  status: 'status',
+  linkedinUrl: 'linkedinUrl',
+  githubUrl: 'githubUrl',
+  portfolioUrl: 'portfolioUrl',
+  photoUrl: 'photoUrl',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TalentScalarFieldEnum = (typeof TalentScalarFieldEnum)[keyof typeof TalentScalarFieldEnum]
+
+
+export const TalentSkillScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  talentId: 'talentId',
+  createdAt: 'createdAt'
+} as const
+
+export type TalentSkillScalarFieldEnum = (typeof TalentSkillScalarFieldEnum)[keyof typeof TalentSkillScalarFieldEnum]
+
+
+export const TalentLanguageScalarFieldEnum = {
+  id: 'id',
+  language: 'language',
+  level: 'level',
+  talentId: 'talentId',
+  createdAt: 'createdAt'
+} as const
+
+export type TalentLanguageScalarFieldEnum = (typeof TalentLanguageScalarFieldEnum)[keyof typeof TalentLanguageScalarFieldEnum]
+
+
 export const QuarterReportScalarFieldEnum = {
   id: 'id',
   year: 'year',
@@ -276,6 +325,7 @@ export const DocumentScalarFieldEnum = {
   startupId: 'startupId',
   residentId: 'residentId',
   infrastructureId: 'infrastructureId',
+  talentId: 'talentId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

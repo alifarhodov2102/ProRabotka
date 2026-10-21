@@ -304,6 +304,40 @@ export type EnumResidentStatusWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumResidentStatusFilter<$PrismaModel>
 }
 
+export type EnumTalentStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.TalentStatus | Prisma.EnumTalentStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.TalentStatus[] | Prisma.ListEnumTalentStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TalentStatus[] | Prisma.ListEnumTalentStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTalentStatusFilter<$PrismaModel> | $Enums.TalentStatus
+}
+
+export type EnumTalentStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TalentStatus | Prisma.EnumTalentStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.TalentStatus[] | Prisma.ListEnumTalentStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TalentStatus[] | Prisma.ListEnumTalentStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTalentStatusWithAggregatesFilter<$PrismaModel> | $Enums.TalentStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTalentStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTalentStatusFilter<$PrismaModel>
+}
+
+export type EnumLanguageLevelFilter<$PrismaModel = never> = {
+  equals?: $Enums.LanguageLevel | Prisma.EnumLanguageLevelFieldRefInput<$PrismaModel>
+  in?: $Enums.LanguageLevel[] | Prisma.ListEnumLanguageLevelFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LanguageLevel[] | Prisma.ListEnumLanguageLevelFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLanguageLevelFilter<$PrismaModel> | $Enums.LanguageLevel
+}
+
+export type EnumLanguageLevelWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.LanguageLevel | Prisma.EnumLanguageLevelFieldRefInput<$PrismaModel>
+  in?: $Enums.LanguageLevel[] | Prisma.ListEnumLanguageLevelFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LanguageLevel[] | Prisma.ListEnumLanguageLevelFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLanguageLevelWithAggregatesFilter<$PrismaModel> | $Enums.LanguageLevel
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumLanguageLevelFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumLanguageLevelFilter<$PrismaModel>
+}
+
 export type IntFilter<$PrismaModel = never> = {
   equals?: number | Prisma.IntFieldRefInput<$PrismaModel>
   in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
@@ -717,6 +751,40 @@ export type NestedEnumResidentStatusWithAggregatesFilter<$PrismaModel = never> =
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumResidentStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumResidentStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumTalentStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.TalentStatus | Prisma.EnumTalentStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.TalentStatus[] | Prisma.ListEnumTalentStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TalentStatus[] | Prisma.ListEnumTalentStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTalentStatusFilter<$PrismaModel> | $Enums.TalentStatus
+}
+
+export type NestedEnumTalentStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TalentStatus | Prisma.EnumTalentStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.TalentStatus[] | Prisma.ListEnumTalentStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TalentStatus[] | Prisma.ListEnumTalentStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTalentStatusWithAggregatesFilter<$PrismaModel> | $Enums.TalentStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTalentStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTalentStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumLanguageLevelFilter<$PrismaModel = never> = {
+  equals?: $Enums.LanguageLevel | Prisma.EnumLanguageLevelFieldRefInput<$PrismaModel>
+  in?: $Enums.LanguageLevel[] | Prisma.ListEnumLanguageLevelFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LanguageLevel[] | Prisma.ListEnumLanguageLevelFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLanguageLevelFilter<$PrismaModel> | $Enums.LanguageLevel
+}
+
+export type NestedEnumLanguageLevelWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.LanguageLevel | Prisma.EnumLanguageLevelFieldRefInput<$PrismaModel>
+  in?: $Enums.LanguageLevel[] | Prisma.ListEnumLanguageLevelFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LanguageLevel[] | Prisma.ListEnumLanguageLevelFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLanguageLevelWithAggregatesFilter<$PrismaModel> | $Enums.LanguageLevel
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumLanguageLevelFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumLanguageLevelFilter<$PrismaModel>
 }
 
 export type NestedEnumQuarterStatusFilter<$PrismaModel = never> = {

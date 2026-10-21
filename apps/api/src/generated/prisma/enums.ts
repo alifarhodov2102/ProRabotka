@@ -31,6 +31,7 @@ export type TaskPriority = (typeof TaskPriority)[keyof typeof TaskPriority]
 export const SectionType = {
   STARTUPS: 'STARTUPS',
   RESIDENTS: 'RESIDENTS',
+  TALENTS: 'TALENTS',
   INFRASTRUCTURE: 'INFRASTRUCTURE',
   GENERAL: 'GENERAL'
 } as const
@@ -64,6 +65,27 @@ export const ResidentStatus = {
 } as const
 
 export type ResidentStatus = (typeof ResidentStatus)[keyof typeof ResidentStatus]
+
+
+export const TalentStatus = {
+  AVAILABLE: 'AVAILABLE',
+  OPEN_TO_OFFERS: 'OPEN_TO_OFFERS',
+  EMPLOYED: 'EMPLOYED',
+  NOT_AVAILABLE: 'NOT_AVAILABLE'
+} as const
+
+export type TalentStatus = (typeof TalentStatus)[keyof typeof TalentStatus]
+
+
+export const LanguageLevel = {
+  BASIC: 'BASIC',
+  INTERMEDIATE: 'INTERMEDIATE',
+  ADVANCED: 'ADVANCED',
+  FLUENT: 'FLUENT',
+  NATIVE: 'NATIVE'
+} as const
+
+export type LanguageLevel = (typeof LanguageLevel)[keyof typeof LanguageLevel]
 
 
 export const InfrastructureType = {

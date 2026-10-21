@@ -24,6 +24,7 @@ enum TaskPriority {
 enum SectionType {
   STARTUPS
   RESIDENTS
+  TALENTS
   INFRASTRUCTURE
   GENERAL
 }
@@ -45,6 +46,21 @@ enum ResidentStatus {
   INACTIVE
   SUSPENDED
   ARCHIVED
+}
+
+enum TalentStatus {
+  AVAILABLE
+  OPEN_TO_OFFERS
+  EMPLOYED
+  NOT_AVAILABLE
+}
+
+enum LanguageLevel {
+  BASIC
+  INTERMEDIATE
+  ADVANCED
+  FLUENT
+  NATIVE
 }
 
 enum InfrastructureType {
@@ -239,6 +255,72 @@ model Resident {
   updatedAt DateTime @updatedAt
 }
 
+model Talent {
+  id       String  @id @default(cuid())
+  fullName String
+  position String?
+
+  phone    String?
+  email    String?
+  telegram String?
+
+  location       String?
+  currentCompany String?
+
+  experienceYears Int?
+
+  salaryExpectation Decimal?
+  salaryCurrency    String?
+
+  status TalentStatus @default(AVAILABLE)
+
+  linkedinUrl  String?
+  githubUrl    String?
+  portfolioUrl String?
+
+  photoUrl String?
+
+  notes String?
+
+  skills    TalentSkill[]
+  languages TalentLanguage[]
+  documents Document[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([fullName])
+  @@index([position])
+  @@index([status])
+}
+
+model TalentSkill {
+  id   String @id @default(cuid())
+  name String
+
+  talentId String
+  talent   Talent @relation(fields: [talentId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([talentId])
+  @@index([name])
+}
+
+model TalentLanguage {
+  id       String        @id @default(cuid())
+  language String
+  level    LanguageLevel
+
+  talentId String
+  talent   Talent @relation(fields: [talentId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([talentId])
+  @@index([language])
+}
+
 model QuarterReport {
   id      String        @id @default(cuid())
   year    Int
@@ -344,6 +426,9 @@ model Document {
   infrastructureId String?
   infrastructure   Infrastructure? @relation(fields: [infrastructureId], references: [id])
 
+  talentId String?
+  talent   Talent? @relation(fields: [talentId], references: [id])
+
   quarterReports QuarterReport[]
 
   createdAt DateTime @default(now())
@@ -352,6 +437,7 @@ model Document {
   @@index([startupId])
   @@index([residentId])
   @@index([infrastructureId])
+  @@index([talentId])
 }
 
 model ActivityLog {

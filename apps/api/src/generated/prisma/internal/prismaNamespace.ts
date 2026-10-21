@@ -404,6 +404,9 @@ export const ModelName = {
   Startup: 'Startup',
   StartupFunding: 'StartupFunding',
   Resident: 'Resident',
+  Talent: 'Talent',
+  TalentSkill: 'TalentSkill',
+  TalentLanguage: 'TalentLanguage',
   QuarterReport: 'QuarterReport',
   Infrastructure: 'Infrastructure',
   Space: 'Space',
@@ -427,7 +430,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "task" | "taskComment" | "taskAttachment" | "startup" | "startupFunding" | "resident" | "quarterReport" | "infrastructure" | "space" | "folder" | "document" | "activityLog" | "outreachCampaign" | "lead"
+    modelProps: "user" | "task" | "taskComment" | "taskAttachment" | "startup" | "startupFunding" | "resident" | "talent" | "talentSkill" | "talentLanguage" | "quarterReport" | "infrastructure" | "space" | "folder" | "document" | "activityLog" | "outreachCampaign" | "lead"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -946,6 +949,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.ResidentCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.ResidentCountAggregateOutputType> | number
+        }
+      }
+    }
+    Talent: {
+      payload: Prisma.$TalentPayload<ExtArgs>
+      fields: Prisma.TalentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TalentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TalentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TalentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TalentPayload>
+        }
+        findFirst: {
+          args: Prisma.TalentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TalentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TalentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TalentPayload>
+        }
+        findMany: {
+          args: Prisma.TalentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TalentPayload>[]
+        }
+        create: {
+          args: Prisma.TalentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TalentPayload>
+        }
+        createMany: {
+          args: Prisma.TalentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TalentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TalentPayload>[]
+        }
+        delete: {
+          args: Prisma.TalentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TalentPayload>
+        }
+        update: {
+          args: Prisma.TalentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TalentPayload>
+        }
+        deleteMany: {
+          args: Prisma.TalentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TalentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TalentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TalentPayload>[]
+        }
+        upsert: {
+          args: Prisma.TalentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TalentPayload>
+        }
+        aggregate: {
+          args: Prisma.TalentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTalent>
+        }
+        groupBy: {
+          args: Prisma.TalentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TalentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TalentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TalentCountAggregateOutputType> | number
+        }
+      }
+    }
+    TalentSkill: {
+      payload: Prisma.$TalentSkillPayload<ExtArgs>
+      fields: Prisma.TalentSkillFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TalentSkillFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TalentSkillPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TalentSkillFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TalentSkillPayload>
+        }
+        findFirst: {
+          args: Prisma.TalentSkillFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TalentSkillPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TalentSkillFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TalentSkillPayload>
+        }
+        findMany: {
+          args: Prisma.TalentSkillFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TalentSkillPayload>[]
+        }
+        create: {
+          args: Prisma.TalentSkillCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TalentSkillPayload>
+        }
+        createMany: {
+          args: Prisma.TalentSkillCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TalentSkillCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TalentSkillPayload>[]
+        }
+        delete: {
+          args: Prisma.TalentSkillDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TalentSkillPayload>
+        }
+        update: {
+          args: Prisma.TalentSkillUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TalentSkillPayload>
+        }
+        deleteMany: {
+          args: Prisma.TalentSkillDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TalentSkillUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TalentSkillUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TalentSkillPayload>[]
+        }
+        upsert: {
+          args: Prisma.TalentSkillUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TalentSkillPayload>
+        }
+        aggregate: {
+          args: Prisma.TalentSkillAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTalentSkill>
+        }
+        groupBy: {
+          args: Prisma.TalentSkillGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TalentSkillGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TalentSkillCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TalentSkillCountAggregateOutputType> | number
+        }
+      }
+    }
+    TalentLanguage: {
+      payload: Prisma.$TalentLanguagePayload<ExtArgs>
+      fields: Prisma.TalentLanguageFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TalentLanguageFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TalentLanguagePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TalentLanguageFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TalentLanguagePayload>
+        }
+        findFirst: {
+          args: Prisma.TalentLanguageFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TalentLanguagePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TalentLanguageFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TalentLanguagePayload>
+        }
+        findMany: {
+          args: Prisma.TalentLanguageFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TalentLanguagePayload>[]
+        }
+        create: {
+          args: Prisma.TalentLanguageCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TalentLanguagePayload>
+        }
+        createMany: {
+          args: Prisma.TalentLanguageCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TalentLanguageCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TalentLanguagePayload>[]
+        }
+        delete: {
+          args: Prisma.TalentLanguageDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TalentLanguagePayload>
+        }
+        update: {
+          args: Prisma.TalentLanguageUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TalentLanguagePayload>
+        }
+        deleteMany: {
+          args: Prisma.TalentLanguageDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TalentLanguageUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TalentLanguageUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TalentLanguagePayload>[]
+        }
+        upsert: {
+          args: Prisma.TalentLanguageUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TalentLanguagePayload>
+        }
+        aggregate: {
+          args: Prisma.TalentLanguageAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTalentLanguage>
+        }
+        groupBy: {
+          args: Prisma.TalentLanguageGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TalentLanguageGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TalentLanguageCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TalentLanguageCountAggregateOutputType> | number
         }
       }
     }
@@ -1696,6 +1921,52 @@ export const ResidentScalarFieldEnum = {
 export type ResidentScalarFieldEnum = (typeof ResidentScalarFieldEnum)[keyof typeof ResidentScalarFieldEnum]
 
 
+export const TalentScalarFieldEnum = {
+  id: 'id',
+  fullName: 'fullName',
+  position: 'position',
+  phone: 'phone',
+  email: 'email',
+  telegram: 'telegram',
+  location: 'location',
+  currentCompany: 'currentCompany',
+  experienceYears: 'experienceYears',
+  salaryExpectation: 'salaryExpectation',
+  salaryCurrency: 'salaryCurrency',
+  status: 'status',
+  linkedinUrl: 'linkedinUrl',
+  githubUrl: 'githubUrl',
+  portfolioUrl: 'portfolioUrl',
+  photoUrl: 'photoUrl',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TalentScalarFieldEnum = (typeof TalentScalarFieldEnum)[keyof typeof TalentScalarFieldEnum]
+
+
+export const TalentSkillScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  talentId: 'talentId',
+  createdAt: 'createdAt'
+} as const
+
+export type TalentSkillScalarFieldEnum = (typeof TalentSkillScalarFieldEnum)[keyof typeof TalentSkillScalarFieldEnum]
+
+
+export const TalentLanguageScalarFieldEnum = {
+  id: 'id',
+  language: 'language',
+  level: 'level',
+  talentId: 'talentId',
+  createdAt: 'createdAt'
+} as const
+
+export type TalentLanguageScalarFieldEnum = (typeof TalentLanguageScalarFieldEnum)[keyof typeof TalentLanguageScalarFieldEnum]
+
+
 export const QuarterReportScalarFieldEnum = {
   id: 'id',
   year: 'year',
@@ -1772,6 +2043,7 @@ export const DocumentScalarFieldEnum = {
   startupId: 'startupId',
   residentId: 'residentId',
   infrastructureId: 'infrastructureId',
+  talentId: 'talentId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -2016,6 +2288,34 @@ export type ListEnumResidentStatusFieldRefInput<$PrismaModel> = FieldRefInputTyp
 
 
 /**
+ * Reference to a field of type 'TalentStatus'
+ */
+export type EnumTalentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TalentStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'TalentStatus[]'
+ */
+export type ListEnumTalentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TalentStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'LanguageLevel'
+ */
+export type EnumLanguageLevelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LanguageLevel'>
+    
+
+
+/**
+ * Reference to a field of type 'LanguageLevel[]'
+ */
+export type ListEnumLanguageLevelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LanguageLevel[]'>
+    
+
+
+/**
  * Reference to a field of type 'QuarterStatus'
  */
 export type EnumQuarterStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QuarterStatus'>
@@ -2256,6 +2556,9 @@ export type GlobalOmitConfig = {
   startup?: Prisma.StartupOmit
   startupFunding?: Prisma.StartupFundingOmit
   resident?: Prisma.ResidentOmit
+  talent?: Prisma.TalentOmit
+  talentSkill?: Prisma.TalentSkillOmit
+  talentLanguage?: Prisma.TalentLanguageOmit
   quarterReport?: Prisma.QuarterReportOmit
   infrastructure?: Prisma.InfrastructureOmit
   space?: Prisma.SpaceOmit

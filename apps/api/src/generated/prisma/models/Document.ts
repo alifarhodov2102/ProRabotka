@@ -50,6 +50,7 @@ export type DocumentMinAggregateOutputType = {
   startupId: string | null
   residentId: string | null
   infrastructureId: string | null
+  talentId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -70,6 +71,7 @@ export type DocumentMaxAggregateOutputType = {
   startupId: string | null
   residentId: string | null
   infrastructureId: string | null
+  talentId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -90,6 +92,7 @@ export type DocumentCountAggregateOutputType = {
   startupId: number
   residentId: number
   infrastructureId: number
+  talentId: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -120,6 +123,7 @@ export type DocumentMinAggregateInputType = {
   startupId?: true
   residentId?: true
   infrastructureId?: true
+  talentId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -140,6 +144,7 @@ export type DocumentMaxAggregateInputType = {
   startupId?: true
   residentId?: true
   infrastructureId?: true
+  talentId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -160,6 +165,7 @@ export type DocumentCountAggregateInputType = {
   startupId?: true
   residentId?: true
   infrastructureId?: true
+  talentId?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -267,6 +273,7 @@ export type DocumentGroupByOutputType = {
   startupId: string | null
   residentId: string | null
   infrastructureId: string | null
+  talentId: string | null
   createdAt: Date
   updatedAt: Date
   _count: DocumentCountAggregateOutputType | null
@@ -310,6 +317,7 @@ export type DocumentWhereInput = {
   startupId?: Prisma.StringNullableFilter<"Document"> | string | null
   residentId?: Prisma.StringNullableFilter<"Document"> | string | null
   infrastructureId?: Prisma.StringNullableFilter<"Document"> | string | null
+  talentId?: Prisma.StringNullableFilter<"Document"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Document"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Document"> | Date | string
   uploadedBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -318,6 +326,7 @@ export type DocumentWhereInput = {
   startup?: Prisma.XOR<Prisma.StartupNullableScalarRelationFilter, Prisma.StartupWhereInput> | null
   resident?: Prisma.XOR<Prisma.ResidentNullableScalarRelationFilter, Prisma.ResidentWhereInput> | null
   infrastructure?: Prisma.XOR<Prisma.InfrastructureNullableScalarRelationFilter, Prisma.InfrastructureWhereInput> | null
+  talent?: Prisma.XOR<Prisma.TalentNullableScalarRelationFilter, Prisma.TalentWhereInput> | null
   quarterReports?: Prisma.QuarterReportListRelationFilter
 }
 
@@ -337,6 +346,7 @@ export type DocumentOrderByWithRelationInput = {
   startupId?: Prisma.SortOrderInput | Prisma.SortOrder
   residentId?: Prisma.SortOrderInput | Prisma.SortOrder
   infrastructureId?: Prisma.SortOrderInput | Prisma.SortOrder
+  talentId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   uploadedBy?: Prisma.UserOrderByWithRelationInput
@@ -345,6 +355,7 @@ export type DocumentOrderByWithRelationInput = {
   startup?: Prisma.StartupOrderByWithRelationInput
   resident?: Prisma.ResidentOrderByWithRelationInput
   infrastructure?: Prisma.InfrastructureOrderByWithRelationInput
+  talent?: Prisma.TalentOrderByWithRelationInput
   quarterReports?: Prisma.QuarterReportOrderByRelationAggregateInput
 }
 
@@ -367,6 +378,7 @@ export type DocumentWhereUniqueInput = Prisma.AtLeast<{
   startupId?: Prisma.StringNullableFilter<"Document"> | string | null
   residentId?: Prisma.StringNullableFilter<"Document"> | string | null
   infrastructureId?: Prisma.StringNullableFilter<"Document"> | string | null
+  talentId?: Prisma.StringNullableFilter<"Document"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Document"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Document"> | Date | string
   uploadedBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -375,6 +387,7 @@ export type DocumentWhereUniqueInput = Prisma.AtLeast<{
   startup?: Prisma.XOR<Prisma.StartupNullableScalarRelationFilter, Prisma.StartupWhereInput> | null
   resident?: Prisma.XOR<Prisma.ResidentNullableScalarRelationFilter, Prisma.ResidentWhereInput> | null
   infrastructure?: Prisma.XOR<Prisma.InfrastructureNullableScalarRelationFilter, Prisma.InfrastructureWhereInput> | null
+  talent?: Prisma.XOR<Prisma.TalentNullableScalarRelationFilter, Prisma.TalentWhereInput> | null
   quarterReports?: Prisma.QuarterReportListRelationFilter
 }, "id">
 
@@ -394,6 +407,7 @@ export type DocumentOrderByWithAggregationInput = {
   startupId?: Prisma.SortOrderInput | Prisma.SortOrder
   residentId?: Prisma.SortOrderInput | Prisma.SortOrder
   infrastructureId?: Prisma.SortOrderInput | Prisma.SortOrder
+  talentId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.DocumentCountOrderByAggregateInput
@@ -422,6 +436,7 @@ export type DocumentScalarWhereWithAggregatesInput = {
   startupId?: Prisma.StringNullableWithAggregatesFilter<"Document"> | string | null
   residentId?: Prisma.StringNullableWithAggregatesFilter<"Document"> | string | null
   infrastructureId?: Prisma.StringNullableWithAggregatesFilter<"Document"> | string | null
+  talentId?: Prisma.StringNullableWithAggregatesFilter<"Document"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Document"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Document"> | Date | string
 }
@@ -444,6 +459,7 @@ export type DocumentCreateInput = {
   startup?: Prisma.StartupCreateNestedOneWithoutDocumentsInput
   resident?: Prisma.ResidentCreateNestedOneWithoutDocumentsInput
   infrastructure?: Prisma.InfrastructureCreateNestedOneWithoutDocumentsInput
+  talent?: Prisma.TalentCreateNestedOneWithoutDocumentsInput
   quarterReports?: Prisma.QuarterReportCreateNestedManyWithoutDocumentInput
 }
 
@@ -463,6 +479,7 @@ export type DocumentUncheckedCreateInput = {
   startupId?: string | null
   residentId?: string | null
   infrastructureId?: string | null
+  talentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   quarterReports?: Prisma.QuarterReportUncheckedCreateNestedManyWithoutDocumentInput
@@ -486,6 +503,7 @@ export type DocumentUpdateInput = {
   startup?: Prisma.StartupUpdateOneWithoutDocumentsNestedInput
   resident?: Prisma.ResidentUpdateOneWithoutDocumentsNestedInput
   infrastructure?: Prisma.InfrastructureUpdateOneWithoutDocumentsNestedInput
+  talent?: Prisma.TalentUpdateOneWithoutDocumentsNestedInput
   quarterReports?: Prisma.QuarterReportUpdateManyWithoutDocumentNestedInput
 }
 
@@ -505,6 +523,7 @@ export type DocumentUncheckedUpdateInput = {
   startupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   residentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   infrastructureId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  talentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quarterReports?: Prisma.QuarterReportUncheckedUpdateManyWithoutDocumentNestedInput
@@ -526,6 +545,7 @@ export type DocumentCreateManyInput = {
   startupId?: string | null
   residentId?: string | null
   infrastructureId?: string | null
+  talentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -560,6 +580,7 @@ export type DocumentUncheckedUpdateManyInput = {
   startupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   residentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   infrastructureId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  talentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -595,6 +616,7 @@ export type DocumentCountOrderByAggregateInput = {
   startupId?: Prisma.SortOrder
   residentId?: Prisma.SortOrder
   infrastructureId?: Prisma.SortOrder
+  talentId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -619,6 +641,7 @@ export type DocumentMaxOrderByAggregateInput = {
   startupId?: Prisma.SortOrder
   residentId?: Prisma.SortOrder
   infrastructureId?: Prisma.SortOrder
+  talentId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -639,6 +662,7 @@ export type DocumentMinOrderByAggregateInput = {
   startupId?: Prisma.SortOrder
   residentId?: Prisma.SortOrder
   infrastructureId?: Prisma.SortOrder
+  talentId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -770,6 +794,48 @@ export type DocumentUncheckedUpdateManyWithoutResidentNestedInput = {
   connect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
   update?: Prisma.DocumentUpdateWithWhereUniqueWithoutResidentInput | Prisma.DocumentUpdateWithWhereUniqueWithoutResidentInput[]
   updateMany?: Prisma.DocumentUpdateManyWithWhereWithoutResidentInput | Prisma.DocumentUpdateManyWithWhereWithoutResidentInput[]
+  deleteMany?: Prisma.DocumentScalarWhereInput | Prisma.DocumentScalarWhereInput[]
+}
+
+export type DocumentCreateNestedManyWithoutTalentInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutTalentInput, Prisma.DocumentUncheckedCreateWithoutTalentInput> | Prisma.DocumentCreateWithoutTalentInput[] | Prisma.DocumentUncheckedCreateWithoutTalentInput[]
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutTalentInput | Prisma.DocumentCreateOrConnectWithoutTalentInput[]
+  createMany?: Prisma.DocumentCreateManyTalentInputEnvelope
+  connect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+}
+
+export type DocumentUncheckedCreateNestedManyWithoutTalentInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutTalentInput, Prisma.DocumentUncheckedCreateWithoutTalentInput> | Prisma.DocumentCreateWithoutTalentInput[] | Prisma.DocumentUncheckedCreateWithoutTalentInput[]
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutTalentInput | Prisma.DocumentCreateOrConnectWithoutTalentInput[]
+  createMany?: Prisma.DocumentCreateManyTalentInputEnvelope
+  connect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+}
+
+export type DocumentUpdateManyWithoutTalentNestedInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutTalentInput, Prisma.DocumentUncheckedCreateWithoutTalentInput> | Prisma.DocumentCreateWithoutTalentInput[] | Prisma.DocumentUncheckedCreateWithoutTalentInput[]
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutTalentInput | Prisma.DocumentCreateOrConnectWithoutTalentInput[]
+  upsert?: Prisma.DocumentUpsertWithWhereUniqueWithoutTalentInput | Prisma.DocumentUpsertWithWhereUniqueWithoutTalentInput[]
+  createMany?: Prisma.DocumentCreateManyTalentInputEnvelope
+  set?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  disconnect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  delete?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  connect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  update?: Prisma.DocumentUpdateWithWhereUniqueWithoutTalentInput | Prisma.DocumentUpdateWithWhereUniqueWithoutTalentInput[]
+  updateMany?: Prisma.DocumentUpdateManyWithWhereWithoutTalentInput | Prisma.DocumentUpdateManyWithWhereWithoutTalentInput[]
+  deleteMany?: Prisma.DocumentScalarWhereInput | Prisma.DocumentScalarWhereInput[]
+}
+
+export type DocumentUncheckedUpdateManyWithoutTalentNestedInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutTalentInput, Prisma.DocumentUncheckedCreateWithoutTalentInput> | Prisma.DocumentCreateWithoutTalentInput[] | Prisma.DocumentUncheckedCreateWithoutTalentInput[]
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutTalentInput | Prisma.DocumentCreateOrConnectWithoutTalentInput[]
+  upsert?: Prisma.DocumentUpsertWithWhereUniqueWithoutTalentInput | Prisma.DocumentUpsertWithWhereUniqueWithoutTalentInput[]
+  createMany?: Prisma.DocumentCreateManyTalentInputEnvelope
+  set?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  disconnect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  delete?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  connect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  update?: Prisma.DocumentUpdateWithWhereUniqueWithoutTalentInput | Prisma.DocumentUpdateWithWhereUniqueWithoutTalentInput[]
+  updateMany?: Prisma.DocumentUpdateManyWithWhereWithoutTalentInput | Prisma.DocumentUpdateManyWithWhereWithoutTalentInput[]
   deleteMany?: Prisma.DocumentScalarWhereInput | Prisma.DocumentScalarWhereInput[]
 }
 
@@ -932,6 +998,7 @@ export type DocumentCreateWithoutUploadedByInput = {
   startup?: Prisma.StartupCreateNestedOneWithoutDocumentsInput
   resident?: Prisma.ResidentCreateNestedOneWithoutDocumentsInput
   infrastructure?: Prisma.InfrastructureCreateNestedOneWithoutDocumentsInput
+  talent?: Prisma.TalentCreateNestedOneWithoutDocumentsInput
   quarterReports?: Prisma.QuarterReportCreateNestedManyWithoutDocumentInput
 }
 
@@ -950,6 +1017,7 @@ export type DocumentUncheckedCreateWithoutUploadedByInput = {
   startupId?: string | null
   residentId?: string | null
   infrastructureId?: string | null
+  talentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   quarterReports?: Prisma.QuarterReportUncheckedCreateNestedManyWithoutDocumentInput
@@ -1000,6 +1068,7 @@ export type DocumentScalarWhereInput = {
   startupId?: Prisma.StringNullableFilter<"Document"> | string | null
   residentId?: Prisma.StringNullableFilter<"Document"> | string | null
   infrastructureId?: Prisma.StringNullableFilter<"Document"> | string | null
+  talentId?: Prisma.StringNullableFilter<"Document"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Document"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Document"> | Date | string
 }
@@ -1021,6 +1090,7 @@ export type DocumentCreateWithoutStartupInput = {
   folder?: Prisma.FolderCreateNestedOneWithoutDocumentsInput
   resident?: Prisma.ResidentCreateNestedOneWithoutDocumentsInput
   infrastructure?: Prisma.InfrastructureCreateNestedOneWithoutDocumentsInput
+  talent?: Prisma.TalentCreateNestedOneWithoutDocumentsInput
   quarterReports?: Prisma.QuarterReportCreateNestedManyWithoutDocumentInput
 }
 
@@ -1039,6 +1109,7 @@ export type DocumentUncheckedCreateWithoutStartupInput = {
   folderId?: string | null
   residentId?: string | null
   infrastructureId?: string | null
+  talentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   quarterReports?: Prisma.QuarterReportUncheckedCreateNestedManyWithoutDocumentInput
@@ -1087,6 +1158,7 @@ export type DocumentCreateWithoutResidentInput = {
   folder?: Prisma.FolderCreateNestedOneWithoutDocumentsInput
   startup?: Prisma.StartupCreateNestedOneWithoutDocumentsInput
   infrastructure?: Prisma.InfrastructureCreateNestedOneWithoutDocumentsInput
+  talent?: Prisma.TalentCreateNestedOneWithoutDocumentsInput
   quarterReports?: Prisma.QuarterReportCreateNestedManyWithoutDocumentInput
 }
 
@@ -1105,6 +1177,7 @@ export type DocumentUncheckedCreateWithoutResidentInput = {
   folderId?: string | null
   startupId?: string | null
   infrastructureId?: string | null
+  talentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   quarterReports?: Prisma.QuarterReportUncheckedCreateNestedManyWithoutDocumentInput
@@ -1136,6 +1209,74 @@ export type DocumentUpdateManyWithWhereWithoutResidentInput = {
   data: Prisma.XOR<Prisma.DocumentUpdateManyMutationInput, Prisma.DocumentUncheckedUpdateManyWithoutResidentInput>
 }
 
+export type DocumentCreateWithoutTalentInput = {
+  id?: string
+  fileName: string
+  originalName?: string | null
+  fileUrl: string
+  storageKey: string
+  mimeType?: string | null
+  fileSize?: number | null
+  description?: string | null
+  section: $Enums.SectionType
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  uploadedBy: Prisma.UserCreateNestedOneWithoutDocumentsInput
+  space?: Prisma.SpaceCreateNestedOneWithoutDocumentsInput
+  folder?: Prisma.FolderCreateNestedOneWithoutDocumentsInput
+  startup?: Prisma.StartupCreateNestedOneWithoutDocumentsInput
+  resident?: Prisma.ResidentCreateNestedOneWithoutDocumentsInput
+  infrastructure?: Prisma.InfrastructureCreateNestedOneWithoutDocumentsInput
+  quarterReports?: Prisma.QuarterReportCreateNestedManyWithoutDocumentInput
+}
+
+export type DocumentUncheckedCreateWithoutTalentInput = {
+  id?: string
+  fileName: string
+  originalName?: string | null
+  fileUrl: string
+  storageKey: string
+  mimeType?: string | null
+  fileSize?: number | null
+  description?: string | null
+  section: $Enums.SectionType
+  uploadedById: string
+  spaceId?: string | null
+  folderId?: string | null
+  startupId?: string | null
+  residentId?: string | null
+  infrastructureId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  quarterReports?: Prisma.QuarterReportUncheckedCreateNestedManyWithoutDocumentInput
+}
+
+export type DocumentCreateOrConnectWithoutTalentInput = {
+  where: Prisma.DocumentWhereUniqueInput
+  create: Prisma.XOR<Prisma.DocumentCreateWithoutTalentInput, Prisma.DocumentUncheckedCreateWithoutTalentInput>
+}
+
+export type DocumentCreateManyTalentInputEnvelope = {
+  data: Prisma.DocumentCreateManyTalentInput | Prisma.DocumentCreateManyTalentInput[]
+  skipDuplicates?: boolean
+}
+
+export type DocumentUpsertWithWhereUniqueWithoutTalentInput = {
+  where: Prisma.DocumentWhereUniqueInput
+  update: Prisma.XOR<Prisma.DocumentUpdateWithoutTalentInput, Prisma.DocumentUncheckedUpdateWithoutTalentInput>
+  create: Prisma.XOR<Prisma.DocumentCreateWithoutTalentInput, Prisma.DocumentUncheckedCreateWithoutTalentInput>
+}
+
+export type DocumentUpdateWithWhereUniqueWithoutTalentInput = {
+  where: Prisma.DocumentWhereUniqueInput
+  data: Prisma.XOR<Prisma.DocumentUpdateWithoutTalentInput, Prisma.DocumentUncheckedUpdateWithoutTalentInput>
+}
+
+export type DocumentUpdateManyWithWhereWithoutTalentInput = {
+  where: Prisma.DocumentScalarWhereInput
+  data: Prisma.XOR<Prisma.DocumentUpdateManyMutationInput, Prisma.DocumentUncheckedUpdateManyWithoutTalentInput>
+}
+
 export type DocumentCreateWithoutQuarterReportsInput = {
   id?: string
   fileName: string
@@ -1154,6 +1295,7 @@ export type DocumentCreateWithoutQuarterReportsInput = {
   startup?: Prisma.StartupCreateNestedOneWithoutDocumentsInput
   resident?: Prisma.ResidentCreateNestedOneWithoutDocumentsInput
   infrastructure?: Prisma.InfrastructureCreateNestedOneWithoutDocumentsInput
+  talent?: Prisma.TalentCreateNestedOneWithoutDocumentsInput
 }
 
 export type DocumentUncheckedCreateWithoutQuarterReportsInput = {
@@ -1172,6 +1314,7 @@ export type DocumentUncheckedCreateWithoutQuarterReportsInput = {
   startupId?: string | null
   residentId?: string | null
   infrastructureId?: string | null
+  talentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1210,6 +1353,7 @@ export type DocumentUpdateWithoutQuarterReportsInput = {
   startup?: Prisma.StartupUpdateOneWithoutDocumentsNestedInput
   resident?: Prisma.ResidentUpdateOneWithoutDocumentsNestedInput
   infrastructure?: Prisma.InfrastructureUpdateOneWithoutDocumentsNestedInput
+  talent?: Prisma.TalentUpdateOneWithoutDocumentsNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutQuarterReportsInput = {
@@ -1228,6 +1372,7 @@ export type DocumentUncheckedUpdateWithoutQuarterReportsInput = {
   startupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   residentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   infrastructureId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  talentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1249,6 +1394,7 @@ export type DocumentCreateWithoutInfrastructureInput = {
   folder?: Prisma.FolderCreateNestedOneWithoutDocumentsInput
   startup?: Prisma.StartupCreateNestedOneWithoutDocumentsInput
   resident?: Prisma.ResidentCreateNestedOneWithoutDocumentsInput
+  talent?: Prisma.TalentCreateNestedOneWithoutDocumentsInput
   quarterReports?: Prisma.QuarterReportCreateNestedManyWithoutDocumentInput
 }
 
@@ -1267,6 +1413,7 @@ export type DocumentUncheckedCreateWithoutInfrastructureInput = {
   folderId?: string | null
   startupId?: string | null
   residentId?: string | null
+  talentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   quarterReports?: Prisma.QuarterReportUncheckedCreateNestedManyWithoutDocumentInput
@@ -1315,6 +1462,7 @@ export type DocumentCreateWithoutSpaceInput = {
   startup?: Prisma.StartupCreateNestedOneWithoutDocumentsInput
   resident?: Prisma.ResidentCreateNestedOneWithoutDocumentsInput
   infrastructure?: Prisma.InfrastructureCreateNestedOneWithoutDocumentsInput
+  talent?: Prisma.TalentCreateNestedOneWithoutDocumentsInput
   quarterReports?: Prisma.QuarterReportCreateNestedManyWithoutDocumentInput
 }
 
@@ -1333,6 +1481,7 @@ export type DocumentUncheckedCreateWithoutSpaceInput = {
   startupId?: string | null
   residentId?: string | null
   infrastructureId?: string | null
+  talentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   quarterReports?: Prisma.QuarterReportUncheckedCreateNestedManyWithoutDocumentInput
@@ -1381,6 +1530,7 @@ export type DocumentCreateWithoutFolderInput = {
   startup?: Prisma.StartupCreateNestedOneWithoutDocumentsInput
   resident?: Prisma.ResidentCreateNestedOneWithoutDocumentsInput
   infrastructure?: Prisma.InfrastructureCreateNestedOneWithoutDocumentsInput
+  talent?: Prisma.TalentCreateNestedOneWithoutDocumentsInput
   quarterReports?: Prisma.QuarterReportCreateNestedManyWithoutDocumentInput
 }
 
@@ -1399,6 +1549,7 @@ export type DocumentUncheckedCreateWithoutFolderInput = {
   startupId?: string | null
   residentId?: string | null
   infrastructureId?: string | null
+  talentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   quarterReports?: Prisma.QuarterReportUncheckedCreateNestedManyWithoutDocumentInput
@@ -1445,6 +1596,7 @@ export type DocumentCreateManyUploadedByInput = {
   startupId?: string | null
   residentId?: string | null
   infrastructureId?: string | null
+  talentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1466,6 +1618,7 @@ export type DocumentUpdateWithoutUploadedByInput = {
   startup?: Prisma.StartupUpdateOneWithoutDocumentsNestedInput
   resident?: Prisma.ResidentUpdateOneWithoutDocumentsNestedInput
   infrastructure?: Prisma.InfrastructureUpdateOneWithoutDocumentsNestedInput
+  talent?: Prisma.TalentUpdateOneWithoutDocumentsNestedInput
   quarterReports?: Prisma.QuarterReportUpdateManyWithoutDocumentNestedInput
 }
 
@@ -1484,6 +1637,7 @@ export type DocumentUncheckedUpdateWithoutUploadedByInput = {
   startupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   residentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   infrastructureId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  talentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quarterReports?: Prisma.QuarterReportUncheckedUpdateManyWithoutDocumentNestedInput
@@ -1504,6 +1658,7 @@ export type DocumentUncheckedUpdateManyWithoutUploadedByInput = {
   startupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   residentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   infrastructureId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  talentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1523,6 +1678,7 @@ export type DocumentCreateManyStartupInput = {
   folderId?: string | null
   residentId?: string | null
   infrastructureId?: string | null
+  talentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1544,6 +1700,7 @@ export type DocumentUpdateWithoutStartupInput = {
   folder?: Prisma.FolderUpdateOneWithoutDocumentsNestedInput
   resident?: Prisma.ResidentUpdateOneWithoutDocumentsNestedInput
   infrastructure?: Prisma.InfrastructureUpdateOneWithoutDocumentsNestedInput
+  talent?: Prisma.TalentUpdateOneWithoutDocumentsNestedInput
   quarterReports?: Prisma.QuarterReportUpdateManyWithoutDocumentNestedInput
 }
 
@@ -1562,6 +1719,7 @@ export type DocumentUncheckedUpdateWithoutStartupInput = {
   folderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   residentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   infrastructureId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  talentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quarterReports?: Prisma.QuarterReportUncheckedUpdateManyWithoutDocumentNestedInput
@@ -1582,6 +1740,7 @@ export type DocumentUncheckedUpdateManyWithoutStartupInput = {
   folderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   residentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   infrastructureId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  talentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1601,6 +1760,7 @@ export type DocumentCreateManyResidentInput = {
   folderId?: string | null
   startupId?: string | null
   infrastructureId?: string | null
+  talentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1622,6 +1782,7 @@ export type DocumentUpdateWithoutResidentInput = {
   folder?: Prisma.FolderUpdateOneWithoutDocumentsNestedInput
   startup?: Prisma.StartupUpdateOneWithoutDocumentsNestedInput
   infrastructure?: Prisma.InfrastructureUpdateOneWithoutDocumentsNestedInput
+  talent?: Prisma.TalentUpdateOneWithoutDocumentsNestedInput
   quarterReports?: Prisma.QuarterReportUpdateManyWithoutDocumentNestedInput
 }
 
@@ -1640,6 +1801,7 @@ export type DocumentUncheckedUpdateWithoutResidentInput = {
   folderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   infrastructureId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  talentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quarterReports?: Prisma.QuarterReportUncheckedUpdateManyWithoutDocumentNestedInput
@@ -1660,6 +1822,89 @@ export type DocumentUncheckedUpdateManyWithoutResidentInput = {
   folderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   infrastructureId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  talentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type DocumentCreateManyTalentInput = {
+  id?: string
+  fileName: string
+  originalName?: string | null
+  fileUrl: string
+  storageKey: string
+  mimeType?: string | null
+  fileSize?: number | null
+  description?: string | null
+  section: $Enums.SectionType
+  uploadedById: string
+  spaceId?: string | null
+  folderId?: string | null
+  startupId?: string | null
+  residentId?: string | null
+  infrastructureId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type DocumentUpdateWithoutTalentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fileName?: Prisma.StringFieldUpdateOperationsInput | string
+  originalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  storageKey?: Prisma.StringFieldUpdateOperationsInput | string
+  mimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  section?: Prisma.EnumSectionTypeFieldUpdateOperationsInput | $Enums.SectionType
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  uploadedBy?: Prisma.UserUpdateOneRequiredWithoutDocumentsNestedInput
+  space?: Prisma.SpaceUpdateOneWithoutDocumentsNestedInput
+  folder?: Prisma.FolderUpdateOneWithoutDocumentsNestedInput
+  startup?: Prisma.StartupUpdateOneWithoutDocumentsNestedInput
+  resident?: Prisma.ResidentUpdateOneWithoutDocumentsNestedInput
+  infrastructure?: Prisma.InfrastructureUpdateOneWithoutDocumentsNestedInput
+  quarterReports?: Prisma.QuarterReportUpdateManyWithoutDocumentNestedInput
+}
+
+export type DocumentUncheckedUpdateWithoutTalentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fileName?: Prisma.StringFieldUpdateOperationsInput | string
+  originalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  storageKey?: Prisma.StringFieldUpdateOperationsInput | string
+  mimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  section?: Prisma.EnumSectionTypeFieldUpdateOperationsInput | $Enums.SectionType
+  uploadedById?: Prisma.StringFieldUpdateOperationsInput | string
+  spaceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  folderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  residentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  infrastructureId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  quarterReports?: Prisma.QuarterReportUncheckedUpdateManyWithoutDocumentNestedInput
+}
+
+export type DocumentUncheckedUpdateManyWithoutTalentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fileName?: Prisma.StringFieldUpdateOperationsInput | string
+  originalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  storageKey?: Prisma.StringFieldUpdateOperationsInput | string
+  mimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  section?: Prisma.EnumSectionTypeFieldUpdateOperationsInput | $Enums.SectionType
+  uploadedById?: Prisma.StringFieldUpdateOperationsInput | string
+  spaceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  folderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  residentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  infrastructureId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1679,6 +1924,7 @@ export type DocumentCreateManyInfrastructureInput = {
   folderId?: string | null
   startupId?: string | null
   residentId?: string | null
+  talentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1700,6 +1946,7 @@ export type DocumentUpdateWithoutInfrastructureInput = {
   folder?: Prisma.FolderUpdateOneWithoutDocumentsNestedInput
   startup?: Prisma.StartupUpdateOneWithoutDocumentsNestedInput
   resident?: Prisma.ResidentUpdateOneWithoutDocumentsNestedInput
+  talent?: Prisma.TalentUpdateOneWithoutDocumentsNestedInput
   quarterReports?: Prisma.QuarterReportUpdateManyWithoutDocumentNestedInput
 }
 
@@ -1718,6 +1965,7 @@ export type DocumentUncheckedUpdateWithoutInfrastructureInput = {
   folderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   residentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  talentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quarterReports?: Prisma.QuarterReportUncheckedUpdateManyWithoutDocumentNestedInput
@@ -1738,6 +1986,7 @@ export type DocumentUncheckedUpdateManyWithoutInfrastructureInput = {
   folderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   residentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  talentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1757,6 +2006,7 @@ export type DocumentCreateManySpaceInput = {
   startupId?: string | null
   residentId?: string | null
   infrastructureId?: string | null
+  talentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1778,6 +2028,7 @@ export type DocumentUpdateWithoutSpaceInput = {
   startup?: Prisma.StartupUpdateOneWithoutDocumentsNestedInput
   resident?: Prisma.ResidentUpdateOneWithoutDocumentsNestedInput
   infrastructure?: Prisma.InfrastructureUpdateOneWithoutDocumentsNestedInput
+  talent?: Prisma.TalentUpdateOneWithoutDocumentsNestedInput
   quarterReports?: Prisma.QuarterReportUpdateManyWithoutDocumentNestedInput
 }
 
@@ -1796,6 +2047,7 @@ export type DocumentUncheckedUpdateWithoutSpaceInput = {
   startupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   residentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   infrastructureId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  talentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quarterReports?: Prisma.QuarterReportUncheckedUpdateManyWithoutDocumentNestedInput
@@ -1816,6 +2068,7 @@ export type DocumentUncheckedUpdateManyWithoutSpaceInput = {
   startupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   residentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   infrastructureId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  talentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1835,6 +2088,7 @@ export type DocumentCreateManyFolderInput = {
   startupId?: string | null
   residentId?: string | null
   infrastructureId?: string | null
+  talentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1856,6 +2110,7 @@ export type DocumentUpdateWithoutFolderInput = {
   startup?: Prisma.StartupUpdateOneWithoutDocumentsNestedInput
   resident?: Prisma.ResidentUpdateOneWithoutDocumentsNestedInput
   infrastructure?: Prisma.InfrastructureUpdateOneWithoutDocumentsNestedInput
+  talent?: Prisma.TalentUpdateOneWithoutDocumentsNestedInput
   quarterReports?: Prisma.QuarterReportUpdateManyWithoutDocumentNestedInput
 }
 
@@ -1874,6 +2129,7 @@ export type DocumentUncheckedUpdateWithoutFolderInput = {
   startupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   residentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   infrastructureId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  talentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quarterReports?: Prisma.QuarterReportUncheckedUpdateManyWithoutDocumentNestedInput
@@ -1894,6 +2150,7 @@ export type DocumentUncheckedUpdateManyWithoutFolderInput = {
   startupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   residentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   infrastructureId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  talentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1945,6 +2202,7 @@ export type DocumentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   startupId?: boolean
   residentId?: boolean
   infrastructureId?: boolean
+  talentId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   uploadedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1953,6 +2211,7 @@ export type DocumentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   startup?: boolean | Prisma.Document$startupArgs<ExtArgs>
   resident?: boolean | Prisma.Document$residentArgs<ExtArgs>
   infrastructure?: boolean | Prisma.Document$infrastructureArgs<ExtArgs>
+  talent?: boolean | Prisma.Document$talentArgs<ExtArgs>
   quarterReports?: boolean | Prisma.Document$quarterReportsArgs<ExtArgs>
   _count?: boolean | Prisma.DocumentCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["document"]>
@@ -1973,6 +2232,7 @@ export type DocumentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   startupId?: boolean
   residentId?: boolean
   infrastructureId?: boolean
+  talentId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   uploadedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1981,6 +2241,7 @@ export type DocumentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   startup?: boolean | Prisma.Document$startupArgs<ExtArgs>
   resident?: boolean | Prisma.Document$residentArgs<ExtArgs>
   infrastructure?: boolean | Prisma.Document$infrastructureArgs<ExtArgs>
+  talent?: boolean | Prisma.Document$talentArgs<ExtArgs>
 }, ExtArgs["result"]["document"]>
 
 export type DocumentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1999,6 +2260,7 @@ export type DocumentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   startupId?: boolean
   residentId?: boolean
   infrastructureId?: boolean
+  talentId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   uploadedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -2007,6 +2269,7 @@ export type DocumentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   startup?: boolean | Prisma.Document$startupArgs<ExtArgs>
   resident?: boolean | Prisma.Document$residentArgs<ExtArgs>
   infrastructure?: boolean | Prisma.Document$infrastructureArgs<ExtArgs>
+  talent?: boolean | Prisma.Document$talentArgs<ExtArgs>
 }, ExtArgs["result"]["document"]>
 
 export type DocumentSelectScalar = {
@@ -2025,11 +2288,12 @@ export type DocumentSelectScalar = {
   startupId?: boolean
   residentId?: boolean
   infrastructureId?: boolean
+  talentId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type DocumentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "fileName" | "originalName" | "fileUrl" | "storageKey" | "mimeType" | "fileSize" | "description" | "section" | "uploadedById" | "spaceId" | "folderId" | "startupId" | "residentId" | "infrastructureId" | "createdAt" | "updatedAt", ExtArgs["result"]["document"]>
+export type DocumentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "fileName" | "originalName" | "fileUrl" | "storageKey" | "mimeType" | "fileSize" | "description" | "section" | "uploadedById" | "spaceId" | "folderId" | "startupId" | "residentId" | "infrastructureId" | "talentId" | "createdAt" | "updatedAt", ExtArgs["result"]["document"]>
 export type DocumentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   uploadedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   space?: boolean | Prisma.Document$spaceArgs<ExtArgs>
@@ -2037,6 +2301,7 @@ export type DocumentInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   startup?: boolean | Prisma.Document$startupArgs<ExtArgs>
   resident?: boolean | Prisma.Document$residentArgs<ExtArgs>
   infrastructure?: boolean | Prisma.Document$infrastructureArgs<ExtArgs>
+  talent?: boolean | Prisma.Document$talentArgs<ExtArgs>
   quarterReports?: boolean | Prisma.Document$quarterReportsArgs<ExtArgs>
   _count?: boolean | Prisma.DocumentCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -2047,6 +2312,7 @@ export type DocumentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   startup?: boolean | Prisma.Document$startupArgs<ExtArgs>
   resident?: boolean | Prisma.Document$residentArgs<ExtArgs>
   infrastructure?: boolean | Prisma.Document$infrastructureArgs<ExtArgs>
+  talent?: boolean | Prisma.Document$talentArgs<ExtArgs>
 }
 export type DocumentIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   uploadedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -2055,6 +2321,7 @@ export type DocumentIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   startup?: boolean | Prisma.Document$startupArgs<ExtArgs>
   resident?: boolean | Prisma.Document$residentArgs<ExtArgs>
   infrastructure?: boolean | Prisma.Document$infrastructureArgs<ExtArgs>
+  talent?: boolean | Prisma.Document$talentArgs<ExtArgs>
 }
 
 export type $DocumentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2066,6 +2333,7 @@ export type $DocumentPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     startup: Prisma.$StartupPayload<ExtArgs> | null
     resident: Prisma.$ResidentPayload<ExtArgs> | null
     infrastructure: Prisma.$InfrastructurePayload<ExtArgs> | null
+    talent: Prisma.$TalentPayload<ExtArgs> | null
     quarterReports: Prisma.$QuarterReportPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -2084,6 +2352,7 @@ export type $DocumentPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     startupId: string | null
     residentId: string | null
     infrastructureId: string | null
+    talentId: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["document"]>
@@ -2486,6 +2755,7 @@ export interface Prisma__DocumentClient<T, Null = never, ExtArgs extends runtime
   startup<T extends Prisma.Document$startupArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$startupArgs<ExtArgs>>): Prisma.Prisma__StartupClient<runtime.Types.Result.GetResult<Prisma.$StartupPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   resident<T extends Prisma.Document$residentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$residentArgs<ExtArgs>>): Prisma.Prisma__ResidentClient<runtime.Types.Result.GetResult<Prisma.$ResidentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   infrastructure<T extends Prisma.Document$infrastructureArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$infrastructureArgs<ExtArgs>>): Prisma.Prisma__InfrastructureClient<runtime.Types.Result.GetResult<Prisma.$InfrastructurePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  talent<T extends Prisma.Document$talentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$talentArgs<ExtArgs>>): Prisma.Prisma__TalentClient<runtime.Types.Result.GetResult<Prisma.$TalentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   quarterReports<T extends Prisma.Document$quarterReportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$quarterReportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$QuarterReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -2531,6 +2801,7 @@ export interface DocumentFieldRefs {
   readonly startupId: Prisma.FieldRef<"Document", 'String'>
   readonly residentId: Prisma.FieldRef<"Document", 'String'>
   readonly infrastructureId: Prisma.FieldRef<"Document", 'String'>
+  readonly talentId: Prisma.FieldRef<"Document", 'String'>
   readonly createdAt: Prisma.FieldRef<"Document", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Document", 'DateTime'>
 }
@@ -3026,6 +3297,25 @@ export type Document$infrastructureArgs<ExtArgs extends runtime.Types.Extensions
    */
   include?: Prisma.InfrastructureInclude<ExtArgs> | null
   where?: Prisma.InfrastructureWhereInput
+}
+
+/**
+ * Document.talent
+ */
+export type Document$talentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Talent
+   */
+  select?: Prisma.TalentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Talent
+   */
+  omit?: Prisma.TalentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TalentInclude<ExtArgs> | null
+  where?: Prisma.TalentWhereInput
 }
 
 /**

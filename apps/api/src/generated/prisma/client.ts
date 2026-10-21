@@ -75,6 +75,21 @@ export type StartupFunding = Prisma.StartupFundingModel
  */
 export type Resident = Prisma.ResidentModel
 /**
+ * Model Talent
+ * 
+ */
+export type Talent = Prisma.TalentModel
+/**
+ * Model TalentSkill
+ * 
+ */
+export type TalentSkill = Prisma.TalentSkillModel
+/**
+ * Model TalentLanguage
+ * 
+ */
+export type TalentLanguage = Prisma.TalentLanguageModel
+/**
  * Model QuarterReport
  * 
  */
