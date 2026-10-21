@@ -14,6 +14,7 @@ import {
   ArrowLeft,
   BriefcaseBusiness,
   CalendarRange,
+  ChevronDown,
   Download,
   FileText,
   Globe,
@@ -35,6 +36,8 @@ import {
 } from 'next/navigation';
 
 import AppShell from '@/components/app-shell';
+
+import ConfirmModal from '@/components/ui/confirm-modal';
 
 import TalentModal from '@/components/talents/talent-modal';
 
@@ -103,6 +106,18 @@ export default function TalentProfilePage() {
   const [
     editSaving,
     setEditSaving,
+  ] =
+    useState(false);
+
+  const [
+    deleteOpen,
+    setDeleteOpen,
+  ] =
+    useState(false);
+
+  const [
+    deleteSaving,
+    setDeleteSaving,
   ] =
     useState(false);
 
@@ -393,6 +408,51 @@ export default function TalentProfilePage() {
           },
         );
       }
+    }
+  }
+
+  async function deleteTalent() {
+    try {
+      setDeleteSaving(
+        true,
+      );
+
+      setError('');
+
+      await apiFetch(
+        `/talents/${id}`,
+        {
+          method:
+            'DELETE',
+        },
+      );
+
+      setDeleteOpen(
+        false,
+      );
+
+      router.push(
+        '/talents',
+      );
+
+      router.refresh();
+    } catch (err) {
+      if (
+        err instanceof
+        ApiError
+      ) {
+        setError(
+          err.message,
+        );
+      } else {
+        setError(
+          'Could not delete the talent.',
+        );
+      }
+    } finally {
+      setDeleteSaving(
+        false,
+      );
     }
   }
 
@@ -935,21 +995,39 @@ export default function TalentProfilePage() {
               )}
             </div>
 
-            <button
-              type="button"
-              onClick={() =>
-                setEditOpen(
-                  true,
-                )
-              }
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-200 px-3 text-sm font-medium text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
-            >
-              <Pencil
-                size={14}
-              />
+            <div className="flex shrink-0 items-center gap-2">
+              <button
+                type="button"
+                onClick={() =>
+                  setEditOpen(
+                    true,
+                  )
+                }
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-200 px-3 text-sm font-medium text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+              >
+                <Pencil
+                  size={14}
+                />
 
-              Edit
-            </button>
+                Edit
+              </button>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setDeleteOpen(
+                    true,
+                  )
+                }
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-red-200 px-3 text-sm font-medium text-red-600 transition hover:bg-red-50 dark:border-red-900/60 dark:text-red-400 dark:hover:bg-red-950/40"
+              >
+                <Trash2
+                  size={14}
+                />
+
+                Delete
+              </button>
+            </div>
           </div>
 
           <div className="grid gap-5 p-5 sm:grid-cols-2 sm:p-6 lg:grid-cols-4">
@@ -1084,43 +1162,49 @@ export default function TalentProfilePage() {
                 }
               />
 
-              <select
-                value={
-                  languageLevel
-                }
-                onChange={(
-                  event,
-                ) =>
-                  setLanguageLevel(
-                    event
-                      .target
-                      .value as LanguageLevel,
-                  )
-                }
-                className={
-                  inputClass
-                }
-              >
-                <option value="BASIC">
-                  Basic
-                </option>
+              <div className="relative">
+                <select
+                  value={
+                    languageLevel
+                  }
+                  onChange={(
+                    event,
+                  ) =>
+                    setLanguageLevel(
+                      event
+                        .target
+                        .value as LanguageLevel,
+                    )
+                  }
+                  className={`${inputClass} appearance-none pr-10`}
+                >
+                  <option value="BASIC">
+                    Basic
+                  </option>
 
-                <option value="INTERMEDIATE">
-                  Intermediate
-                </option>
+                  <option value="INTERMEDIATE">
+                    Intermediate
+                  </option>
 
-                <option value="ADVANCED">
-                  Advanced
-                </option>
+                  <option value="ADVANCED">
+                    Advanced
+                  </option>
 
-                <option value="FLUENT">
-                  Fluent
-                </option>
+                  <option value="FLUENT">
+                    Fluent
+                  </option>
 
-                <option value="NATIVE">
-                  Native
-                </option>
-              </select>
+                  <option value="NATIVE">
+                    Native
+                  </option>
+                </select>
+
+                <ChevronDown
+                  size={16}
+                  strokeWidth={1.8}
+                  className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
+                />
+              </div>
 
               <button
                 type="button"
@@ -1331,6 +1415,31 @@ export default function TalentProfilePage() {
           }
           onSubmit={
             saveTalent
+          }
+        />
+
+        <ConfirmModal
+          open={
+            deleteOpen
+          }
+          title="Delete talent?"
+          description={`This will permanently delete ${talent.fullName} from Talents. This action cannot be undone.`}
+          confirmText="Delete talent"
+          variant="delete"
+          loading={
+            deleteSaving
+          }
+          onClose={() => {
+            if (
+              !deleteSaving
+            ) {
+              setDeleteOpen(
+                false,
+              );
+            }
+          }}
+          onConfirm={() =>
+            void deleteTalent()
           }
         />
 
