@@ -38,6 +38,8 @@ async function bootstrap() {
         !origin ||
         origin ===
           'http://localhost:3000' ||
+        origin ===
+          'https://prorabotka.win' ||
         origin.endsWith(
           '.vercel.app',
         )
