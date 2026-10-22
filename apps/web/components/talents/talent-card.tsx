@@ -2,10 +2,17 @@
 
 import {
   ArrowUpRight,
-  BriefcaseBusiness,
+  Check,
+  Copy,
   Languages,
   MapPin,
+  Phone,
+  Send,
 } from 'lucide-react';
+
+import {
+  useState,
+} from 'react';
 
 import {
   useRouter,
@@ -26,6 +33,16 @@ export default function TalentCard({
 }) {
   const router =
     useRouter();
+
+  const [
+    copied,
+    setCopied,
+  ] =
+    useState<
+      | 'phone'
+      | 'telegram'
+      | null
+    >(null);
 
   const initials =
     talent.fullName
@@ -56,15 +73,70 @@ export default function TalentCard({
           )
       : null;
 
+  async function copyValue(
+    type:
+      | 'phone'
+      | 'telegram',
+
+    value: string,
+  ) {
+    try {
+      await navigator.clipboard.writeText(
+        value,
+      );
+
+      setCopied(
+        type,
+      );
+
+      window.setTimeout(
+        () => {
+          setCopied(
+            (
+              current,
+            ) =>
+              current ===
+              type
+                ? null
+                : current,
+          );
+        },
+        1200,
+      );
+    } catch {
+      setCopied(
+        null,
+      );
+    }
+  }
+
+  function openTalent() {
+    router.push(
+      `/talents/${talent.id}`,
+    );
+  }
+
   return (
-    <button
-      type="button"
-      onClick={() =>
-        router.push(
-          `/talents/${talent.id}`,
-        )
+    <article
+      role="button"
+      tabIndex={0}
+      onClick={
+        openTalent
       }
-      className="group flex min-h-[310px] min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white text-left shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md active:translate-y-0 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700"
+      onKeyDown={(
+        event,
+      ) => {
+        if (
+          event.key ===
+            'Enter' ||
+          event.key ===
+            ' '
+        ) {
+          event.preventDefault();
+          openTalent();
+        }
+      }}
+      className="group flex min-h-[310px] min-w-0 cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white text-left shadow-sm outline-none transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md focus-visible:ring-2 focus-visible:ring-slate-300 active:translate-y-0 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700 dark:focus-visible:ring-slate-700"
     >
       <div className="relative flex min-h-[150px] items-center justify-center border-b border-slate-100 bg-slate-50/70 p-5 dark:border-slate-800 dark:bg-slate-950/40">
         {photoSrc ? (
@@ -124,10 +196,20 @@ export default function TalentCard({
               }
             </h2>
 
-            <p className="mt-1 truncate text-xs text-slate-500 dark:text-slate-400">
-              {talent.position ||
-                'Position not added'}
-            </p>
+            {talent.location && (
+              <div className="mt-1.5 flex min-w-0 items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+                <MapPin
+                  size={12}
+                  className="shrink-0"
+                />
+
+                <span className="truncate">
+                  {
+                    talent.location
+                  }
+                </span>
+              </div>
+            )}
           </div>
 
           <ArrowUpRight
@@ -137,34 +219,50 @@ export default function TalentCard({
         </div>
 
         <div className="mt-4 space-y-2">
-          {talent.currentCompany && (
-            <div className="flex min-w-0 items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-              <BriefcaseBusiness
-                size={13}
-                className="shrink-0"
-              />
-
-              <span className="truncate">
-                {
-                  talent.currentCompany
-                }
-              </span>
-            </div>
+          {talent.phone && (
+            <CopyRow
+              icon={
+                <Phone
+                  size={13}
+                />
+              }
+              value={
+                talent.phone
+              }
+              copied={
+                copied ===
+                'phone'
+              }
+              onCopy={() =>
+                void copyValue(
+                  'phone',
+                  talent.phone!,
+                )
+              }
+            />
           )}
 
-          {talent.location && (
-            <div className="flex min-w-0 items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-              <MapPin
-                size={13}
-                className="shrink-0"
-              />
-
-              <span className="truncate">
-                {
-                  talent.location
-                }
-              </span>
-            </div>
+          {talent.telegram && (
+            <CopyRow
+              icon={
+                <Send
+                  size={13}
+                />
+              }
+              value={
+                talent.telegram
+              }
+              copied={
+                copied ===
+                'telegram'
+              }
+              onCopy={() =>
+                void copyValue(
+                  'telegram',
+                  talent.telegram!,
+                )
+              }
+            />
           )}
 
           {talent.languages.length >
@@ -204,18 +302,81 @@ export default function TalentCard({
               undefined && (
               <span className="text-[11px] text-slate-400 dark:text-slate-500">
                 {
-                  talent.experienceYears
-                }{' '}
-                {talent.experienceYears ===
-                1
-                  ? 'year'
-                  : 'years'}{' '}
-                experience
+                  talent.experienceYears ===
+                  0
+                    ? 'No experience'
+                    : `${talent.experienceYears} ${
+                        talent.experienceYears ===
+                        1
+                          ? 'year'
+                          : 'years'
+                      } experience`
+                }
               </span>
             )}
         </div>
       </div>
-    </button>
+    </article>
+  );
+}
+
+function CopyRow({
+  icon,
+  value,
+  copied,
+  onCopy,
+}: {
+  icon:
+    React.ReactNode;
+
+  value: string;
+
+  copied: boolean;
+
+  onCopy:
+    () => void;
+}) {
+  return (
+    <div className="flex min-w-0 items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+      <span className="shrink-0">
+        {icon}
+      </span>
+
+      <span className="min-w-0 flex-1 truncate">
+        {value}
+      </span>
+
+      <button
+        type="button"
+        onClick={(
+          event,
+        ) => {
+          event.stopPropagation();
+          onCopy();
+        }}
+        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+        title={
+          copied
+            ? 'Copied'
+            : 'Copy'
+        }
+        aria-label={
+          copied
+            ? 'Copied'
+            : `Copy ${value}`
+        }
+      >
+        {copied ? (
+          <Check
+            size={13}
+          />
+        ) : (
+          <Copy
+            size={13}
+          />
+        )}
+      </button>
+    </div>
   );
 }
 

@@ -12,21 +12,21 @@ import type {
 
 import {
   ArrowLeft,
-  BriefcaseBusiness,
   CalendarRange,
+  Check,
   ChevronDown,
+  Copy,
   Download,
   FileText,
-  Globe,
   ImagePlus,
   Mail,
   MapPin,
   Pencil,
   Phone,
   Plus,
+  Send,
   Trash2,
   Upload,
-  UserRound,
   X,
 } from 'lucide-react';
 
@@ -233,10 +233,6 @@ export default function TalentProfilePage() {
               fullName:
                 form.fullName,
 
-              position:
-                form.position ||
-                null,
-
               phone:
                 form.phone ||
                 null,
@@ -253,20 +249,8 @@ export default function TalentProfilePage() {
                 form.location ||
                 null,
 
-              currentCompany:
-                form.currentCompany ||
-                null,
-
               experienceYears:
                 form.experienceYears ||
-                null,
-
-              salaryExpectation:
-                form.salaryExpectation ||
-                null,
-
-              salaryCurrency:
-                form.salaryCurrency ||
                 null,
 
               status:
@@ -963,11 +947,6 @@ export default function TalentProfilePage() {
                 />
               </div>
 
-              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                {talent.position ||
-                  'Position not added'}
-              </p>
-
               {talent.languages.length >
                 0 && (
                 <div className="mt-4 flex flex-wrap gap-2">
@@ -1030,20 +1009,7 @@ export default function TalentProfilePage() {
             </div>
           </div>
 
-          <div className="grid gap-5 p-5 sm:grid-cols-2 sm:p-6 lg:grid-cols-4">
-            <InfoItem
-              icon={
-                <Mail
-                  size={16}
-                />
-              }
-              label="Email"
-              value={
-                talent.email ||
-                '—'
-              }
-            />
-
+          <div className="grid gap-5 p-5 sm:grid-cols-2 sm:p-6 lg:grid-cols-3">
             <InfoItem
               icon={
                 <Phone
@@ -1053,6 +1019,40 @@ export default function TalentProfilePage() {
               label="Phone"
               value={
                 talent.phone ||
+                '—'
+              }
+              copyValue={
+                talent.phone ||
+                undefined
+              }
+            />
+
+            <InfoItem
+              icon={
+                <Send
+                  size={16}
+                />
+              }
+              label="Telegram"
+              value={
+                talent.telegram ||
+                '—'
+              }
+              copyValue={
+                talent.telegram ||
+                undefined
+              }
+            />
+
+            <InfoItem
+              icon={
+                <Mail
+                  size={16}
+                />
+              }
+              label="Email"
+              value={
+                talent.email ||
                 '—'
               }
             />
@@ -1072,19 +1072,6 @@ export default function TalentProfilePage() {
 
             <InfoItem
               icon={
-                <BriefcaseBusiness
-                  size={16}
-                />
-              }
-              label="Company"
-              value={
-                talent.currentCompany ||
-                '—'
-              }
-            />
-
-            <InfoItem
-              icon={
                 <CalendarRange
                   size={16}
                 />
@@ -1095,39 +1082,15 @@ export default function TalentProfilePage() {
                   null &&
                 talent.experienceYears !==
                   undefined
-                  ? `${talent.experienceYears} years`
-                  : '—'
-              }
-            />
-
-            <InfoItem
-              icon={
-                <UserRound
-                  size={16}
-                />
-              }
-              label="Telegram"
-              value={
-                talent.telegram ||
-                '—'
-              }
-            />
-
-            <InfoItem
-              icon={
-                <Globe
-                  size={16}
-                />
-              }
-              label="Salary"
-              value={
-                talent.salaryExpectation
-                  ? `${Number(
-                      talent.salaryExpectation,
-                    ).toLocaleString()} ${
-                      talent.salaryCurrency ||
-                      ''
-                    }`
+                  ? talent.experienceYears ===
+                    0
+                    ? 'No experience'
+                    : `${talent.experienceYears} ${
+                        talent.experienceYears ===
+                        1
+                          ? 'year'
+                          : 'years'
+                      }`
                   : '—'
               }
             />
@@ -1615,6 +1578,7 @@ function InfoItem({
   icon,
   label,
   value,
+  copyValue,
 }: {
   icon:
     ReactNode;
@@ -1622,7 +1586,43 @@ function InfoItem({
   label: string;
 
   value: string;
+
+  copyValue?: string;
 }) {
+  const [
+    copied,
+    setCopied,
+  ] =
+    useState(false);
+
+  async function copy() {
+    if (!copyValue) {
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(
+        copyValue,
+      );
+
+      setCopied(
+        true,
+      );
+
+      window.setTimeout(
+        () =>
+          setCopied(
+            false,
+          ),
+        1200,
+      );
+    } catch {
+      setCopied(
+        false,
+      );
+    }
+  }
+
   return (
     <div className="min-w-0">
       <div className="flex items-center gap-2 text-xs text-slate-400">
@@ -1631,9 +1631,41 @@ function InfoItem({
         {label}
       </div>
 
-      <p className="mt-2 break-words text-sm font-medium text-slate-800 dark:text-slate-200">
-        {value}
-      </p>
+      <div className="mt-2 flex min-w-0 items-center gap-2">
+        <p className="min-w-0 flex-1 break-words text-sm font-medium text-slate-800 dark:text-slate-200">
+          {value}
+        </p>
+
+        {copyValue && (
+          <button
+            type="button"
+            onClick={() =>
+              void copy()
+            }
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+            title={
+              copied
+                ? 'Copied'
+                : 'Copy'
+            }
+            aria-label={
+              copied
+                ? 'Copied'
+                : `Copy ${label}`
+            }
+          >
+            {copied ? (
+              <Check
+                size={14}
+              />
+            ) : (
+              <Copy
+                size={14}
+              />
+            )}
+          </button>
+        )}
+      </div>
     </div>
   );
 }

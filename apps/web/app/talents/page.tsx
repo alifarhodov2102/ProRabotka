@@ -201,12 +201,10 @@ export default function TalentsPage() {
 
           const haystack = [
             talent.fullName,
-            talent.position,
             talent.phone,
             talent.email,
             talent.telegram,
             talent.location,
-            talent.currentCompany,
 
             ...talent.languages.map(
               (
@@ -501,7 +499,7 @@ export default function TalentsPage() {
                     .value,
                 )
               }
-              placeholder="Search by name, position, company, location or language..."
+              placeholder="Search by name, phone, Telegram, location or language..."
               className="h-11 w-full rounded-xl border border-slate-200 bg-white pl-10 pr-4 text-[16px] text-slate-800 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-100 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-slate-600 dark:focus:ring-slate-800 sm:text-sm"
             />
           </div>
@@ -735,10 +733,6 @@ function buildTalentPayload(
     fullName:
       form.fullName,
 
-    position:
-      form.position ||
-      null,
-
     phone:
       form.phone ||
       null,
@@ -755,20 +749,8 @@ function buildTalentPayload(
       form.location ||
       null,
 
-    currentCompany:
-      form.currentCompany ||
-      null,
-
     experienceYears:
       form.experienceYears ||
-      null,
-
-    salaryExpectation:
-      form.salaryExpectation ||
-      null,
-
-    salaryCurrency:
-      form.salaryCurrency ||
       null,
 
     status:

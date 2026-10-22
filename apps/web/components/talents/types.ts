@@ -85,19 +85,13 @@ export type Talent = {
 
 export type TalentFormValues = {
   fullName: string;
-  position: string;
 
   phone: string;
   email: string;
   telegram: string;
 
   location: string;
-  currentCompany: string;
-
   experienceYears: string;
-
-  salaryExpectation: string;
-  salaryCurrency: string;
 
   status: TalentStatus;
 

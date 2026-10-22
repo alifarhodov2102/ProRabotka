@@ -10,6 +10,7 @@ import type {
 } from 'react';
 
 import {
+  ChevronDown,
   X,
 } from 'lucide-react';
 
@@ -23,19 +24,13 @@ import {
 const emptyForm:
   TalentFormValues = {
   fullName: '',
-  position: '',
 
   phone: '',
   email: '',
   telegram: '',
 
   location: '',
-  currentCompany: '',
-
   experienceYears: '',
-
-  salaryExpectation: '',
-  salaryCurrency: 'USD',
 
   status: 'AVAILABLE',
 
@@ -97,10 +92,6 @@ export default function TalentModal({
         talent.fullName ||
         '',
 
-      position:
-        talent.position ||
-        '',
-
       phone:
         talent.phone ||
         '',
@@ -117,10 +108,6 @@ export default function TalentModal({
         talent.location ||
         '',
 
-      currentCompany:
-        talent.currentCompany ||
-        '',
-
       experienceYears:
         talent.experienceYears !==
           null &&
@@ -130,20 +117,6 @@ export default function TalentModal({
               talent.experienceYears,
             )
           : '',
-
-      salaryExpectation:
-        talent.salaryExpectation !==
-          null &&
-        talent.salaryExpectation !==
-          undefined
-          ? String(
-              talent.salaryExpectation,
-            )
-          : '',
-
-      salaryCurrency:
-        talent.salaryCurrency ||
-        'USD',
 
       status:
         talent.status,
@@ -174,6 +147,24 @@ export default function TalentModal({
     open,
     talent,
   ]);
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const previous =
+      document.body.style
+        .overflow;
+
+    document.body.style.overflow =
+      'hidden';
+
+    return () => {
+      document.body.style.overflow =
+        previous;
+    };
+  }, [open]);
 
   if (!open) {
     return null;
@@ -212,9 +203,9 @@ export default function TalentModal({
         aria-label="Close"
       />
 
-      <div className="relative z-10 flex max-h-[calc(100dvh-8px)] w-full max-w-2xl flex-col overflow-hidden rounded-t-2xl bg-white shadow-2xl dark:bg-slate-900 sm:max-h-[calc(100dvh-40px)] sm:rounded-2xl">
-        <div className="flex shrink-0 items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-800 sm:px-6 sm:py-5">
-          <div>
+      <div className="relative z-10 flex max-h-[calc(100dvh-8px)] w-full max-w-xl flex-col overflow-hidden rounded-t-2xl bg-white shadow-2xl dark:bg-slate-900 sm:max-h-[calc(100dvh-40px)] sm:rounded-2xl">
+        <div className="flex shrink-0 items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-800 sm:px-6">
+          <div className="min-w-0">
             <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
               {talent
                 ? 'Edit talent'
@@ -223,8 +214,8 @@ export default function TalentModal({
 
             <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
               {talent
-                ? 'Update candidate information.'
-                : 'Add a candidate to the internal talent pool.'}
+                ? 'Update the candidate details.'
+                : 'Add the key details now. You can upload documents later.'}
             </p>
           </div>
 
@@ -236,7 +227,7 @@ export default function TalentModal({
             onClick={
               onClose
             }
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 dark:hover:bg-slate-800"
             aria-label="Close"
           >
             <X
@@ -245,17 +236,14 @@ export default function TalentModal({
           </button>
         </div>
 
-        <div className="min-h-0 flex-1 space-y-6 overflow-y-auto p-5 sm:p-6">
-          <SectionTitle>
-            Basic information
-          </SectionTitle>
-
-          <div className="grid gap-4 sm:grid-cols-2">
+        <div className="min-h-0 flex-1 overflow-y-auto p-5 sm:p-6">
+          <div className="space-y-5">
             <Field
               label="Full name"
               required
             >
               <input
+                autoFocus
                 value={
                   form.fullName
                 }
@@ -276,337 +264,252 @@ export default function TalentModal({
               />
             </Field>
 
-            <Field label="Position">
-              <input
-                value={
-                  form.position
-                }
-                onChange={(
-                  event,
-                ) =>
-                  update(
-                    'position',
-                    event
-                      .target
-                      .value,
-                  )
-                }
-                placeholder="Frontend Developer"
-                className={
-                  inputClass
-                }
-              />
-            </Field>
-
-            <Field label="Location">
-              <input
-                value={
-                  form.location
-                }
-                onChange={(
-                  event,
-                ) =>
-                  update(
-                    'location',
-                    event
-                      .target
-                      .value,
-                  )
-                }
-                placeholder="Gulistan"
-                className={
-                  inputClass
-                }
-              />
-            </Field>
-
-            <Field label="Current company">
-              <input
-                value={
-                  form.currentCompany
-                }
-                onChange={(
-                  event,
-                ) =>
-                  update(
-                    'currentCompany',
-                    event
-                      .target
-                      .value,
-                  )
-                }
-                placeholder="Company name"
-                className={
-                  inputClass
-                }
-              />
-            </Field>
-
-            <Field label="Experience">
-              <div className="relative">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Phone">
                 <input
-                  inputMode="numeric"
+                  type="tel"
                   value={
-                    form.experienceYears
+                    form.phone
                   }
                   onChange={(
                     event,
                   ) =>
                     update(
-                      'experienceYears',
+                      'phone',
                       event
                         .target
                         .value,
                     )
                   }
-                  placeholder="3"
-                  className={`${inputClass} pr-16`}
+                  placeholder="+998..."
+                  className={
+                    inputClass
+                  }
+                />
+              </Field>
+
+              <Field label="Telegram">
+                <input
+                  value={
+                    form.telegram
+                  }
+                  onChange={(
+                    event,
+                  ) =>
+                    update(
+                      'telegram',
+                      event
+                        .target
+                        .value,
+                    )
+                  }
+                  placeholder="@username"
+                  className={
+                    inputClass
+                  }
+                />
+              </Field>
+
+              <Field label="Location">
+                <input
+                  value={
+                    form.location
+                  }
+                  onChange={(
+                    event,
+                  ) =>
+                    update(
+                      'location',
+                      event
+                        .target
+                        .value,
+                    )
+                  }
+                  placeholder="Gulistan"
+                  className={
+                    inputClass
+                  }
+                />
+              </Field>
+
+              <Field label="Experience">
+                <div className="relative">
+                  <input
+                    inputMode="numeric"
+                    min="0"
+                    max="100"
+                    value={
+                      form.experienceYears
+                    }
+                    onChange={(
+                      event,
+                    ) =>
+                      update(
+                        'experienceYears',
+                        event
+                          .target
+                          .value
+                          .replace(
+                            /\D/g,
+                            '',
+                          )
+                          .slice(
+                            0,
+                            2,
+                          ),
+                      )
+                    }
+                    placeholder="3"
+                    className={`${inputClass} pr-16`}
+                  />
+
+                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">
+                    years
+                  </span>
+                </div>
+              </Field>
+
+              <Field label="Email">
+                <input
+                  type="email"
+                  value={
+                    form.email
+                  }
+                  onChange={(
+                    event,
+                  ) =>
+                    update(
+                      'email',
+                      event
+                        .target
+                        .value,
+                    )
+                  }
+                  placeholder="name@email.com"
+                  className={
+                    inputClass
+                  }
+                />
+              </Field>
+
+              <Field label="Status">
+                <SelectWrap>
+                  <select
+                    value={
+                      form.status
+                    }
+                    onChange={(
+                      event,
+                    ) =>
+                      update(
+                        'status',
+                        event
+                          .target
+                          .value as TalentStatus,
+                      )
+                    }
+                    className={`${inputClass} appearance-none pr-10`}
+                  >
+                    <option value="AVAILABLE">
+                      Available
+                    </option>
+
+                    <option value="OPEN_TO_OFFERS">
+                      Open to offers
+                    </option>
+
+                    <option value="EMPLOYED">
+                      Employed
+                    </option>
+
+                    <option value="NOT_AVAILABLE">
+                      Not available
+                    </option>
+                  </select>
+                </SelectWrap>
+              </Field>
+            </div>
+
+            <div>
+              <div className="mb-3">
+                <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Languages
+                </p>
+
+                <p className="mt-0.5 text-xs text-slate-400 dark:text-slate-500">
+                  Leave a language empty if it is not needed.
+                </p>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-3">
+                <LanguageField
+                  label="English"
+                  value={
+                    form.englishLevel
+                  }
+                  onChange={(
+                    value,
+                  ) =>
+                    update(
+                      'englishLevel',
+                      value,
+                    )
+                  }
                 />
 
-                <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">
-                  years
-                </span>
+                <LanguageField
+                  label="Russian"
+                  value={
+                    form.russianLevel
+                  }
+                  onChange={(
+                    value,
+                  ) =>
+                    update(
+                      'russianLevel',
+                      value,
+                    )
+                  }
+                />
+
+                <LanguageField
+                  label="Uzbek"
+                  value={
+                    form.uzbekLevel
+                  }
+                  onChange={(
+                    value,
+                  ) =>
+                    update(
+                      'uzbekLevel',
+                      value,
+                    )
+                  }
+                />
               </div>
-            </Field>
+            </div>
 
-            <Field label="Status">
-              <select
+            <Field label="Notes">
+              <textarea
+                rows={3}
                 value={
-                  form.status
+                  form.notes
                 }
                 onChange={(
                   event,
                 ) =>
                   update(
-                    'status',
-                    event
-                      .target
-                      .value as TalentStatus,
-                  )
-                }
-                className={
-                  inputClass
-                }
-              >
-                <option value="AVAILABLE">
-                  Available
-                </option>
-
-                <option value="OPEN_TO_OFFERS">
-                  Open to offers
-                </option>
-
-                <option value="EMPLOYED">
-                  Employed
-                </option>
-
-                <option value="NOT_AVAILABLE">
-                  Not available
-                </option>
-              </select>
-            </Field>
-          </div>
-
-          <SectionTitle>
-            Contact
-          </SectionTitle>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Phone">
-              <input
-                value={
-                  form.phone
-                }
-                onChange={(
-                  event,
-                ) =>
-                  update(
-                    'phone',
+                    'notes',
                     event
                       .target
                       .value,
                   )
                 }
-                placeholder="+998..."
-                className={
-                  inputClass
-                }
-              />
-            </Field>
-
-            <Field label="Email">
-              <input
-                type="email"
-                value={
-                  form.email
-                }
-                onChange={(
-                  event,
-                ) =>
-                  update(
-                    'email',
-                    event
-                      .target
-                      .value,
-                  )
-                }
-                placeholder="name@email.com"
-                className={
-                  inputClass
-                }
-              />
-            </Field>
-
-            <Field label="Telegram">
-              <input
-                value={
-                  form.telegram
-                }
-                onChange={(
-                  event,
-                ) =>
-                  update(
-                    'telegram',
-                    event
-                      .target
-                      .value,
-                  )
-                }
-                placeholder="@username"
-                className={
-                  inputClass
-                }
+                placeholder="Optional note..."
+                className={`${inputClass} h-auto min-h-[90px] resize-none py-3`}
               />
             </Field>
           </div>
-
-          <SectionTitle>
-            Languages
-          </SectionTitle>
-
-          <div className="grid gap-4 sm:grid-cols-3">
-            <LanguageField
-              label="English"
-              value={
-                form.englishLevel
-              }
-              onChange={(
-                value,
-              ) =>
-                update(
-                  'englishLevel',
-                  value,
-                )
-              }
-            />
-
-            <LanguageField
-              label="Russian"
-              value={
-                form.russianLevel
-              }
-              onChange={(
-                value,
-              ) =>
-                update(
-                  'russianLevel',
-                  value,
-                )
-              }
-            />
-
-            <LanguageField
-              label="Uzbek"
-              value={
-                form.uzbekLevel
-              }
-              onChange={(
-                value,
-              ) =>
-                update(
-                  'uzbekLevel',
-                  value,
-                )
-              }
-            />
-          </div>
-
-          <SectionTitle>
-            Salary
-          </SectionTitle>
-
-          <div className="grid grid-cols-[1fr_120px] gap-3">
-            <Field label="Salary expectation">
-              <input
-                inputMode="decimal"
-                value={
-                  form.salaryExpectation
-                }
-                onChange={(
-                  event,
-                ) =>
-                  update(
-                    'salaryExpectation',
-                    event
-                      .target
-                      .value,
-                  )
-                }
-                placeholder="1500"
-                className={
-                  inputClass
-                }
-              />
-            </Field>
-
-            <Field label="Currency">
-              <input
-                value={
-                  form.salaryCurrency
-                }
-                onChange={(
-                  event,
-                ) =>
-                  update(
-                    'salaryCurrency',
-                    event
-                      .target
-                      .value
-                      .toUpperCase(),
-                  )
-                }
-                placeholder="USD"
-                className={
-                  inputClass
-                }
-              />
-            </Field>
-          </div>
-
-          <SectionTitle>
-            Notes
-          </SectionTitle>
-
-          <Field label="Internal notes">
-            <textarea
-              rows={4}
-              value={
-                form.notes
-              }
-              onChange={(
-                event,
-              ) =>
-                update(
-                  'notes',
-                  event
-                    .target
-                    .value,
-                )
-              }
-              placeholder="Additional information about the candidate..."
-              className={`${inputClass} h-auto min-h-[110px] resize-none py-3`}
-            />
-          </Field>
         </div>
 
         <div className="grid shrink-0 grid-cols-2 gap-2 border-t border-slate-100 bg-white p-4 pb-[max(16px,env(safe-area-inset-bottom))] dark:border-slate-800 dark:bg-slate-900 sm:flex sm:justify-end sm:px-6">
@@ -618,7 +521,7 @@ export default function TalentModal({
             onClick={
               onClose
             }
-            className="h-11 rounded-xl border border-slate-200 px-5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 sm:h-10 sm:rounded-lg"
+            className="h-11 rounded-xl border border-slate-200 px-5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 sm:h-10 sm:rounded-lg"
           >
             Cancel
           </button>
@@ -634,7 +537,7 @@ export default function TalentModal({
                 form,
               )
             }
-            className="h-11 rounded-xl bg-slate-900 px-5 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-50 dark:bg-slate-100 dark:text-slate-900 sm:h-10 sm:rounded-lg"
+            className="h-11 rounded-xl bg-slate-900 px-5 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white sm:h-10 sm:rounded-lg"
           >
             {saving
               ? 'Saving...'
@@ -677,15 +580,21 @@ function Field({
   );
 }
 
-function SectionTitle({
+function SelectWrap({
   children,
 }: {
   children:
     ReactNode;
 }) {
   return (
-    <div className="border-b border-slate-100 pb-2 text-xs font-semibold uppercase tracking-[0.08em] text-slate-400 dark:border-slate-800 dark:text-slate-500">
+    <div className="relative">
       {children}
+
+      <ChevronDown
+        size={16}
+        strokeWidth={1.8}
+        className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"
+      />
     </div>
   );
 }
@@ -713,49 +622,49 @@ function LanguageField({
         label
       }
     >
-      <select
-        value={
-          value
-        }
-        onChange={(
-          event,
-        ) =>
-          onChange(
-            event
-              .target
-              .value as
-              | ''
-              | LanguageLevel,
-          )
-        }
-        className={
-          inputClass
-        }
-      >
-        <option value="">
-          Not specified
-        </option>
+      <SelectWrap>
+        <select
+          value={
+            value
+          }
+          onChange={(
+            event,
+          ) =>
+            onChange(
+              event
+                .target
+                .value as
+                | ''
+                | LanguageLevel,
+            )
+          }
+          className={`${inputClass} appearance-none pr-10`}
+        >
+          <option value="">
+            —
+          </option>
 
-        <option value="BASIC">
-          Basic
-        </option>
+          <option value="BASIC">
+            Basic
+          </option>
 
-        <option value="INTERMEDIATE">
-          Intermediate
-        </option>
+          <option value="INTERMEDIATE">
+            Intermediate
+          </option>
 
-        <option value="ADVANCED">
-          Advanced
-        </option>
+          <option value="ADVANCED">
+            Advanced
+          </option>
 
-        <option value="FLUENT">
-          Fluent
-        </option>
+          <option value="FLUENT">
+            Fluent
+          </option>
 
-        <option value="NATIVE">
-          Native
-        </option>
-      </select>
+          <option value="NATIVE">
+            Native
+          </option>
+        </select>
+      </SelectWrap>
     </Field>
   );
 }
@@ -781,4 +690,4 @@ function findLanguage(
 }
 
 const inputClass =
-  'h-11 w-full min-w-0 rounded-xl border border-slate-200 bg-white px-3 text-[16px] text-slate-800 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-100 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-slate-500 dark:focus:ring-slate-800 sm:text-sm';
+  'h-11 w-full min-w-0 rounded-xl border border-slate-200 bg-white px-3 text-[16px] text-slate-800 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-slate-400 focus:ring-2 focus:ring-slate-100 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500 dark:hover:border-slate-600 dark:focus:border-slate-500 dark:focus:ring-slate-800 sm:text-sm';
