@@ -495,9 +495,6 @@ function MultiAssigneeSelect({
   const [open, setOpen] =
     useState(false);
 
-  const [openUpward, setOpenUpward] =
-    useState(false);
-
   const wrapperRef =
     useRef<HTMLDivElement | null>(
       null,
@@ -553,44 +550,6 @@ function MultiAssigneeSelect({
     };
   }, []);
 
-  function toggleDropdown() {
-    if (open) {
-      setOpen(false);
-      return;
-    }
-
-    const element =
-      wrapperRef.current;
-
-    if (element) {
-      const rect =
-        element.getBoundingClientRect();
-
-      const estimatedMenuHeight =
-        Math.min(
-          users.length * 56 + 16,
-          320,
-        );
-
-      const availableBelow =
-        window.innerHeight -
-        rect.bottom;
-
-      const availableAbove =
-        rect.top;
-
-      setOpenUpward(
-        availableBelow <
-          estimatedMenuHeight +
-            16 &&
-          availableAbove >
-            availableBelow,
-      );
-    }
-
-    setOpen(true);
-  }
-
   function toggleUser(
     userId: string,
   ) {
@@ -617,11 +576,16 @@ function MultiAssigneeSelect({
   return (
     <div
       ref={wrapperRef}
-      className="relative min-w-0 max-w-full"
+      className="min-w-0 max-w-full"
     >
       <button
         type="button"
-        onClick={toggleDropdown}
+        onClick={() =>
+          setOpen(
+            (current) =>
+              !current,
+          )
+        }
         className={[
           'flex min-h-12 w-full min-w-0 max-w-full items-center gap-2 overflow-hidden rounded-xl border bg-white px-3.5 py-2 text-left text-[16px] outline-none transition dark:bg-slate-950 sm:min-h-11 sm:text-sm',
           open
@@ -663,15 +627,8 @@ function MultiAssigneeSelect({
       </button>
 
       {open && (
-        <div
-          className={[
-            'absolute left-0 right-0 z-[200] max-w-full overflow-hidden rounded-xl border border-slate-200 bg-white p-1.5 shadow-2xl shadow-slate-900/15 dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/30',
-            openUpward
-              ? 'bottom-[calc(100%+6px)]'
-              : 'top-[calc(100%+6px)]',
-          ].join(' ')}
-        >
-          <div className="max-h-[min(320px,42dvh)] overflow-x-hidden overflow-y-auto overscroll-contain">
+        <div className="mt-2 overflow-hidden rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg shadow-slate-900/10 dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/20">
+          <div className="max-h-[280px] overflow-x-hidden overflow-y-auto overscroll-contain">
             {users.length === 0 ? (
               <div className="px-3 py-4 text-sm text-slate-400 dark:text-slate-500">
                 No team members available.
