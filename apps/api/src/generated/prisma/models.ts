@@ -10,6 +10,7 @@
  */
 export type * from './models/User.js'
 export type * from './models/Task.js'
+export type * from './models/TaskAssignee.js'
 export type * from './models/TaskComment.js'
 export type * from './models/TaskAttachment.js'
 export type * from './models/Startup.js'

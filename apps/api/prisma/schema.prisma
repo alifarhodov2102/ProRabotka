@@ -113,8 +113,8 @@ model User {
   approvalStatus UserApprovalStatus @default(APPROVED)
   isActive       Boolean            @default(true)
 
-  createdTasks  Task[] @relation("TaskCreator")
-  assignedTasks Task[] @relation("TaskAssignee")
+  createdTasks    Task[]         @relation("TaskCreator")
+  taskAssignments TaskAssignee[]
 
   documents    Document[]
   activities   ActivityLog[]
@@ -141,8 +141,7 @@ model Task {
   creatorId String
   creator   User   @relation("TaskCreator", fields: [creatorId], references: [id])
 
-  assigneeId String?
-  assignee   User?   @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  assignees TaskAssignee[]
 
   startupId String?
   startup   Startup? @relation(fields: [startupId], references: [id])
@@ -158,6 +157,19 @@ model Task {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model TaskAssignee {
+  taskId String
+  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  assignedAt DateTime @default(now())
+
+  @@id([taskId, userId])
+  @@index([userId])
 }
 
 model TaskComment {

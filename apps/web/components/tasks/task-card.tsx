@@ -40,7 +40,7 @@ export type TaskItem = {
 
   creator: TaskUser;
 
-  assignee?: TaskUser | null;
+  assignees: TaskUser[];
 
   startup?: {
     id: string;
@@ -141,9 +141,7 @@ export default function TaskCard({
             className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 active:scale-95 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-200"
           >
             <Pencil
-              size={
-                14
-              }
+              size={14}
             />
           </button>
 
@@ -163,70 +161,38 @@ export default function TaskCard({
             className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition hover:bg-red-50 hover:text-red-600 active:scale-95 dark:text-slate-500 dark:hover:bg-red-950/40 dark:hover:text-red-400"
           >
             <Trash2
-              size={
-                14
-              }
+              size={14}
             />
           </button>
         </div>
       </div>
 
       <h3 className="mt-2.5 break-words text-sm font-semibold leading-5 text-slate-900 dark:text-slate-100">
-        {
-          task.title
-        }
+        {task.title}
       </h3>
 
       {task.description && (
         <p className="mt-1.5 line-clamp-2 break-words text-xs leading-5 text-slate-500 dark:text-slate-400">
-          {
-            task.description
-          }
+          {task.description}
         </p>
       )}
 
       <TaskContext
-        task={
-          task
-        }
+        task={task}
       />
 
       <div className="mt-4 flex min-w-0 flex-col gap-3 border-t border-slate-100 pt-3 dark:border-slate-800 sm:flex-row sm:items-end sm:justify-between">
-        <div className="min-w-0">
-          {task.assignee ? (
-            <div className="flex min-w-0 items-center gap-2">
-              <Avatar
-                name={
-                  task.assignee
-                    .name
-                }
-              />
-
-              <div className="min-w-0">
-                <p className="truncate text-[11px] font-medium text-slate-700 dark:text-slate-200">
-                  {
-                    task.assignee
-                      .name
-                  }
-                </p>
-
-                {task.assignee
-                  .position && (
-                  <p className="truncate text-[10px] text-slate-400 dark:text-slate-500">
-                    {
-                      task.assignee
-                        .position
-                    }
-                  </p>
-                )}
-              </div>
-            </div>
+        <div className="min-w-0 flex-1">
+          {task.assignees.length > 0 ? (
+            <AssigneeSummary
+              assignees={
+                task.assignees
+              }
+            />
           ) : (
             <div className="flex items-center gap-1.5 text-[11px] text-slate-400 dark:text-slate-500">
               <UserRound
-                size={
-                  13
-                }
+                size={13}
               />
 
               Unassigned
@@ -240,15 +206,11 @@ export default function TaskCard({
             0) > 0 && (
             <div className="flex items-center gap-1 text-[10px] text-slate-400 dark:text-slate-500">
               <MessageSquare
-                size={
-                  12
-                }
+                size={12}
               />
 
-              {
-                task._count
-                  ?.comments
-              }
+              {task._count
+                ?.comments}
             </div>
           )}
 
@@ -265,6 +227,66 @@ export default function TaskCard({
         </div>
       </div>
     </article>
+  );
+}
+
+function AssigneeSummary({
+  assignees,
+}: {
+  assignees: TaskUser[];
+}) {
+  const visible =
+    assignees.slice(
+      0,
+      3,
+    );
+
+  const remaining =
+    assignees.length -
+    visible.length;
+
+  return (
+    <div className="flex min-w-0 items-center gap-2.5">
+      <div className="flex shrink-0 items-center -space-x-2">
+        {visible.map(
+          (assignee) => (
+            <Avatar
+              key={
+                assignee.id
+              }
+              name={
+                assignee.name
+              }
+            />
+          ),
+        )}
+
+        {remaining > 0 && (
+          <div className="relative z-10 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 border-white bg-slate-200 text-[9px] font-semibold text-slate-600 dark:border-slate-950 dark:bg-slate-700 dark:text-slate-200">
+            +{remaining}
+          </div>
+        )}
+      </div>
+
+      <div className="min-w-0">
+        <p className="truncate text-[11px] font-medium text-slate-700 dark:text-slate-200">
+          {assignees.length === 1
+            ? assignees[0].name
+            : `${assignees.length} assignees`}
+        </p>
+
+        {assignees.length === 1 &&
+          assignees[0]
+            .position && (
+            <p className="truncate text-[10px] text-slate-400 dark:text-slate-500">
+              {
+                assignees[0]
+                  .position
+              }
+            </p>
+          )}
+      </div>
+    </div>
   );
 }
 
@@ -304,11 +326,9 @@ function PriorityBadge({
         ],
       ].join(' ')}
     >
-      {
-        labels[
-          priority
-        ]
-      }
+      {labels[
+        priority
+      ]}
     </span>
   );
 }
@@ -367,11 +387,9 @@ function Avatar({
       .join('');
 
   return (
-    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-900 text-[9px] font-semibold text-white dark:bg-slate-700">
-      {
-        initials ||
-        '?'
-      }
+    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 border-white bg-slate-900 text-[9px] font-semibold text-white dark:border-slate-950 dark:bg-slate-700">
+      {initials ||
+        '?'}
     </div>
   );
 }
@@ -410,9 +428,7 @@ function DueDate({
       ].join(' ')}
     >
       <CalendarDays
-        size={
-          12
-        }
+        size={12}
       />
 
       {date.toLocaleDateString(

@@ -58,7 +58,7 @@ type StoredUser = {
 const emptyForm: TaskFormValue = {
   title: '',
   description: '',
-  assigneeId: '',
+  assigneeIds: [],
   priority: 'MEDIUM',
   status: 'TODO',
   dueDate: '',
@@ -311,9 +311,11 @@ export default function DashboardPage() {
       ) {
         return tasks.filter(
           (task) =>
-            task.assignee
-              ?.id ===
-            currentUserId,
+            task.assignees.some(
+              (assignee) =>
+                assignee.id ===
+                currentUserId,
+            ),
         );
       }
 
@@ -336,9 +338,11 @@ export default function DashboardPage() {
           const matchesUser =
             assigneeFilter ===
               'ALL' ||
-            task.assignee
-              ?.id ===
-              assigneeFilter;
+            task.assignees.some(
+              (assignee) =>
+                assignee.id ===
+                assigneeFilter,
+            );
 
           if (
             !matchesUser
@@ -353,8 +357,10 @@ export default function DashboardPage() {
           return [
             task.title,
             task.description,
-            task.assignee
-              ?.name,
+            ...task.assignees.map(
+              (assignee) =>
+                assignee.name,
+            ),
             task.creator
               ?.name,
             task.resident
@@ -464,12 +470,12 @@ export default function DashboardPage() {
       ...emptyForm,
       status,
 
-      assigneeId:
+      assigneeIds:
         taskScope ===
           'MINE' &&
         currentUserId
-          ? currentUserId
-          : '',
+          ? [currentUserId]
+          : [],
     });
 
     setModalOpen(
@@ -522,10 +528,11 @@ export default function DashboardPage() {
         task.description ||
         '',
 
-      assigneeId:
-        task.assignee
-          ?.id ||
-        '',
+      assigneeIds:
+        task.assignees.map(
+          (assignee) =>
+            assignee.id,
+        ),
 
       priority:
         task.priority,
@@ -589,9 +596,8 @@ export default function DashboardPage() {
           form.description.trim() ||
           undefined,
 
-        assigneeId:
-          form.assigneeId ||
-          null,
+        assigneeIds:
+          form.assigneeIds,
 
         priority:
           form.priority,

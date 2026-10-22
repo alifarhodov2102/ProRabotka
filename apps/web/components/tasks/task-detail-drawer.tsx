@@ -356,22 +356,9 @@ export default function TaskDetailDrawer({
                 </section>
 
                 <section className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <InfoCard
-                    icon={
-                      <UserRound
-                        size={16}
-                      />
-                    }
-                    label="Assigned to"
-                    value={
-                      task.assignee
-                        ?.name ||
-                      'Unassigned'
-                    }
-                    secondary={
-                      task.assignee
-                        ?.position ||
-                      undefined
+                  <AssigneesInfoCard
+                    assignees={
+                      task.assignees
                     }
                   />
 
@@ -601,6 +588,59 @@ export default function TaskDetailDrawer({
           </>
         )}
       </aside>
+    </div>
+  );
+}
+
+function AssigneesInfoCard({
+  assignees,
+}: {
+  assignees: TaskUser[];
+}) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 dark:border-slate-800 dark:bg-slate-950/50">
+      <div className="flex items-center gap-2 text-slate-400 dark:text-slate-500">
+        <UserRound
+          size={16}
+        />
+
+        <span className="text-[11px] font-medium">
+          Assigned to
+        </span>
+      </div>
+
+      {assignees.length === 0 ? (
+        <p className="mt-2 text-sm font-medium text-slate-800 dark:text-slate-200">
+          Unassigned
+        </p>
+      ) : (
+        <div className="mt-3 space-y-2">
+          {assignees.map(
+            (assignee) => (
+              <div
+                key={assignee.id}
+                className="flex min-w-0 items-center gap-2.5"
+              >
+                <Avatar
+                  name={assignee.name}
+                />
+
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-200">
+                    {assignee.name}
+                  </p>
+
+                  {assignee.position && (
+                    <p className="mt-0.5 truncate text-[11px] text-slate-400 dark:text-slate-500">
+                      {assignee.position}
+                    </p>
+                  )}
+                </div>
+              </div>
+            ),
+          )}
+        </div>
+      )}
     </div>
   );
 }

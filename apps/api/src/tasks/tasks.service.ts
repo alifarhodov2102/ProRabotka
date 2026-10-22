@@ -25,7 +25,7 @@ type CreateTaskInput = {
   priority?: TaskPriority;
 
   dueDate?: string | null;
-  assigneeId?: string | null;
+  assigneeIds?: string[];
 
   startupId?: string | null;
   residentId?: string | null;
@@ -35,137 +35,122 @@ type CreateTaskInput = {
 type UpdateTaskInput =
   Partial<CreateTaskInput>;
 
+const userSelect = {
+  id: true,
+  name: true,
+  email: true,
+  position: true,
+};
+
+const listInclude = {
+  creator: {
+    select: userSelect,
+  },
+
+  assignees: {
+    include: {
+      user: {
+        select: userSelect,
+      },
+    },
+
+    orderBy: {
+      assignedAt: 'asc' as const,
+    },
+  },
+
+  startup: {
+    select: {
+      id: true,
+      name: true,
+    },
+  },
+
+  resident: {
+    select: {
+      id: true,
+      companyName: true,
+    },
+  },
+
+  infrastructure: {
+    select: {
+      id: true,
+      name: true,
+    },
+  },
+
+  _count: {
+    select: {
+      comments: true,
+      attachments: true,
+    },
+  },
+};
+
 @Injectable()
 export class TasksService {
   constructor(
     private readonly prisma: PrismaService,
   ) {}
 
-  findAll() {
-    return this.prisma.task.findMany({
-      include: {
-        creator: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            position: true,
-          },
-        },
+  async findAll() {
+    const tasks =
+      await this.prisma.task.findMany({
+        include: listInclude,
 
-        assignee: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            position: true,
-          },
-        },
-
-        startup: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-
-        resident: {
-          select: {
-            id: true,
-            companyName: true,
-          },
-        },
-
-        infrastructure: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-
-        _count: {
-          select: {
-            comments: true,
-            attachments: true,
-          },
-        },
-      },
-
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
-  }
-
-  findMyTasks(userId: string) {
-    return this.prisma.task.findMany({
-      where: {
-        assigneeId: userId,
-      },
-
-      include: {
-        creator: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            position: true,
-          },
-        },
-
-        assignee: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            position: true,
-          },
-        },
-
-        startup: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-
-        resident: {
-          select: {
-            id: true,
-            companyName: true,
-          },
-        },
-
-        infrastructure: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-
-        _count: {
-          select: {
-            comments: true,
-            attachments: true,
-          },
-        },
-      },
-
-      orderBy: [
-        {
-          status: 'asc',
-        },
-        {
-          dueDate: 'asc',
-        },
-        {
+        orderBy: {
           createdAt: 'desc',
         },
-      ],
-    });
+      });
+
+    return tasks.map(
+      (task) =>
+        this.normalizeTask(
+          task,
+        ),
+    );
   }
 
-  async findOne(id: string) {
+  async findMyTasks(
+    userId: string,
+  ) {
+    const tasks =
+      await this.prisma.task.findMany({
+        where: {
+          assignees: {
+            some: {
+              userId,
+            },
+          },
+        },
+
+        include: listInclude,
+
+        orderBy: [
+          {
+            status: 'asc',
+          },
+          {
+            dueDate: 'asc',
+          },
+          {
+            createdAt: 'desc',
+          },
+        ],
+      });
+
+    return tasks.map(
+      (task) =>
+        this.normalizeTask(
+          task,
+        ),
+    );
+  }
+
+  async findOne(
+    id: string,
+  ) {
     const task =
       await this.prisma.task.findUnique({
         where: {
@@ -174,20 +159,18 @@ export class TasksService {
 
         include: {
           creator: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              position: true,
-            },
+            select: userSelect,
           },
 
-          assignee: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              position: true,
+          assignees: {
+            include: {
+              user: {
+                select: userSelect,
+              },
+            },
+
+            orderBy: {
+              assignedAt: 'asc',
             },
           },
 
@@ -198,12 +181,7 @@ export class TasksService {
           comments: {
             include: {
               user: {
-                select: {
-                  id: true,
-                  name: true,
-                  email: true,
-                  position: true,
-                },
+                select: userSelect,
               },
             },
 
@@ -235,12 +213,7 @@ export class TasksService {
 
         include: {
           user: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              position: true,
-            },
+            select: userSelect,
           },
         },
 
@@ -250,7 +223,9 @@ export class TasksService {
       });
 
     return {
-      ...task,
+      ...this.normalizeTask(
+        task,
+      ),
       activities,
     };
   }
@@ -265,8 +240,13 @@ export class TasksService {
       );
     }
 
-    await this.validateAssignee(
-      data.assigneeId,
+    const assigneeIds =
+      this.uniqueIds(
+        data.assigneeIds,
+      );
+
+    await this.validateAssignees(
+      assigneeIds,
     );
 
     const status =
@@ -302,9 +282,17 @@ export class TasksService {
 
           creatorId,
 
-          assigneeId:
-            data.assigneeId ||
-            null,
+          assignees:
+            assigneeIds.length > 0
+              ? {
+                  create:
+                    assigneeIds.map(
+                      (userId) => ({
+                        userId,
+                      }),
+                    ),
+                }
+              : undefined,
 
           startupId:
             data.startupId ||
@@ -319,25 +307,7 @@ export class TasksService {
             null,
         },
 
-        include: {
-          creator: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              position: true,
-            },
-          },
-
-          assignee: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              position: true,
-            },
-          },
-        },
+        include: listInclude,
       });
 
     await this.createActivity({
@@ -348,7 +318,9 @@ export class TasksService {
         'created this task',
     });
 
-    return task;
+    return this.normalizeTask(
+      task,
+    );
   }
 
   async update(
@@ -363,10 +335,14 @@ export class TasksService {
         },
 
         include: {
-          assignee: {
-            select: {
-              id: true,
-              name: true,
+          assignees: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
             },
           },
         },
@@ -387,32 +363,21 @@ export class TasksService {
       );
     }
 
-    await this.validateAssignee(
-      data.assigneeId,
-    );
-
-    let newAssigneeName:
-      | string
-      | null = null;
+    const nextAssigneeIds =
+      data.assigneeIds !==
+      undefined
+        ? this.uniqueIds(
+            data.assigneeIds,
+          )
+        : undefined;
 
     if (
-      data.assigneeId !== undefined &&
-      data.assigneeId
+      nextAssigneeIds !==
+      undefined
     ) {
-      const newAssignee =
-        await this.prisma.user.findUnique({
-          where: {
-            id: data.assigneeId,
-          },
-
-          select: {
-            name: true,
-          },
-        });
-
-      newAssigneeName =
-        newAssignee?.name ||
-        null;
+      await this.validateAssignees(
+        nextAssigneeIds,
+      );
     }
 
     const nextStatus =
@@ -468,11 +433,18 @@ export class TasksService {
                 : null,
           }),
 
-          ...(data.assigneeId !==
+          ...(nextAssigneeIds !==
             undefined && {
-            assigneeId:
-              data.assigneeId ||
-              null,
+            assignees: {
+              deleteMany: {},
+              create:
+                nextAssigneeIds.map(
+                  (assigneeId) => ({
+                    userId:
+                      assigneeId,
+                  }),
+                ),
+            },
           }),
 
           ...(data.startupId !==
@@ -497,53 +469,7 @@ export class TasksService {
           }),
         },
 
-        include: {
-          creator: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              position: true,
-            },
-          },
-
-          assignee: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              position: true,
-            },
-          },
-
-          startup: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
-
-          resident: {
-            select: {
-              id: true,
-              companyName: true,
-            },
-          },
-
-          infrastructure: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
-
-          _count: {
-            select: {
-              comments: true,
-              attachments: true,
-            },
-          },
-        },
+        include: listInclude,
       });
 
     const activities: {
@@ -570,27 +496,51 @@ export class TasksService {
     }
 
     if (
-      data.assigneeId !==
-        undefined &&
-      data.assigneeId !==
-        existing.assigneeId
+      nextAssigneeIds !==
+      undefined
     ) {
-      const previousName =
-        existing.assignee
-          ?.name ||
-        'Unassigned';
+      const previousIds =
+        existing.assignees
+          .map(
+            (item) =>
+              item.userId,
+          )
+          .sort();
 
-      const nextName =
-        newAssigneeName ||
-        'Unassigned';
+      const nextIds = [
+        ...nextAssigneeIds,
+      ].sort();
 
-      activities.push({
-        action:
-          'ASSIGNEE_CHANGED',
+      if (
+        previousIds.join(',') !==
+        nextIds.join(',')
+      ) {
+        const previousNames =
+          existing.assignees
+            .map(
+              (item) =>
+                item.user.name,
+            )
+            .join(', ') ||
+          'Unassigned';
 
-        description:
-          `changed assignee from ${previousName} to ${nextName}`,
-      });
+        const nextNames =
+          updated.assignees
+            .map(
+              (item) =>
+                item.user.name,
+            )
+            .join(', ') ||
+          'Unassigned';
+
+        activities.push({
+          action:
+            'ASSIGNEES_CHANGED',
+
+          description:
+            `changed assignees from ${previousNames} to ${nextNames}`,
+        });
+      }
     }
 
     if (
@@ -702,7 +652,9 @@ export class TasksService {
       });
     }
 
-    return updated;
+    return this.normalizeTask(
+      updated,
+    );
   }
 
   async addComment(
@@ -746,12 +698,7 @@ export class TasksService {
 
         include: {
           user: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              position: true,
-            },
+            select: userSelect,
           },
         },
       });
@@ -810,7 +757,9 @@ export class TasksService {
     };
   }
 
-  async remove(id: string) {
+  async remove(
+    id: string,
+  ) {
     const task =
       await this.prisma.task.findUnique({
         where: {
@@ -844,33 +793,75 @@ export class TasksService {
     };
   }
 
-  private async validateAssignee(
-    assigneeId?:
-      | string
-      | null,
+  private normalizeTask(
+    task: any,
   ) {
-    if (!assigneeId) {
+    const {
+      assignees,
+      ...rest
+    } = task;
+
+    return {
+      ...rest,
+      assignees:
+        Array.isArray(
+          assignees,
+        )
+          ? assignees.map(
+              (item: any) =>
+                item.user,
+            )
+          : [],
+    };
+  }
+
+  private uniqueIds(
+    ids?: string[],
+  ) {
+    return [
+      ...new Set(
+        (ids || [])
+          .map(
+            (id) =>
+              id?.trim(),
+          )
+          .filter(
+            Boolean,
+          ) as string[],
+      ),
+    ];
+  }
+
+  private async validateAssignees(
+    assigneeIds: string[],
+  ) {
+    if (
+      assigneeIds.length === 0
+    ) {
       return;
     }
 
-    const user =
-      await this.prisma.user.findUnique({
+    const users =
+      await this.prisma.user.findMany({
         where: {
-          id: assigneeId,
+          id: {
+            in: assigneeIds,
+          },
+
+          isActive: true,
         },
 
         select: {
           id: true,
-          isActive: true,
         },
       });
 
     if (
-      !user ||
-      !user.isActive
+      users.length !==
+      assigneeIds.length
     ) {
       throw new BadRequestException(
-        'Selected user is not available',
+        'One or more selected users are not available',
       );
     }
   }

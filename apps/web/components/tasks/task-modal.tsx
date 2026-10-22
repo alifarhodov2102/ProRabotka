@@ -22,7 +22,7 @@ export type TaskFormValue = {
   title: string;
   description: string;
 
-  assigneeId: string;
+  assigneeIds: string[];
 
   priority:
     | 'LOW'
@@ -177,24 +177,6 @@ export default function TaskModal({
     });
   }
 
-  const assigneeOptions:
-    SelectOption[] = [
-    {
-      value: '',
-      label: 'Unassigned',
-    },
-
-    ...users.map(
-      (user) => ({
-        value: user.id,
-        label: user.name,
-        secondary:
-          user.position ||
-          undefined,
-      }),
-    ),
-  ];
-
   const priorityOptions:
     SelectOption[] = [
     {
@@ -299,8 +281,8 @@ export default function TaskModal({
             </h2>
 
             <p className="mt-1 max-w-full text-sm leading-5 text-slate-500 dark:text-slate-400">
-              Assign work to a team
-              member and track its
+              Assign work to one or more team
+              members and track its
               progress.
             </p>
           </div>
@@ -375,19 +357,16 @@ export default function TaskModal({
                   Assign to
                 </label>
 
-                <CustomSelect
+                <MultiAssigneeSelect
                   value={
-                    value.assigneeId
+                    value.assigneeIds
                   }
-                  options={
-                    assigneeOptions
-                  }
-                  placeholder="Unassigned"
+                  users={users}
                   onChange={(
                     next,
                   ) =>
                     update(
-                      'assigneeId',
+                      'assigneeIds',
                       next,
                     )
                   }
@@ -498,6 +477,283 @@ export default function TaskModal({
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function MultiAssigneeSelect({
+  value,
+  users,
+  onChange,
+}: {
+  value: string[];
+  users: TaskUser[];
+  onChange: (
+    value: string[],
+  ) => void;
+}) {
+  const [open, setOpen] =
+    useState(false);
+
+  const [openUpward, setOpenUpward] =
+    useState(false);
+
+  const wrapperRef =
+    useRef<HTMLDivElement | null>(
+      null,
+    );
+
+  const selectedUsers =
+    users.filter(
+      (user) =>
+        value.includes(
+          user.id,
+        ),
+    );
+
+  useEffect(() => {
+    function handleOutsideClick(
+      event:
+        MouseEvent |
+        TouchEvent,
+    ) {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(
+          event.target as Node,
+        )
+      ) {
+        setOpen(false);
+      }
+    }
+
+    document.addEventListener(
+      'mousedown',
+      handleOutsideClick,
+    );
+
+    document.addEventListener(
+      'touchstart',
+      handleOutsideClick,
+      {
+        passive: true,
+      },
+    );
+
+    return () => {
+      document.removeEventListener(
+        'mousedown',
+        handleOutsideClick,
+      );
+
+      document.removeEventListener(
+        'touchstart',
+        handleOutsideClick,
+      );
+    };
+  }, []);
+
+  function toggleDropdown() {
+    if (open) {
+      setOpen(false);
+      return;
+    }
+
+    const element =
+      wrapperRef.current;
+
+    if (element) {
+      const rect =
+        element.getBoundingClientRect();
+
+      const estimatedMenuHeight =
+        Math.min(
+          users.length * 56 + 16,
+          320,
+        );
+
+      const availableBelow =
+        window.innerHeight -
+        rect.bottom;
+
+      const availableAbove =
+        rect.top;
+
+      setOpenUpward(
+        availableBelow <
+          estimatedMenuHeight +
+            16 &&
+          availableAbove >
+            availableBelow,
+      );
+    }
+
+    setOpen(true);
+  }
+
+  function toggleUser(
+    userId: string,
+  ) {
+    if (
+      value.includes(
+        userId,
+      )
+    ) {
+      onChange(
+        value.filter(
+          (id) =>
+            id !== userId,
+        ),
+      );
+      return;
+    }
+
+    onChange([
+      ...value,
+      userId,
+    ]);
+  }
+
+  return (
+    <div
+      ref={wrapperRef}
+      className="relative min-w-0 max-w-full"
+    >
+      <button
+        type="button"
+        onClick={toggleDropdown}
+        className={[
+          'flex min-h-12 w-full min-w-0 max-w-full items-center gap-2 overflow-hidden rounded-xl border bg-white px-3.5 py-2 text-left text-[16px] outline-none transition dark:bg-slate-950 sm:min-h-11 sm:text-sm',
+          open
+            ? 'border-slate-400 ring-2 ring-slate-100 dark:border-slate-500 dark:ring-slate-800'
+            : 'border-slate-200 hover:border-slate-300 dark:border-slate-700 dark:hover:border-slate-600',
+        ].join(' ')}
+      >
+        <div className="flex min-w-0 flex-1 flex-wrap gap-1.5">
+          {selectedUsers.length === 0 ? (
+            <span className="text-slate-400 dark:text-slate-500">
+              Unassigned
+            </span>
+          ) : (
+            selectedUsers.map(
+              (user) => (
+                <span
+                  key={user.id}
+                  className="inline-flex max-w-full items-center rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                >
+                  <span className="max-w-[140px] truncate">
+                    {user.name}
+                  </span>
+                </span>
+              ),
+            )
+          )}
+        </div>
+
+        <ChevronDown
+          size={16}
+          strokeWidth={1.8}
+          className={[
+            'ml-auto shrink-0 text-slate-400 transition-transform duration-150 dark:text-slate-500',
+            open
+              ? 'rotate-180'
+              : '',
+          ].join(' ')}
+        />
+      </button>
+
+      {open && (
+        <div
+          className={[
+            'absolute left-0 right-0 z-[200] max-w-full overflow-hidden rounded-xl border border-slate-200 bg-white p-1.5 shadow-2xl shadow-slate-900/15 dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/30',
+            openUpward
+              ? 'bottom-[calc(100%+6px)]'
+              : 'top-[calc(100%+6px)]',
+          ].join(' ')}
+        >
+          <div className="max-h-[min(320px,42dvh)] overflow-x-hidden overflow-y-auto overscroll-contain">
+            {users.length === 0 ? (
+              <div className="px-3 py-4 text-sm text-slate-400 dark:text-slate-500">
+                No team members available.
+              </div>
+            ) : (
+              users.map(
+                (user) => {
+                  const active =
+                    value.includes(
+                      user.id,
+                    );
+
+                  return (
+                    <button
+                      key={user.id}
+                      type="button"
+                      onClick={() =>
+                        toggleUser(
+                          user.id,
+                        )
+                      }
+                      className={[
+                        'flex min-h-11 w-full min-w-0 items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-left transition',
+                        active
+                          ? 'bg-slate-100 dark:bg-slate-800'
+                          : 'hover:bg-slate-50 active:bg-slate-100 dark:hover:bg-slate-800/70 dark:active:bg-slate-800',
+                      ].join(' ')}
+                    >
+                      <div className="min-w-0 flex-1">
+                        <p
+                          className={[
+                            'truncate text-sm',
+                            active
+                              ? 'font-medium text-slate-900 dark:text-slate-100'
+                              : 'text-slate-700 dark:text-slate-300',
+                          ].join(' ')}
+                        >
+                          {user.name}
+                        </p>
+
+                        {user.position && (
+                          <p className="mt-0.5 truncate text-[11px] text-slate-400 dark:text-slate-500">
+                            {user.position}
+                          </p>
+                        )}
+                      </div>
+
+                      <span
+                        className={[
+                          'flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition',
+                          active
+                            ? 'border-slate-900 bg-slate-900 text-white dark:border-slate-100 dark:bg-slate-100 dark:text-slate-900'
+                            : 'border-slate-300 text-transparent dark:border-slate-600',
+                        ].join(' ')}
+                      >
+                        <Check
+                          size={13}
+                          strokeWidth={2.2}
+                        />
+                      </span>
+                    </button>
+                  );
+                },
+              )
+            )}
+          </div>
+
+          {value.length > 0 && (
+            <div className="border-t border-slate-100 p-1.5 pb-0 dark:border-slate-800">
+              <button
+                type="button"
+                onClick={() =>
+                  onChange([])
+                }
+                className="w-full rounded-lg px-3 py-2 text-left text-xs font-medium text-slate-500 transition hover:bg-slate-50 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+              >
+                Clear all
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
