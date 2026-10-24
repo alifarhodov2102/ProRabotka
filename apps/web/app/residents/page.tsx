@@ -22,6 +22,10 @@ import ResidentTable, {
 
 import ResidentExcelView from '@/components/residents/resident-excel-view';
 
+import BecomingResidentsTable, {
+  type ResidentApplication,
+} from '@/components/residents/becoming-residents-table';
+
 import ResidentModal from '@/components/residents/resident-modal';
 
 import QuarterlyReports from '@/components/residents/quarterly-reports';
@@ -59,6 +63,7 @@ export default function ResidentsPage() {
   ] = useState<
     | 'overview'
     | 'list'
+    | 'becoming'
     | 'excel'
     | 'reports'
     | 'spaces'
@@ -73,82 +78,121 @@ export default function ResidentsPage() {
     );
 
   const [
+    applications,
+    setApplications,
+  ] =
+    useState<
+      ResidentApplication[]
+    >(
+      [],
+    );
+
+  const [
     search,
     setSearch,
-  ] = useState('');
+  ] =
+    useState('');
+
+  const [
+    applicationSearch,
+    setApplicationSearch,
+  ] =
+    useState('');
 
   const [
     loading,
     setLoading,
-  ] = useState(true);
+  ] =
+    useState(true);
 
   const [
     error,
     setError,
-  ] = useState('');
+  ] =
+    useState('');
 
   const [
     modalOpen,
     setModalOpen,
-  ] = useState(false);
+  ] =
+    useState(false);
 
   const [
     saving,
     setSaving,
-  ] = useState(false);
+  ] =
+    useState(false);
 
   const [
     exporting,
     setExporting,
-  ] = useState(false);
+  ] =
+    useState(false);
 
   const [
     editingId,
     setEditingId,
-  ] = useState<
-    string | null
-  >(null);
+  ] =
+    useState<
+      string | null
+    >(null);
 
   const [
     form,
     setForm,
-  ] = useState(
-    emptyForm,
-  );
+  ] =
+    useState(
+      emptyForm,
+    );
 
   const [
-    confirmAction,
-    setConfirmAction,
-  ] = useState<{
-    type:
-      | 'archive'
-      | 'delete';
-
-    resident:
-      Resident;
-  } | null>(
-    null,
-  );
+    deleteResidentTarget,
+    setDeleteResidentTarget,
+  ] =
+    useState<
+      Resident | null
+    >(null);
 
   const [
     confirmLoading,
     setConfirmLoading,
-  ] = useState(false);
+  ] =
+    useState(false);
 
   async function loadResidents() {
+    const data =
+      await apiFetch<
+        Resident[]
+      >(
+        '/residents',
+      );
+
+    setResidents(
+      data,
+    );
+  }
+
+  async function loadApplications() {
+    const data =
+      await apiFetch<
+        ResidentApplication[]
+      >(
+        '/residents/applications',
+      );
+
+    setApplications(
+      data,
+    );
+  }
+
+  async function loadAll() {
     try {
       setError('');
 
-      const data =
-        await apiFetch<
-          Resident[]
-        >(
-          '/residents',
-        );
-
-      setResidents(
-        data,
-      );
+      await Promise.all([
+        loadResidents(),
+        loadApplications(),
+      ]);
     } catch (err) {
       if (
         err instanceof
@@ -170,7 +214,7 @@ export default function ResidentsPage() {
           true,
         );
 
-        await loadResidents();
+        await loadAll();
       } finally {
         setLoading(
           false,
@@ -181,7 +225,7 @@ export default function ResidentsPage() {
     void initialLoad();
   }, []);
 
-  const filtered =
+  const filteredResidents =
     useMemo(() => {
       const q =
         search
@@ -209,7 +253,9 @@ export default function ResidentsPage() {
               Boolean,
             )
             .some(
-              (value) =>
+              (
+                value,
+              ) =>
                 String(
                   value,
                 )
@@ -222,6 +268,52 @@ export default function ResidentsPage() {
     }, [
       residents,
       search,
+    ]);
+
+  const filteredApplications =
+    useMemo(() => {
+      const q =
+        applicationSearch
+          .trim()
+          .toLowerCase();
+
+      if (!q) {
+        return applications;
+      }
+
+      return applications.filter(
+        (
+          application,
+        ) =>
+          [
+            application.companyName,
+            application.tin,
+            application.activity,
+            application.founderCountry,
+            application.region,
+            application.district,
+            application.focalPoint,
+            application.status,
+          ]
+            .filter(
+              Boolean,
+            )
+            .some(
+              (
+                value,
+              ) =>
+                String(
+                  value,
+                )
+                  .toLowerCase()
+                  .includes(
+                    q,
+                  ),
+            ),
+      );
+    }, [
+      applications,
+      applicationSearch,
     ]);
 
   function openCreate() {
@@ -468,19 +560,16 @@ export default function ResidentsPage() {
           'a',
         );
 
-      const today =
-        new Date()
-          .toISOString()
-          .slice(
-            0,
-            10,
-          );
-
       anchor.href =
         url;
 
       anchor.download =
-        `sirdaryo-residents-${today}.xlsx`;
+        `sirdaryo-residents-${new Date()
+          .toISOString()
+          .slice(
+            0,
+            10,
+          )}.xlsx`;
 
       document.body.appendChild(
         anchor,
@@ -503,33 +592,9 @@ export default function ResidentsPage() {
     }
   }
 
-  function archiveResident(
-    resident:
-      Resident,
-  ) {
-    setConfirmAction({
-      type:
-        'archive',
-
-      resident,
-    });
-  }
-
-  function deleteResident(
-    resident:
-      Resident,
-  ) {
-    setConfirmAction({
-      type:
-        'delete',
-
-      resident,
-    });
-  }
-
-  async function handleConfirmAction() {
+  async function deleteResident() {
     if (
-      !confirmAction
+      !deleteResidentTarget
     ) {
       return;
     }
@@ -541,33 +606,15 @@ export default function ResidentsPage() {
 
       setError('');
 
-      if (
-        confirmAction.type ===
-        'archive'
-      ) {
-        await apiFetch(
-          `/residents/${confirmAction.resident.id}/archive`,
-          {
-            method:
-              'POST',
-          },
-        );
-      }
+      await apiFetch(
+        `/residents/${deleteResidentTarget.id}`,
+        {
+          method:
+            'DELETE',
+        },
+      );
 
-      if (
-        confirmAction.type ===
-        'delete'
-      ) {
-        await apiFetch(
-          `/residents/${confirmAction.resident.id}`,
-          {
-            method:
-              'DELETE',
-          },
-        );
-      }
-
-      setConfirmAction(
+      setDeleteResidentTarget(
         null,
       );
 
@@ -602,7 +649,7 @@ export default function ResidentsPage() {
             </h1>
 
             <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-              Manage resident companies and quarterly reporting.
+              Manage resident companies and residency applications.
             </p>
           </div>
 
@@ -620,9 +667,7 @@ export default function ResidentsPage() {
                 className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
               >
                 <Download
-                  size={
-                    16
-                  }
+                  size={16}
                 />
 
                 {exporting
@@ -630,21 +675,22 @@ export default function ResidentsPage() {
                   : 'Download Excel'}
               </button>
 
-              <button
-                type="button"
-                onClick={
-                  openCreate
-                }
-                className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 text-sm font-medium text-white transition hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
-              >
-                <Plus
-                  size={
-                    16
+              {tab !==
+                'becoming' && (
+                <button
+                  type="button"
+                  onClick={
+                    openCreate
                   }
-                />
+                  className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 text-sm font-medium text-white transition hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
+                >
+                  <Plus
+                    size={16}
+                  />
 
-                Add resident
-              </button>
+                  Add resident
+                </button>
+              )}
             </div>
           )}
         </section>
@@ -656,22 +702,22 @@ export default function ResidentsPage() {
                 'overview',
                 'Overview',
               ],
-
               [
                 'list',
                 'Resident list',
               ],
-
+              [
+                'becoming',
+                'Becoming residents',
+              ],
               [
                 'excel',
                 'Excel view',
               ],
-
               [
                 'reports',
                 'Quarterly reports',
               ],
-
               [
                 'spaces',
                 'Spaces',
@@ -694,16 +740,15 @@ export default function ResidentsPage() {
                   className={[
                     'border-b-2 px-1 pb-3 text-sm transition',
 
-                    tab === key
+                    tab ===
+                    key
                       ? 'border-slate-900 font-medium text-slate-900 dark:border-slate-100 dark:text-slate-100'
                       : 'border-transparent text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-300',
                   ].join(
                     ' ',
                   )}
                 >
-                  {
-                    label
-                  }
+                  {label}
                 </button>
               ),
             )}
@@ -717,7 +762,7 @@ export default function ResidentsPage() {
         )}
 
         {loading ? (
-          <div className="py-20 text-center text-sm text-slate-400 dark:text-slate-500">
+          <div className="py-20 text-center text-sm text-slate-400">
             Loading residents...
           </div>
         ) : (
@@ -734,46 +779,55 @@ export default function ResidentsPage() {
             {tab ===
               'list' && (
               <div className="space-y-4">
-                <div className="flex h-10 w-full max-w-sm items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 dark:border-slate-800 dark:bg-slate-900">
-                  <Search
-                    size={
-                      16
-                    }
-                    className="text-slate-400 dark:text-slate-500"
-                  />
-
-                  <input
-                    value={
-                      search
-                    }
-                    onChange={(
-                      event,
-                    ) =>
-                      setSearch(
-                        event.target
-                          .value,
-                      )
-                    }
-                    placeholder="Search residents..."
-                    className="w-full bg-transparent text-sm text-slate-800 outline-none placeholder:text-slate-400 dark:text-slate-200 dark:placeholder:text-slate-500"
-                  />
-                </div>
+                <SearchBox
+                  value={
+                    search
+                  }
+                  onChange={
+                    setSearch
+                  }
+                  placeholder="Search residents..."
+                />
 
                 <ResidentTable
                   residents={
-                    filtered
+                    filteredResidents
                   }
                   onEdit={
                     openEdit
                   }
-                  onArchive={
-                    archiveResident
-                  }
                   onDelete={
-                    deleteResident
+                    setDeleteResidentTarget
                   }
                   onChanged={
                     loadResidents
+                  }
+                  onError={
+                    setError
+                  }
+                />
+              </div>
+            )}
+
+            {tab ===
+              'becoming' && (
+              <div className="space-y-4">
+                <SearchBox
+                  value={
+                    applicationSearch
+                  }
+                  onChange={
+                    setApplicationSearch
+                  }
+                  placeholder="Search applications..."
+                />
+
+                <BecomingResidentsTable
+                  applications={
+                    filteredApplications
+                  }
+                  onChanged={
+                    loadAll
                   }
                   onError={
                     setError
@@ -857,58 +911,74 @@ export default function ResidentsPage() {
 
         <ConfirmModal
           open={
-            confirmAction !==
+            deleteResidentTarget !==
             null
           }
-          variant={
-            confirmAction?.type ??
-            'archive'
-          }
+          variant="delete"
           loading={
             confirmLoading
           }
-          title={
-            confirmAction?.type ===
-            'delete'
-              ? 'Delete resident?'
-              : 'Archive resident?'
-          }
-          description={
-            confirmAction?.type ===
-            'delete'
-              ? `${
-                  confirmAction
-                    ?.resident
-                    .companyName ??
-                  ''
-                } will be permanently deleted. This action cannot be undone.`
-              : `${
-                  confirmAction
-                    ?.resident
-                    .companyName ??
-                  ''
-                } will be moved to archived residents. Its information and history will remain available.`
-          }
-          confirmText={
-            confirmAction?.type ===
-            'delete'
-              ? 'Delete resident'
-              : 'Archive resident'
-          }
+          title="Delete resident?"
+          description={`${
+            deleteResidentTarget
+              ?.companyName ??
+            ''
+          } will be permanently deleted. This action cannot be undone.`}
+          confirmText="Delete resident"
           onClose={() => {
             if (
               !confirmLoading
             ) {
-              setConfirmAction(
+              setDeleteResidentTarget(
                 null,
               );
             }
           }}
           onConfirm={
-            handleConfirmAction
+            deleteResident
           }
         />
       </div>
     </AppShell>
+  );
+}
+
+function SearchBox({
+  value,
+  onChange,
+  placeholder,
+}: {
+  value: string;
+
+  onChange: (
+    value: string,
+  ) => void;
+
+  placeholder: string;
+}) {
+  return (
+    <div className="flex h-10 w-full max-w-sm items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 dark:border-slate-800 dark:bg-slate-900">
+      <Search
+        size={16}
+        className="text-slate-400"
+      />
+
+      <input
+        value={
+          value
+        }
+        onChange={(
+          event,
+        ) =>
+          onChange(
+            event.target.value,
+          )
+        }
+        placeholder={
+          placeholder
+        }
+        className="w-full bg-transparent text-sm text-slate-800 outline-none placeholder:text-slate-400 dark:text-slate-200"
+      />
+    </div>
   );
 }

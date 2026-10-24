@@ -48,6 +48,12 @@ enum ResidentStatus {
   ARCHIVED
 }
 
+enum ResidentApplicationStatus {
+  PENDING
+  REJECTED
+  APPROVED
+}
+
 enum TalentStatus {
   AVAILABLE
   OPEN_TO_OFFERS
@@ -265,6 +271,30 @@ model Resident {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model ResidentApplication {
+  id             String                    @id @default(cuid())
+  companyName    String
+  tin            String?
+  activity       String?
+  exporter       Boolean                   @default(false)
+  founderCountry String?
+  region         String?
+  district       String?
+  appliedAt      DateTime?
+  focalPoint     String?
+  broughtBy      String?
+  status         ResidentApplicationStatus @default(PENDING)
+  notes          String?
+  approvedAt     DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([companyName])
+  @@index([tin])
+  @@index([status])
 }
 
 model Talent {

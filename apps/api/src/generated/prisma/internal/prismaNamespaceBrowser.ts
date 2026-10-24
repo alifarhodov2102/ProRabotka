@@ -59,6 +59,7 @@ export const ModelName = {
   Startup: 'Startup',
   StartupFunding: 'StartupFunding',
   Resident: 'Resident',
+  ResidentApplication: 'ResidentApplication',
   Talent: 'Talent',
   TalentSkill: 'TalentSkill',
   TalentLanguage: 'TalentLanguage',
@@ -210,6 +211,28 @@ export const ResidentScalarFieldEnum = {
 } as const
 
 export type ResidentScalarFieldEnum = (typeof ResidentScalarFieldEnum)[keyof typeof ResidentScalarFieldEnum]
+
+
+export const ResidentApplicationScalarFieldEnum = {
+  id: 'id',
+  companyName: 'companyName',
+  tin: 'tin',
+  activity: 'activity',
+  exporter: 'exporter',
+  founderCountry: 'founderCountry',
+  region: 'region',
+  district: 'district',
+  appliedAt: 'appliedAt',
+  focalPoint: 'focalPoint',
+  broughtBy: 'broughtBy',
+  status: 'status',
+  notes: 'notes',
+  approvedAt: 'approvedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ResidentApplicationScalarFieldEnum = (typeof ResidentApplicationScalarFieldEnum)[keyof typeof ResidentApplicationScalarFieldEnum]
 
 
 export const TalentScalarFieldEnum = {

@@ -67,6 +67,15 @@ export const ResidentStatus = {
 export type ResidentStatus = (typeof ResidentStatus)[keyof typeof ResidentStatus]
 
 
+export const ResidentApplicationStatus = {
+  PENDING: 'PENDING',
+  REJECTED: 'REJECTED',
+  APPROVED: 'APPROVED'
+} as const
+
+export type ResidentApplicationStatus = (typeof ResidentApplicationStatus)[keyof typeof ResidentApplicationStatus]
+
+
 export const TalentStatus = {
   AVAILABLE: 'AVAILABLE',
   OPEN_TO_OFFERS: 'OPEN_TO_OFFERS',

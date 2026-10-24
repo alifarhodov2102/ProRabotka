@@ -62,39 +62,126 @@ export class ResidentsController {
     );
   }
 
+  @Get('applications')
+  findApplications() {
+    return this.residentsService.findApplications();
+  }
+
+  @Post('applications')
+  createApplication(
+    @Body()
+    body: any,
+  ) {
+    return this.residentsService.createApplication(
+      body,
+    );
+  }
+
+  @Patch('applications/:id')
+  updateApplication(
+    @Param('id')
+    id: string,
+
+    @Body()
+    body: any,
+  ) {
+    return this.residentsService.updateApplication(
+      id,
+      body,
+    );
+  }
+
+  @Post('applications/:id/approve')
+  approveApplication(
+    @Param('id')
+    id: string,
+  ) {
+    return this.residentsService.approveApplication(
+      id,
+    );
+  }
+
+  @Delete('applications/:id')
+  removeApplication(
+    @Param('id')
+    id: string,
+  ) {
+    return this.residentsService.removeApplication(
+      id,
+    );
+  }
+
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.residentsService.findOne(id);
+  findOne(
+    @Param('id')
+    id: string,
+  ) {
+    return this.residentsService.findOne(
+      id,
+    );
   }
 
   @Post()
-  create(@Body() body: any) {
-    return this.residentsService.create(body);
+  create(
+    @Body()
+    body: any,
+  ) {
+    return this.residentsService.create(
+      body,
+    );
   }
 
   @Patch(':id')
   update(
-    @Param('id') id: string,
-    @Body() body: any,
+    @Param('id')
+    id: string,
+
+    @Body()
+    body: any,
   ) {
-    return this.residentsService.update(id, body);
+    return this.residentsService.update(
+      id,
+      body,
+    );
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.residentsService.remove(id);
+  remove(
+    @Param('id')
+    id: string,
+  ) {
+    return this.residentsService.remove(
+      id,
+    );
   }
 
   @Post(':id/archive')
-  archive(@Param('id') id: string) {
-    return this.residentsService.archive(id);
+  archive(
+    @Param('id')
+    id: string,
+  ) {
+    return this.residentsService.archive(
+      id,
+    );
   }
 
   @Put(':id/reports/:year/:quarter')
   setQuarterReport(
-    @Param('id') id: string,
-    @Param('year', ParseIntPipe) year: number,
-    @Param('quarter', ParseIntPipe) quarter: number,
+    @Param('id')
+    id: string,
+
+    @Param(
+      'year',
+      ParseIntPipe,
+    )
+    year: number,
+
+    @Param(
+      'quarter',
+      ParseIntPipe,
+    )
+    quarter: number,
+
     @Body()
     body: {
       status:

@@ -405,6 +405,7 @@ export const ModelName = {
   Startup: 'Startup',
   StartupFunding: 'StartupFunding',
   Resident: 'Resident',
+  ResidentApplication: 'ResidentApplication',
   Talent: 'Talent',
   TalentSkill: 'TalentSkill',
   TalentLanguage: 'TalentLanguage',
@@ -431,7 +432,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "task" | "taskAssignee" | "taskComment" | "taskAttachment" | "startup" | "startupFunding" | "resident" | "talent" | "talentSkill" | "talentLanguage" | "quarterReport" | "infrastructure" | "space" | "folder" | "document" | "activityLog" | "outreachCampaign" | "lead"
+    modelProps: "user" | "task" | "taskAssignee" | "taskComment" | "taskAttachment" | "startup" | "startupFunding" | "resident" | "residentApplication" | "talent" | "talentSkill" | "talentLanguage" | "quarterReport" | "infrastructure" | "space" | "folder" | "document" | "activityLog" | "outreachCampaign" | "lead"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1024,6 +1025,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.ResidentCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.ResidentCountAggregateOutputType> | number
+        }
+      }
+    }
+    ResidentApplication: {
+      payload: Prisma.$ResidentApplicationPayload<ExtArgs>
+      fields: Prisma.ResidentApplicationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ResidentApplicationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ResidentApplicationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ResidentApplicationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ResidentApplicationPayload>
+        }
+        findFirst: {
+          args: Prisma.ResidentApplicationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ResidentApplicationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ResidentApplicationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ResidentApplicationPayload>
+        }
+        findMany: {
+          args: Prisma.ResidentApplicationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ResidentApplicationPayload>[]
+        }
+        create: {
+          args: Prisma.ResidentApplicationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ResidentApplicationPayload>
+        }
+        createMany: {
+          args: Prisma.ResidentApplicationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ResidentApplicationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ResidentApplicationPayload>[]
+        }
+        delete: {
+          args: Prisma.ResidentApplicationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ResidentApplicationPayload>
+        }
+        update: {
+          args: Prisma.ResidentApplicationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ResidentApplicationPayload>
+        }
+        deleteMany: {
+          args: Prisma.ResidentApplicationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ResidentApplicationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ResidentApplicationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ResidentApplicationPayload>[]
+        }
+        upsert: {
+          args: Prisma.ResidentApplicationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ResidentApplicationPayload>
+        }
+        aggregate: {
+          args: Prisma.ResidentApplicationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateResidentApplication>
+        }
+        groupBy: {
+          args: Prisma.ResidentApplicationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ResidentApplicationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ResidentApplicationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ResidentApplicationCountAggregateOutputType> | number
         }
       }
     }
@@ -2004,6 +2079,28 @@ export const ResidentScalarFieldEnum = {
 export type ResidentScalarFieldEnum = (typeof ResidentScalarFieldEnum)[keyof typeof ResidentScalarFieldEnum]
 
 
+export const ResidentApplicationScalarFieldEnum = {
+  id: 'id',
+  companyName: 'companyName',
+  tin: 'tin',
+  activity: 'activity',
+  exporter: 'exporter',
+  founderCountry: 'founderCountry',
+  region: 'region',
+  district: 'district',
+  appliedAt: 'appliedAt',
+  focalPoint: 'focalPoint',
+  broughtBy: 'broughtBy',
+  status: 'status',
+  notes: 'notes',
+  approvedAt: 'approvedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ResidentApplicationScalarFieldEnum = (typeof ResidentApplicationScalarFieldEnum)[keyof typeof ResidentApplicationScalarFieldEnum]
+
+
 export const TalentScalarFieldEnum = {
   id: 'id',
   fullName: 'fullName',
@@ -2371,6 +2468,20 @@ export type ListEnumResidentStatusFieldRefInput<$PrismaModel> = FieldRefInputTyp
 
 
 /**
+ * Reference to a field of type 'ResidentApplicationStatus'
+ */
+export type EnumResidentApplicationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ResidentApplicationStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ResidentApplicationStatus[]'
+ */
+export type ListEnumResidentApplicationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ResidentApplicationStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'TalentStatus'
  */
 export type EnumTalentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TalentStatus'>
@@ -2640,6 +2751,7 @@ export type GlobalOmitConfig = {
   startup?: Prisma.StartupOmit
   startupFunding?: Prisma.StartupFundingOmit
   resident?: Prisma.ResidentOmit
+  residentApplication?: Prisma.ResidentApplicationOmit
   talent?: Prisma.TalentOmit
   talentSkill?: Prisma.TalentSkillOmit
   talentLanguage?: Prisma.TalentLanguageOmit

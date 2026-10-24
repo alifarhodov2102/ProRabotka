@@ -80,6 +80,11 @@ export type StartupFunding = Prisma.StartupFundingModel
  */
 export type Resident = Prisma.ResidentModel
 /**
+ * Model ResidentApplication
+ * 
+ */
+export type ResidentApplication = Prisma.ResidentApplicationModel
+/**
  * Model Talent
  * 
  */

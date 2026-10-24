@@ -10,17 +10,39 @@ import { PrismaService } from '../prisma/prisma.service.js';
 
 type ResidentInput = {
   companyName: string;
-  tin?: string;
-  activity?: string;
+  tin?: string | null;
+  activity?: string | null;
   exporter?: boolean;
-  founderCountry?: string;
-  region?: string;
-  district?: string;
-  residentSince?: string;
-  focalPoint?: string;
-  broughtBy?: string;
-  status?: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED' | 'ARCHIVED';
-  notes?: string;
+  founderCountry?: string | null;
+  region?: string | null;
+  district?: string | null;
+  residentSince?: string | null;
+  focalPoint?: string | null;
+  broughtBy?: string | null;
+  status?:
+    | 'ACTIVE'
+    | 'INACTIVE'
+    | 'SUSPENDED'
+    | 'ARCHIVED';
+  notes?: string | null;
+};
+
+type ApplicationInput = {
+  companyName?: string;
+  tin?: string | null;
+  activity?: string | null;
+  exporter?: boolean;
+  founderCountry?: string | null;
+  region?: string | null;
+  district?: string | null;
+  appliedAt?: string | null;
+  focalPoint?: string | null;
+  broughtBy?: string | null;
+  status?:
+    | 'PENDING'
+    | 'REJECTED'
+    | 'APPROVED';
+  notes?: string | null;
 };
 
 type QuarterInput = {
@@ -44,41 +66,78 @@ export class ResidentsService {
       include: {
         quarterReports: {
           orderBy: [
-            { year: 'desc' },
-            { quarter: 'asc' },
+            {
+              year:
+                'desc',
+            },
+            {
+              quarter:
+                'asc',
+            },
           ],
         },
       },
+
       orderBy: {
-        createdAt: 'asc',
+        createdAt:
+          'asc',
       },
     });
   }
 
-  async findOne(id: string) {
+  async findApplications() {
+    return this.prisma.residentApplication.findMany({
+      where: {
+        status: {
+          not:
+            'APPROVED',
+        },
+      },
+
+      orderBy: {
+        createdAt:
+          'asc',
+      },
+    });
+  }
+
+  async findOne(
+    id: string,
+  ) {
     const resident =
       await this.prisma.resident.findUnique({
-        where: { id },
+        where: {
+          id,
+        },
 
         include: {
           quarterReports: {
             orderBy: [
-              { year: 'desc' },
-              { quarter: 'asc' },
+              {
+                year:
+                  'desc',
+              },
+              {
+                quarter:
+                  'asc',
+              },
             ],
           },
 
-          infrastructure: true,
+          infrastructure:
+            true,
 
           documents: {
             orderBy: {
-              createdAt: 'desc',
+              createdAt:
+                'desc',
             },
           },
 
           tasks: {
             orderBy: {
-              createdAt: 'desc',
+              createdAt:
+                'desc',
             },
           },
         },
@@ -93,27 +152,20 @@ export class ResidentsService {
     return resident;
   }
 
-  async create(data: ResidentInput) {
-    if (!data.companyName?.trim()) {
+  async create(
+    data: ResidentInput,
+  ) {
+    if (
+      !data.companyName?.trim()
+    ) {
       throw new BadRequestException(
         'Company name is required',
       );
     }
 
-    if (data.tin) {
-      const existing =
-        await this.prisma.resident.findUnique({
-          where: {
-            tin: data.tin.trim(),
-          },
-        });
-
-      if (existing) {
-        throw new BadRequestException(
-          'Resident with this STIR already exists',
-        );
-      }
-    }
+    await this.ensureResidentTinAvailable(
+      data.tin,
+    );
 
     return this.prisma.resident.create({
       data: {
@@ -121,51 +173,57 @@ export class ResidentsService {
           data.companyName.trim(),
 
         tin:
-          data.tin?.trim() ||
-          null,
+          this.cleanOptional(
+            data.tin,
+          ),
 
         activity:
-          data.activity?.trim() ||
-          null,
+          this.cleanOptional(
+            data.activity,
+          ),
 
         exporter:
           data.exporter ??
           false,
 
         founderCountry:
-          data.founderCountry?.trim() ||
-          null,
+          this.cleanOptional(
+            data.founderCountry,
+          ),
 
         region:
-          data.region?.trim() ||
-          null,
+          this.cleanOptional(
+            data.region,
+          ),
 
         district:
-          data.district?.trim() ||
-          null,
+          this.cleanOptional(
+            data.district,
+          ),
 
         residentSince:
-          data.residentSince
-            ? new Date(
-                data.residentSince,
-              )
-            : null,
+          this.parseDate(
+            data.residentSince,
+          ),
 
         focalPoint:
-          data.focalPoint?.trim() ||
-          null,
+          this.cleanOptional(
+            data.focalPoint,
+          ),
 
         broughtBy:
-          data.broughtBy?.trim() ||
-          null,
+          this.cleanOptional(
+            data.broughtBy,
+          ),
 
         status:
           data.status ??
           'ACTIVE',
 
         notes:
-          data.notes?.trim() ||
-          null,
+          this.cleanOptional(
+            data.notes,
+          ),
       },
     });
   }
@@ -178,28 +236,15 @@ export class ResidentsService {
       id,
     );
 
-    if (data.tin) {
-      const duplicate =
-        await this.prisma.resident.findFirst({
-          where: {
-            tin:
-              data.tin.trim(),
-
-            NOT: {
-              id,
-            },
-          },
-        });
-
-      if (duplicate) {
-        throw new BadRequestException(
-          'Resident with this STIR already exists',
-        );
-      }
-    }
+    await this.ensureResidentTinAvailable(
+      data.tin,
+      id,
+    );
 
     return this.prisma.resident.update({
-      where: { id },
+      where: {
+        id,
+      },
 
       data: {
         ...(data.companyName !==
@@ -211,15 +256,17 @@ export class ResidentsService {
         ...(data.tin !==
           undefined && {
           tin:
-            data.tin.trim() ||
-            null,
+            this.cleanOptional(
+              data.tin,
+            ),
         }),
 
         ...(data.activity !==
           undefined && {
           activity:
-            data.activity.trim() ||
-            null,
+            this.cleanOptional(
+              data.activity,
+            ),
         }),
 
         ...(data.exporter !==
@@ -231,46 +278,49 @@ export class ResidentsService {
         ...(data.founderCountry !==
           undefined && {
           founderCountry:
-            data.founderCountry.trim() ||
-            null,
+            this.cleanOptional(
+              data.founderCountry,
+            ),
         }),
 
         ...(data.region !==
           undefined && {
           region:
-            data.region.trim() ||
-            null,
+            this.cleanOptional(
+              data.region,
+            ),
         }),
 
         ...(data.district !==
           undefined && {
           district:
-            data.district.trim() ||
-            null,
+            this.cleanOptional(
+              data.district,
+            ),
         }),
 
         ...(data.residentSince !==
           undefined && {
           residentSince:
-            data.residentSince
-              ? new Date(
-                  data.residentSince,
-                )
-              : null,
+            this.parseDate(
+              data.residentSince,
+            ),
         }),
 
         ...(data.focalPoint !==
           undefined && {
           focalPoint:
-            data.focalPoint.trim() ||
-            null,
+            this.cleanOptional(
+              data.focalPoint,
+            ),
         }),
 
         ...(data.broughtBy !==
           undefined && {
           broughtBy:
-            data.broughtBy.trim() ||
-            null,
+            this.cleanOptional(
+              data.broughtBy,
+            ),
         }),
 
         ...(data.status !==
@@ -282,24 +332,341 @@ export class ResidentsService {
         ...(data.notes !==
           undefined && {
           notes:
-            data.notes.trim() ||
-            null,
+            this.cleanOptional(
+              data.notes,
+            ),
         }),
       },
     });
   }
 
-  async remove(id: string) {
+  async createApplication(
+    data: ApplicationInput,
+  ) {
+    const companyName =
+      data.companyName?.trim();
+
+    if (!companyName) {
+      throw new BadRequestException(
+        'Company name is required',
+      );
+    }
+
+    return this.prisma.residentApplication.create({
+      data: {
+        companyName,
+
+        tin:
+          this.cleanOptional(
+            data.tin,
+          ),
+
+        activity:
+          this.cleanOptional(
+            data.activity,
+          ),
+
+        exporter:
+          data.exporter ??
+          false,
+
+        founderCountry:
+          this.cleanOptional(
+            data.founderCountry,
+          ),
+
+        region:
+          this.cleanOptional(
+            data.region,
+          ),
+
+        district:
+          this.cleanOptional(
+            data.district,
+          ),
+
+        appliedAt:
+          this.parseDate(
+            data.appliedAt,
+          ) ??
+          new Date(),
+
+        focalPoint:
+          this.cleanOptional(
+            data.focalPoint,
+          ),
+
+        broughtBy:
+          this.cleanOptional(
+            data.broughtBy,
+          ),
+
+        status:
+          data.status ===
+          'REJECTED'
+            ? 'REJECTED'
+            : 'PENDING',
+
+        notes:
+          this.cleanOptional(
+            data.notes,
+          ),
+      },
+    });
+  }
+
+  async updateApplication(
+    id: string,
+    data: ApplicationInput,
+  ) {
+    const application =
+      await this.ensureApplication(
+        id,
+      );
+
+    if (
+      data.status ===
+      'APPROVED'
+    ) {
+      return this.approveApplication(
+        id,
+      );
+    }
+
+    return this.prisma.residentApplication.update({
+      where: {
+        id,
+      },
+
+      data: {
+        ...(data.companyName !==
+          undefined && {
+          companyName:
+            data.companyName.trim(),
+        }),
+
+        ...(data.tin !==
+          undefined && {
+          tin:
+            this.cleanOptional(
+              data.tin,
+            ),
+        }),
+
+        ...(data.activity !==
+          undefined && {
+          activity:
+            this.cleanOptional(
+              data.activity,
+            ),
+        }),
+
+        ...(data.exporter !==
+          undefined && {
+          exporter:
+            data.exporter,
+        }),
+
+        ...(data.founderCountry !==
+          undefined && {
+          founderCountry:
+            this.cleanOptional(
+              data.founderCountry,
+            ),
+        }),
+
+        ...(data.region !==
+          undefined && {
+          region:
+            this.cleanOptional(
+              data.region,
+            ),
+        }),
+
+        ...(data.district !==
+          undefined && {
+          district:
+            this.cleanOptional(
+              data.district,
+            ),
+        }),
+
+        ...(data.appliedAt !==
+          undefined && {
+          appliedAt:
+            this.parseDate(
+              data.appliedAt,
+            ),
+        }),
+
+        ...(data.focalPoint !==
+          undefined && {
+          focalPoint:
+            this.cleanOptional(
+              data.focalPoint,
+            ),
+        }),
+
+        ...(data.broughtBy !==
+          undefined && {
+          broughtBy:
+            this.cleanOptional(
+              data.broughtBy,
+            ),
+        }),
+
+        ...(data.status !==
+          undefined && {
+          status:
+            data.status ===
+            'REJECTED'
+              ? 'REJECTED'
+              : 'PENDING',
+        }),
+
+        ...(data.notes !==
+          undefined && {
+          notes:
+            this.cleanOptional(
+              data.notes,
+            ),
+        }),
+      },
+    });
+  }
+
+  async approveApplication(
+    id: string,
+  ) {
+    const application =
+      await this.ensureApplication(
+        id,
+      );
+
+    if (
+      application.status ===
+      'APPROVED'
+    ) {
+      throw new BadRequestException(
+        'Application is already approved',
+      );
+    }
+
+    await this.ensureResidentTinAvailable(
+      application.tin,
+    );
+
+    const now =
+      new Date();
+
+    return this.prisma.$transaction(
+      async (
+        transaction,
+      ) => {
+        const resident =
+          await transaction.resident.create({
+            data: {
+              companyName:
+                application.companyName,
+
+              tin:
+                application.tin,
+
+              activity:
+                application.activity,
+
+              exporter:
+                application.exporter,
+
+              founderCountry:
+                application.founderCountry,
+
+              region:
+                application.region,
+
+              district:
+                application.district,
+
+              residentSince:
+                now,
+
+              focalPoint:
+                application.focalPoint,
+
+              broughtBy:
+                application.broughtBy,
+
+              status:
+                'ACTIVE',
+
+              notes:
+                application.notes,
+            },
+          });
+
+        const approvedApplication =
+          await transaction.residentApplication.update({
+            where: {
+              id,
+            },
+
+            data: {
+              status:
+                'APPROVED',
+
+              approvedAt:
+                now,
+            },
+          });
+
+        return {
+          resident,
+          application:
+            approvedApplication,
+        };
+      },
+    );
+  }
+
+  async removeApplication(
+    id: string,
+  ) {
+    await this.ensureApplication(
+      id,
+    );
+
+    await this.prisma.residentApplication.delete({
+      where: {
+        id,
+      },
+    });
+
+    return {
+      success:
+        true,
+    };
+  }
+
+  async remove(
+    id: string,
+  ) {
     const resident =
       await this.prisma.resident.findUnique({
-        where: { id },
+        where: {
+          id,
+        },
 
         include: {
           _count: {
             select: {
-              documents: true,
-              tasks: true,
-              infrastructure: true,
+              documents:
+                true,
+
+              tasks:
+                true,
+
+              infrastructure:
+                true,
             },
           },
         },
@@ -321,26 +688,33 @@ export class ResidentsService {
 
     if (hasLinkedData) {
       throw new BadRequestException(
-        'This resident has linked data. Archive it instead of deleting it.',
+        'This resident has linked data. Change its status instead of deleting it.',
       );
     }
 
     await this.prisma.resident.delete({
-      where: { id },
+      where: {
+        id,
+      },
     });
 
     return {
-      success: true,
+      success:
+        true,
     };
   }
 
-  async archive(id: string) {
+  async archive(
+    id: string,
+  ) {
     await this.findOne(
       id,
     );
 
     return this.prisma.resident.update({
-      where: { id },
+      where: {
+        id,
+      },
 
       data: {
         status:
@@ -435,19 +809,32 @@ export class ResidentsService {
   }
 
   async exportExcel() {
-    const residents =
-      await this.prisma.resident.findMany({
-        orderBy: [
-          {
-            residentSince:
+    const [
+      residents,
+      applications,
+    ] =
+      await Promise.all([
+        this.prisma.resident.findMany({
+          orderBy: {
+            createdAt:
               'asc',
           },
-          {
-            companyName:
+        }),
+
+        this.prisma.residentApplication.findMany({
+          where: {
+            status: {
+              not:
+                'APPROVED',
+            },
+          },
+
+          orderBy: {
+            createdAt:
               'asc',
           },
-        ],
-      });
+        }),
+      ]);
 
     const workbook =
       new ExcelJS.Workbook();
@@ -458,22 +845,171 @@ export class ResidentsService {
     workbook.created =
       new Date();
 
-    const worksheet =
+    const residentsSheet =
       workbook.addWorksheet(
-        'Rezidentlar',
-        {
-          views: [
-            {
-              state:
-                'frozen',
-
-              ySplit:
-                3,
-            },
-          ],
-        },
+        'Residents',
       );
 
+    const applicationsSheet =
+      workbook.addWorksheet(
+        'Becoming residents',
+      );
+
+    this.prepareWorksheet(
+      residentsSheet,
+      'Sirdaryo viloyati IT-Park rezidentlari',
+      "Rezident bo'lgan sana",
+    );
+
+    this.prepareWorksheet(
+      applicationsSheet,
+      'Sirdaryo viloyati IT-Park rezidentligiga ariza topshirganlar',
+      'Ariza sanasi',
+    );
+
+    residents.forEach(
+      (
+        resident,
+        index,
+      ) => {
+        const row =
+          residentsSheet.addRow({
+            number:
+              index +
+              1,
+
+            companyName:
+              resident.companyName,
+
+            tin:
+              resident.tin ||
+              '',
+
+            activity:
+              resident.activity ||
+              '',
+
+            exporter:
+              resident.exporter
+                ? 1
+                : '',
+
+            founderCountry:
+              resident.founderCountry ||
+              '',
+
+            district:
+              resident.district ||
+              resident.region ||
+              '',
+
+            date:
+              resident.residentSince ||
+              '',
+
+            focalPoint:
+              resident.focalPoint ||
+              '',
+
+            status:
+              this.residentStatusLabel(
+                resident.status,
+              ),
+          });
+
+        this.styleDataRow(
+          row,
+          resident.founderCountry,
+          resident.status ===
+          'ACTIVE'
+            ? 'green'
+            : 'red',
+        );
+      },
+    );
+
+    applications.forEach(
+      (
+        application,
+        index,
+      ) => {
+        const row =
+          applicationsSheet.addRow({
+            number:
+              index +
+              1,
+
+            companyName:
+              application.companyName,
+
+            tin:
+              application.tin ||
+              '',
+
+            activity:
+              application.activity ||
+              '',
+
+            exporter:
+              application.exporter
+                ? 1
+                : '',
+
+            founderCountry:
+              application.founderCountry ||
+              '',
+
+            district:
+              application.district ||
+              application.region ||
+              '',
+
+            date:
+              application.appliedAt ||
+              '',
+
+            focalPoint:
+              application.focalPoint ||
+              '',
+
+            status:
+              this.applicationStatusLabel(
+                application.status,
+              ),
+          });
+
+        this.styleDataRow(
+          row,
+          application.founderCountry,
+          application.status ===
+          'PENDING'
+            ? 'amber'
+            : 'red',
+        );
+      },
+    );
+
+    this.finishWorksheet(
+      residentsSheet,
+    );
+
+    this.finishWorksheet(
+      applicationsSheet,
+    );
+
+    const buffer =
+      await workbook.xlsx.writeBuffer();
+
+    return Buffer.from(
+      buffer,
+    );
+  }
+
+  private prepareWorksheet(
+    worksheet: ExcelJS.Worksheet,
+    title: string,
+    dateHeader: string,
+  ) {
     worksheet.mergeCells(
       'A1:J1',
     );
@@ -484,7 +1020,7 @@ export class ResidentsService {
       );
 
     titleCell.value =
-      'Sirdaryo viloyati IT-Park rezidentlari';
+      title;
 
     titleCell.font = {
       name:
@@ -514,79 +1050,6 @@ export class ResidentsService {
       2,
     ).height =
       8;
-
-    const headers = [
-      'T/r',
-      'Nomi',
-      'STIR',
-      'Faoliyat turi',
-      'Exportyor',
-      "Ta'sischi davlat",
-      'Hudud',
-      "Rezident bo'lgan sana",
-      'FOCAL POINT',
-      'HOLATI',
-    ];
-
-    const headerRow =
-      worksheet.getRow(
-        3,
-      );
-
-    headerRow.values =
-      headers;
-
-    headerRow.height =
-      27;
-
-    headerRow.eachCell(
-      (
-        cell,
-      ) => {
-        cell.font = {
-          name:
-            'Times New Roman',
-
-          size:
-            11,
-
-          bold:
-            true,
-
-          color: {
-            argb:
-              'FFFFFFFF',
-          },
-        };
-
-        cell.fill = {
-          type:
-            'pattern',
-
-          pattern:
-            'solid',
-
-          fgColor: {
-            argb:
-              'FF356B5A',
-          },
-        };
-
-        cell.alignment = {
-          horizontal:
-            'center',
-
-          vertical:
-            'middle',
-
-          wrapText:
-            true,
-        };
-
-        cell.border =
-          this.excelBorder();
-      },
-    );
 
     worksheet.columns = [
       {
@@ -640,7 +1103,7 @@ export class ResidentsService {
       },
       {
         key:
-          'residentSince',
+          'date',
 
         width:
           20,
@@ -650,180 +1113,48 @@ export class ResidentsService {
           'focalPoint',
 
         width:
-          24,
+          26,
       },
       {
         key:
           'status',
 
         width:
-          17,
+          18,
       },
     ];
 
-    residents.forEach(
+    const headerRow =
+      worksheet.getRow(
+        3,
+      );
+
+    headerRow.values = [
+      'T/r',
+      'Nomi',
+      'STIR',
+      'Faoliyat turi',
+      'Eksportyor',
+      "Ta'sischi davlat",
+      'Hudud',
+      dateHeader,
+      'FOCAL POINT',
+      'HOLATI',
+    ];
+
+    headerRow.height =
+      27;
+
+    headerRow.eachCell(
       (
-        resident,
-        index,
+        cell,
       ) => {
-        const row =
-          worksheet.addRow({
-            number:
-              index +
-              1,
-
-            companyName:
-              resident.companyName,
-
-            tin:
-              resident.tin ||
-              '',
-
-            activity:
-              resident.activity ||
-              '',
-
-            exporter:
-              resident.exporter
-                ? 1
-                : '',
-
-            founderCountry:
-              resident.founderCountry ||
-              '',
-
-            district:
-              resident.district ||
-              resident.region ||
-              '',
-
-            residentSince:
-              resident.residentSince ||
-              '',
-
-            focalPoint:
-              resident.focalPoint ||
-              '',
-
-            status:
-              this.residentStatusLabel(
-                resident.status,
-              ),
-          });
-
-        row.height =
-          28;
-
-        row.eachCell(
-          {
-            includeEmpty:
-              true,
-          },
-
-          (
-            cell,
-          ) => {
-            cell.font = {
-              name:
-                'Times New Roman',
-
-              size:
-                11,
-            };
-
-            cell.alignment = {
-              horizontal:
-                'center',
-
-              vertical:
-                'middle',
-
-              wrapText:
-                true,
-            };
-
-            cell.border =
-              this.excelBorder();
-          },
-        );
-
-        row.getCell(
-          2,
-        ).alignment = {
-          horizontal:
-            'center',
-
-          vertical:
-            'middle',
-
-          wrapText:
-            true,
-        };
-
-        const countryCell =
-          row.getCell(
-            6,
-          );
-
-        if (
-          resident.founderCountry
-        ) {
-          const uzbekistan =
-            resident.founderCountry
-              .trim()
-              .toLowerCase()
-              .includes(
-                "o'zbekiston",
-              ) ||
-            resident.founderCountry
-              .trim()
-              .toLowerCase()
-              .includes(
-                'uzbekistan',
-              );
-
-          countryCell.fill = {
-            type:
-              'pattern',
-
-            pattern:
-              'solid',
-
-            fgColor: {
-              argb:
-                uzbekistan
-                  ? 'FFFFFF00'
-                  : 'FF92D050',
-            },
-          };
-        }
-
-        const dateCell =
-          row.getCell(
-            8,
-          );
-
-        if (
-          resident.residentSince
-        ) {
-          dateCell.value =
-            resident.residentSince;
-
-          dateCell.numFmt =
-            'dd/mm/yy';
-        }
-
-        const statusCell =
-          row.getCell(
-            10,
-          );
-
-        statusCell.font = {
+        cell.font = {
           name:
             'Times New Roman',
 
           size:
-            10,
+            11,
 
           bold:
             true,
@@ -834,7 +1165,7 @@ export class ResidentsService {
           },
         };
 
-        statusCell.fill = {
+        cell.fill = {
           type:
             'pattern',
 
@@ -843,35 +1174,191 @@ export class ResidentsService {
 
           fgColor: {
             argb:
-              resident.status ===
-              'ACTIVE'
-                ? 'FF15803D'
-                : 'FFC00000',
+              'FF356B5A',
           },
         };
 
-        statusCell.alignment = {
+        cell.alignment = {
           horizontal:
             'center',
 
           vertical:
             'middle',
+
+          wrapText:
+            true,
         };
+
+        cell.border =
+          this.excelBorder();
       },
     );
 
-    const lastRow =
-      Math.max(
-        worksheet.rowCount,
-        3,
+    worksheet.views = [
+      {
+        state:
+          'frozen',
+
+        ySplit:
+          3,
+      },
+    ];
+
+    worksheet.getColumn(
+      3,
+    ).numFmt =
+      '@';
+  }
+
+  private styleDataRow(
+    row: ExcelJS.Row,
+    founderCountry:
+      string | null,
+    statusColor:
+      | 'green'
+      | 'amber'
+      | 'red',
+  ) {
+    row.height =
+      28;
+
+    row.eachCell(
+      {
+        includeEmpty:
+          true,
+      },
+
+      (
+        cell,
+      ) => {
+        cell.font = {
+          name:
+            'Times New Roman',
+
+          size:
+            11,
+        };
+
+        cell.alignment = {
+          horizontal:
+            'center',
+
+          vertical:
+            'middle',
+
+          wrapText:
+            true,
+        };
+
+        cell.border =
+          this.excelBorder();
+      },
+    );
+
+    const countryCell =
+      row.getCell(
+        6,
       );
 
+    if (founderCountry) {
+      const normalized =
+        founderCountry
+          .trim()
+          .toLowerCase();
+
+      const uzbekistan =
+        normalized.includes(
+          "o'zbekiston",
+        ) ||
+        normalized.includes(
+          'uzbekistan',
+        );
+
+      countryCell.fill = {
+        type:
+          'pattern',
+
+        pattern:
+          'solid',
+
+        fgColor: {
+          argb:
+            uzbekistan
+              ? 'FFFFFF00'
+              : 'FF92D050',
+        },
+      };
+    }
+
+    const dateCell =
+      row.getCell(
+        8,
+      );
+
+    if (
+      dateCell.value instanceof
+      Date
+    ) {
+      dateCell.numFmt =
+        'dd/mm/yy';
+    }
+
+    const statusCell =
+      row.getCell(
+        10,
+      );
+
+    const color =
+      statusColor ===
+      'green'
+        ? 'FF15803D'
+        : statusColor ===
+            'amber'
+          ? 'FFD97706'
+          : 'FFC00000';
+
+    statusCell.font = {
+      name:
+        'Times New Roman',
+
+      size:
+        10,
+
+      bold:
+        true,
+
+      color: {
+        argb:
+          'FFFFFFFF',
+      },
+    };
+
+    statusCell.fill = {
+      type:
+        'pattern',
+
+      pattern:
+        'solid',
+
+      fgColor: {
+        argb:
+          color,
+      },
+    };
+  }
+
+  private finishWorksheet(
+    worksheet: ExcelJS.Worksheet,
+  ) {
     worksheet.autoFilter = {
       from:
         'A3',
 
       to:
-        `J${lastRow}`,
+        `J${Math.max(
+          worksheet.rowCount,
+          3,
+        )}`,
     };
 
     worksheet.pageSetup = {
@@ -889,43 +1376,122 @@ export class ResidentsService {
 
       paperSize:
         9,
-
-      margins: {
-        left:
-          0.25,
-
-        right:
-          0.25,
-
-        top:
-          0.5,
-
-        bottom:
-          0.5,
-
-        header:
-          0.2,
-
-        footer:
-          0.2,
-      },
     };
+  }
 
-    worksheet.getColumn(
-      3,
-    ).numFmt =
-      '@';
+  private async ensureApplication(
+    id: string,
+  ) {
+    const application =
+      await this.prisma.residentApplication.findUnique({
+        where: {
+          id,
+        },
+      });
 
-    const buffer =
-      await workbook.xlsx.writeBuffer();
+    if (!application) {
+      throw new NotFoundException(
+        'Resident application not found',
+      );
+    }
 
-    return Buffer.from(
-      buffer,
-    );
+    return application;
+  }
+
+  private async ensureResidentTinAvailable(
+    tin:
+      | string
+      | null
+      | undefined,
+    excludeId?:
+      string,
+  ) {
+    const cleanTin =
+      this.cleanOptional(
+        tin,
+      );
+
+    if (!cleanTin) {
+      return;
+    }
+
+    const duplicate =
+      await this.prisma.resident.findFirst({
+        where: {
+          tin:
+            cleanTin,
+
+          ...(excludeId
+            ? {
+                NOT: {
+                  id:
+                    excludeId,
+                },
+              }
+            : {}),
+        },
+      });
+
+    if (duplicate) {
+      throw new BadRequestException(
+        'Resident with this STIR already exists',
+      );
+    }
+  }
+
+  private parseDate(
+    value:
+      | string
+      | null
+      | undefined,
+  ) {
+    if (!value) {
+      return null;
+    }
+
+    const date =
+      new Date(
+        value,
+      );
+
+    if (
+      Number.isNaN(
+        date.getTime(),
+      )
+    ) {
+      throw new BadRequestException(
+        'Invalid date',
+      );
+    }
+
+    return date;
+  }
+
+  private cleanOptional(
+    value:
+      | string
+      | null
+      | undefined,
+  ) {
+    if (
+      value ===
+        null ||
+      value ===
+        undefined
+    ) {
+      return null;
+    }
+
+    const cleaned =
+      value.trim();
+
+    return cleaned ||
+      null;
   }
 
   private residentStatusLabel(
-    status: string,
+    status:
+      string,
   ) {
     if (
       status ===
@@ -942,6 +1508,27 @@ export class ResidentsService {
     }
 
     return 'FAOL EMAS';
+  }
+
+  private applicationStatusLabel(
+    status:
+      string,
+  ) {
+    if (
+      status ===
+      'PENDING'
+    ) {
+      return 'PENDING';
+    }
+
+    if (
+      status ===
+      'REJECTED'
+    ) {
+      return 'REJECTED';
+    }
+
+    return 'APPROVED';
   }
 
   private excelBorder() {
