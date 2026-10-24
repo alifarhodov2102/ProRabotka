@@ -50,7 +50,7 @@ export class ResidentsService {
         },
       },
       orderBy: {
-        createdAt: 'desc',
+        createdAt: 'asc',
       },
     });
   }
