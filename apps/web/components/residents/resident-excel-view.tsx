@@ -4,9 +4,12 @@ import {
   CalendarDays,
   Check,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Minus,
   Plus,
   Save,
+  X,
 } from 'lucide-react';
 
 import {
@@ -359,7 +362,7 @@ function ExcelRow({
   return (
     <div
       className={[
-        'grid grid-cols-[72px_360px_130px_220px_110px_190px_190px_190px_250px_150px] text-[13px] font-medium text-slate-800 dark:text-slate-200',
+        'grid grid-cols-[72px_360px_130px_220px_110px_190px_190px_190px_250px_150px] text-[13px] font-semibold text-slate-900 dark:text-slate-100',
 
         index %
           2 ===
@@ -633,7 +636,7 @@ function TextCell({
           onBlur={() =>
             void save()
           }
-          className="min-h-14 w-full resize-none bg-transparent px-2.5 py-2 text-center text-[13px] font-medium leading-5 outline-none transition duration-150 hover:bg-slate-50 focus:bg-emerald-50/70 focus:ring-2 focus:ring-inset focus:ring-emerald-300/60 dark:hover:bg-slate-900/60 dark:focus:bg-emerald-950/25 dark:focus:ring-emerald-900"
+          className="min-h-14 w-full resize-none bg-transparent px-2.5 py-2 text-center text-[13px] font-semibold leading-5 outline-none transition duration-150 hover:bg-slate-50 focus:bg-emerald-50/70 focus:ring-2 focus:ring-inset focus:ring-emerald-300/60 dark:hover:bg-slate-900/60 dark:focus:bg-emerald-950/25 dark:focus:ring-emerald-900"
         />
       ) : (
         <input
@@ -662,7 +665,7 @@ function TextCell({
             }
           }}
           className={[
-            'h-14 w-full bg-transparent px-2.5 text-center text-[13px] font-medium outline-none transition duration-150 hover:bg-slate-50 focus:bg-emerald-50/70 focus:ring-2 focus:ring-inset focus:ring-emerald-300/60 dark:hover:bg-slate-900/60 dark:focus:bg-emerald-950/25 dark:focus:ring-emerald-900',
+            'h-14 w-full bg-transparent px-2.5 text-center text-[13px] font-semibold outline-none transition duration-150 hover:bg-slate-50 focus:bg-emerald-50/70 focus:ring-2 focus:ring-inset focus:ring-emerald-300/60 dark:hover:bg-slate-900/60 dark:focus:bg-emerald-950/25 dark:focus:ring-emerald-900',
 
             mono
               ? 'font-mono'
@@ -840,8 +843,14 @@ function DateCell({
   ) =>
     Promise<void>;
 }) {
-  const inputRef =
-    useRef<HTMLInputElement | null>(
+  const [
+    open,
+    setOpen,
+  ] =
+    useState(false);
+
+  const wrapperRef =
+    useRef<HTMLDivElement | null>(
       null,
     );
 
@@ -853,11 +862,93 @@ function DateCell({
         )
       : '';
 
-  const formatted =
+  const selectedDate =
     dateValue
       ? new Date(
           `${dateValue}T00:00:00`,
-        ).toLocaleDateString(
+        )
+      : null;
+
+  const [
+    visibleMonth,
+    setVisibleMonth,
+  ] =
+    useState(() => {
+      const base =
+        selectedDate ??
+        new Date();
+
+      return new Date(
+        base.getFullYear(),
+        base.getMonth(),
+        1,
+      );
+    });
+
+  useEffect(() => {
+    if (
+      selectedDate
+    ) {
+      setVisibleMonth(
+        new Date(
+          selectedDate.getFullYear(),
+          selectedDate.getMonth(),
+          1,
+        ),
+      );
+    }
+  }, [
+    dateValue,
+  ]);
+
+  useEffect(() => {
+    function handleOutsideClick(
+      event:
+        MouseEvent |
+        TouchEvent,
+    ) {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(
+          event.target as Node,
+        )
+      ) {
+        setOpen(
+          false,
+        );
+      }
+    }
+
+    document.addEventListener(
+      'mousedown',
+      handleOutsideClick,
+    );
+
+    document.addEventListener(
+      'touchstart',
+      handleOutsideClick,
+      {
+        passive:
+          true,
+      },
+    );
+
+    return () => {
+      document.removeEventListener(
+        'mousedown',
+        handleOutsideClick,
+      );
+
+      document.removeEventListener(
+        'touchstart',
+        handleOutsideClick,
+      );
+    };
+  }, []);
+
+  const formatted =
+    selectedDate
+      ? selectedDate.toLocaleDateString(
           'en-GB',
           {
             day:
@@ -872,30 +963,247 @@ function DateCell({
         )
       : 'Set date';
 
-  function openPicker() {
-    const input =
-      inputRef.current;
+  const year =
+    visibleMonth.getFullYear();
 
-    if (!input) {
-      return;
-    }
+  const month =
+    visibleMonth.getMonth();
 
-    try {
-      input.showPicker();
-    } catch {
-      input.focus();
-      input.click();
-    }
+  const firstWeekday =
+    new Date(
+      year,
+      month,
+      1,
+    ).getDay();
+
+  const mondayIndex =
+    (
+      firstWeekday +
+      6
+    ) %
+    7;
+
+  const daysInMonth =
+    new Date(
+      year,
+      month +
+        1,
+      0,
+    ).getDate();
+
+  const daysInPreviousMonth =
+    new Date(
+      year,
+      month,
+      0,
+    ).getDate();
+
+  const cells:
+    {
+      date:
+        Date;
+
+      currentMonth:
+        boolean;
+    }[] = [];
+
+  for (
+    let index =
+      mondayIndex -
+      1;
+    index >=
+    0;
+    index -=
+    1
+  ) {
+    cells.push({
+      date:
+        new Date(
+          year,
+          month -
+            1,
+          daysInPreviousMonth -
+            index,
+        ),
+
+      currentMonth:
+        false,
+    });
   }
 
+  for (
+    let day =
+      1;
+    day <=
+    daysInMonth;
+    day +=
+    1
+  ) {
+    cells.push({
+      date:
+        new Date(
+          year,
+          month,
+          day,
+        ),
+
+      currentMonth:
+        true,
+    });
+  }
+
+  let nextDay =
+    1;
+
+  while (
+    cells.length <
+    42
+  ) {
+    cells.push({
+      date:
+        new Date(
+          year,
+          month +
+            1,
+          nextDay,
+        ),
+
+      currentMonth:
+        false,
+    });
+
+    nextDay +=
+      1;
+  }
+
+  function toValue(
+    date:
+      Date,
+  ) {
+    const y =
+      date.getFullYear();
+
+    const m =
+      String(
+        date.getMonth() +
+          1,
+      ).padStart(
+        2,
+        '0',
+      );
+
+    const d =
+      String(
+        date.getDate(),
+      ).padStart(
+        2,
+        '0',
+      );
+
+    return `${y}-${m}-${d}`;
+  }
+
+  async function selectDate(
+    date:
+      Date,
+  ) {
+    setOpen(
+      false,
+    );
+
+    await onSave(
+      toValue(
+        date,
+      ),
+    );
+  }
+
+  async function clearDate() {
+    setOpen(
+      false,
+    );
+
+    await onSave(
+      '',
+    );
+  }
+
+  async function selectToday() {
+    const today =
+      new Date();
+
+    setVisibleMonth(
+      new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        1,
+      ),
+    );
+
+    await selectDate(
+      today,
+    );
+  }
+
+  function previousMonth() {
+    setVisibleMonth(
+      (
+        current,
+      ) =>
+        new Date(
+          current.getFullYear(),
+          current.getMonth() -
+            1,
+          1,
+        ),
+    );
+  }
+
+  function nextMonth() {
+    setVisibleMonth(
+      (
+        current,
+      ) =>
+        new Date(
+          current.getFullYear(),
+          current.getMonth() +
+            1,
+          1,
+        ),
+    );
+  }
+
+  const todayValue =
+    toValue(
+      new Date(),
+    );
+
   return (
-    <div className="relative flex min-h-14 items-center border-b border-r border-slate-300 px-2 dark:border-slate-700">
+    <div
+      ref={
+        wrapperRef
+      }
+      className="relative flex min-h-14 items-center border-b border-r border-slate-300 px-2 dark:border-slate-700"
+    >
       <button
         type="button"
-        onClick={
-          openPicker
+        onClick={() =>
+          setOpen(
+            (
+              current,
+            ) =>
+              !current,
+          )
         }
-        className="flex h-10 w-full items-center justify-center gap-2 rounded-lg px-2 text-[13px] font-semibold text-slate-700 transition duration-150 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-300/60 dark:text-slate-200 dark:hover:bg-slate-800 dark:focus:ring-emerald-900"
+        className={[
+          'flex h-10 w-full items-center justify-center gap-2 rounded-lg px-2 text-[13px] font-semibold transition duration-150 focus:outline-none focus:ring-2',
+
+          open
+            ? 'bg-emerald-50 text-emerald-900 ring-2 ring-emerald-300/60 dark:bg-emerald-950/30 dark:text-emerald-100 dark:ring-emerald-900'
+            : 'text-slate-800 hover:bg-slate-100 focus:ring-emerald-300/60 dark:text-slate-100 dark:hover:bg-slate-800 dark:focus:ring-emerald-900',
+        ].join(
+          ' ',
+        )}
       >
         <span>
           {
@@ -911,28 +1219,176 @@ function DateCell({
         />
       </button>
 
-      <input
-        ref={
-          inputRef
-        }
-        type="date"
-        value={
-          dateValue
-        }
-        onChange={(
-          event,
-        ) =>
-          void onSave(
-            event.target
-              .value,
-          )
-        }
-        className="pointer-events-none absolute h-px w-px opacity-0"
-        tabIndex={
-          -1
-        }
-        aria-hidden="true"
-      />
+      {open && (
+        <div className="absolute left-1/2 top-[calc(100%+8px)] z-[80] w-[300px] -translate-x-1/2 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl shadow-slate-900/15 dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/40">
+          <div className="flex items-center justify-between border-b border-slate-100 px-3 py-3 dark:border-slate-800">
+            <button
+              type="button"
+              onClick={
+                previousMonth
+              }
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 active:scale-95 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+              aria-label="Previous month"
+            >
+              <ChevronLeft
+                size={
+                  16
+                }
+              />
+            </button>
+
+            <div className="text-sm font-bold text-slate-900 dark:text-slate-100">
+              {visibleMonth.toLocaleDateString(
+                'en-US',
+                {
+                  month:
+                    'long',
+
+                  year:
+                    'numeric',
+                },
+              )}
+            </div>
+
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={
+                  nextMonth
+                }
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 active:scale-95 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+                aria-label="Next month"
+              >
+                <ChevronRight
+                  size={
+                    16
+                  }
+                />
+              </button>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setOpen(
+                    false,
+                  )
+                }
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+                aria-label="Close calendar"
+              >
+                <X
+                  size={
+                    15
+                  }
+                />
+              </button>
+            </div>
+          </div>
+
+          <div className="p-3">
+            <div className="mb-1 grid grid-cols-7">
+              {[
+                'Mo',
+                'Tu',
+                'We',
+                'Th',
+                'Fr',
+                'Sa',
+                'Su',
+              ].map(
+                (
+                  label,
+                ) => (
+                  <div
+                    key={
+                      label
+                    }
+                    className="flex h-8 items-center justify-center text-[10px] font-bold uppercase tracking-wide text-slate-400 dark:text-slate-500"
+                  >
+                    {
+                      label
+                    }
+                  </div>
+                ),
+              )}
+            </div>
+
+            <div className="grid grid-cols-7 gap-1">
+              {cells.map(
+                (
+                  cell,
+                ) => {
+                  const cellValue =
+                    toValue(
+                      cell.date,
+                    );
+
+                  const selected =
+                    cellValue ===
+                    dateValue;
+
+                  const today =
+                    cellValue ===
+                    todayValue;
+
+                  return (
+                    <button
+                      key={
+                        cellValue
+                      }
+                      type="button"
+                      onClick={() =>
+                        void selectDate(
+                          cell.date,
+                        )
+                      }
+                      className={[
+                        'flex h-9 items-center justify-center rounded-lg text-xs font-semibold transition active:scale-95',
+
+                        selected
+                          ? 'bg-slate-900 text-white shadow-sm dark:bg-slate-100 dark:text-slate-900'
+                          : today
+                            ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-400 dark:ring-emerald-900'
+                            : cell.currentMonth
+                              ? 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800'
+                              : 'text-slate-300 hover:bg-slate-50 dark:text-slate-600 dark:hover:bg-slate-800/50',
+                      ].join(
+                        ' ',
+                      )}
+                    >
+                      {
+                        cell.date.getDate()
+                      }
+                    </button>
+                  );
+                },
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between border-t border-slate-100 px-3 py-2.5 dark:border-slate-800">
+            <button
+              type="button"
+              onClick={() =>
+                void clearDate()
+              }
+              className="rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-500 transition hover:bg-slate-100 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+            >
+              Clear
+            </button>
+
+            <button
+              type="button"
+              onClick={() =>
+                void selectToday()
+              }
+              className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-slate-800 active:scale-95 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
+            >
+              Today
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
