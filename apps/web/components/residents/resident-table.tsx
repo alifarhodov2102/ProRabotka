@@ -161,7 +161,7 @@ export default function ResidentTable({
     setScale,
   ] =
     useState(
-      0.7,
+      0.9,
     );
 
   const [
@@ -513,7 +513,7 @@ export default function ResidentTable({
               type="button"
               onClick={() =>
                 setScale(
-                  0.7,
+                  0.9,
                 )
               }
               className="flex h-8 min-w-[52px] items-center justify-center border-x border-slate-200 px-2 text-xs font-semibold text-slate-700 dark:border-slate-700 dark:text-slate-300"
