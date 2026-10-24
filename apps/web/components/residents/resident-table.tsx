@@ -3,6 +3,8 @@
 import {
   Check,
   ChevronDown,
+  Filter,
+  Minus,
   MoreHorizontal,
   Plus,
   Trash2,
@@ -10,7 +12,7 @@ import {
 } from 'lucide-react';
 
 import {
-  useRef,
+  useMemo,
   useState,
 } from 'react';
 
@@ -52,6 +54,17 @@ type QuickResident = {
   status: string;
 };
 
+type Filters = {
+  companyName: string;
+  tin: string;
+  activity: string;
+  exporter: 'ALL' | 'YES' | 'NO';
+  founderCountry: string;
+  district: string;
+  focalPoint: string;
+  status: string;
+};
+
 const emptyQuickResident:
   QuickResident = {
   companyName: '',
@@ -63,6 +76,18 @@ const emptyQuickResident:
   residentSince: '',
   focalPoint: '',
   status: 'ACTIVE',
+};
+
+const emptyFilters:
+  Filters = {
+  companyName: '',
+  tin: '',
+  activity: '',
+  exporter: 'ALL',
+  founderCountry: '',
+  district: '',
+  focalPoint: '',
+  status: '',
 };
 
 const statusOptions = [
@@ -130,6 +155,161 @@ export default function ResidentTable({
     useState<QuickResident>({
       ...emptyQuickResident,
     });
+
+  const [
+    scale,
+    setScale,
+  ] =
+    useState(
+      0.7,
+    );
+
+  const [
+    filtersOpen,
+    setFiltersOpen,
+  ] =
+    useState(false);
+
+  const [
+    filters,
+    setFilters,
+  ] =
+    useState<Filters>({
+      ...emptyFilters,
+    });
+
+  const filteredResidents =
+    useMemo(() => {
+      const includes = (
+        value:
+          | string
+          | null
+          | undefined,
+
+        query:
+          string,
+      ) =>
+        !query.trim() ||
+        String(
+          value ||
+            '',
+        )
+          .toLowerCase()
+          .includes(
+            query
+              .trim()
+              .toLowerCase(),
+          );
+
+      return residents.filter(
+        (
+          resident,
+        ) => {
+          if (
+            !includes(
+              resident.companyName,
+              filters.companyName,
+            )
+          ) {
+            return false;
+          }
+
+          if (
+            !includes(
+              resident.tin,
+              filters.tin,
+            )
+          ) {
+            return false;
+          }
+
+          if (
+            !includes(
+              resident.activity,
+              filters.activity,
+            )
+          ) {
+            return false;
+          }
+
+          if (
+            filters.exporter ===
+              'YES' &&
+            !resident.exporter
+          ) {
+            return false;
+          }
+
+          if (
+            filters.exporter ===
+              'NO' &&
+            resident.exporter
+          ) {
+            return false;
+          }
+
+          if (
+            !includes(
+              resident.founderCountry,
+              filters.founderCountry,
+            )
+          ) {
+            return false;
+          }
+
+          if (
+            !includes(
+              resident.district ||
+                resident.region,
+              filters.district,
+            )
+          ) {
+            return false;
+          }
+
+          if (
+            !includes(
+              resident.focalPoint,
+              filters.focalPoint,
+            )
+          ) {
+            return false;
+          }
+
+          if (
+            filters.status &&
+            resident.status !==
+              filters.status
+          ) {
+            return false;
+          }
+
+          return true;
+        },
+      );
+    }, [
+      residents,
+      filters,
+    ]);
+
+  const activeFilterCount =
+    Object.entries(
+      filters,
+    ).filter(
+      ([
+        key,
+        value,
+      ]) =>
+        key ===
+        'exporter'
+          ? value !==
+            'ALL'
+          : Boolean(
+              String(
+                value,
+              ).trim(),
+            ),
+    ).length;
 
   async function updateResident(
     residentId: string,
@@ -257,10 +437,126 @@ export default function ResidentTable({
 
   return (
     <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-      <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3 dark:border-slate-800">
-        <p className="text-xs text-slate-400 dark:text-slate-500">
-          Double-click any cell to edit
-        </p>
+      <div className="flex flex-col gap-3 border-b border-slate-100 px-4 py-3 dark:border-slate-800 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() =>
+              setFiltersOpen(
+                (
+                  current,
+                ) =>
+                  !current,
+              )
+            }
+            className={[
+              'inline-flex h-8 items-center gap-1.5 rounded-lg border px-3 text-xs font-medium transition',
+
+              filtersOpen ||
+              activeFilterCount >
+                0
+                ? 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-400'
+                : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800',
+            ].join(
+              ' ',
+            )}
+          >
+            <Filter
+              size={13}
+            />
+
+            Filter
+
+            {activeFilterCount >
+              0 && (
+              <span className="rounded-full bg-emerald-600 px-1.5 py-0.5 text-[9px] font-bold text-white">
+                {
+                  activeFilterCount
+                }
+              </span>
+            )}
+          </button>
+
+          <div className="flex items-center overflow-hidden rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-950">
+            <button
+              type="button"
+              onClick={() =>
+                setScale(
+                  (
+                    current,
+                  ) =>
+                    Math.max(
+                      0.6,
+                      Number(
+                        (
+                          current -
+                          0.1
+                        ).toFixed(
+                          1,
+                        ),
+                      ),
+                    ),
+                )
+              }
+              disabled={
+                scale <=
+                0.6
+              }
+              className="flex h-8 w-8 items-center justify-center text-slate-500 hover:bg-slate-50 disabled:opacity-30 dark:text-slate-400 dark:hover:bg-slate-800"
+            >
+              <Minus
+                size={13}
+              />
+            </button>
+
+            <button
+              type="button"
+              onClick={() =>
+                setScale(
+                  0.7,
+                )
+              }
+              className="flex h-8 min-w-[52px] items-center justify-center border-x border-slate-200 px-2 text-xs font-semibold text-slate-700 dark:border-slate-700 dark:text-slate-300"
+            >
+              {Math.round(
+                scale *
+                  100,
+              )}
+              %
+            </button>
+
+            <button
+              type="button"
+              onClick={() =>
+                setScale(
+                  (
+                    current,
+                  ) =>
+                    Math.min(
+                      1,
+                      Number(
+                        (
+                          current +
+                          0.1
+                        ).toFixed(
+                          1,
+                        ),
+                      ),
+                    ),
+                )
+              }
+              disabled={
+                scale >=
+                1
+              }
+              className="flex h-8 w-8 items-center justify-center text-slate-500 hover:bg-slate-50 disabled:opacity-30 dark:text-slate-400 dark:hover:bg-slate-800"
+            >
+              <Plus
+                size={13}
+              />
+            </button>
+          </div>
+        </div>
 
         <button
           type="button"
@@ -282,8 +578,30 @@ export default function ResidentTable({
         </button>
       </div>
 
+      {filtersOpen && (
+        <FilterBar
+          value={
+            filters
+          }
+          onChange={
+            setFilters
+          }
+          onClear={() =>
+            setFilters({
+              ...emptyFilters,
+            })
+          }
+        />
+      )}
+
       <div className="overflow-x-auto">
-        <div className="min-w-[1450px]">
+        <div
+          className="min-w-[1450px] origin-top-left"
+          style={{
+            zoom:
+              scale,
+          }}
+        >
           <div
             className={`grid ${grid} items-center border-b border-[#2f6655] bg-[#356b5a] px-4 py-3.5 text-[12px] font-semibold text-white`}
           >
@@ -474,7 +792,6 @@ export default function ResidentTable({
                     quickSaving
                   }
                   className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600 text-white disabled:opacity-50"
-                  title="Save"
                 >
                   <Check
                     size={15}
@@ -492,11 +809,7 @@ export default function ResidentTable({
                       false,
                     );
                   }}
-                  disabled={
-                    quickSaving
-                  }
                   className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-white dark:hover:bg-slate-800"
-                  title="Cancel"
                 >
                   <X
                     size={15}
@@ -506,7 +819,7 @@ export default function ResidentTable({
             </div>
           )}
 
-          {residents.map(
+          {filteredResidents.map(
             (
               resident,
               index,
@@ -525,7 +838,7 @@ export default function ResidentTable({
                     : 'bg-slate-50/70 dark:bg-slate-950/40',
 
                   index !==
-                  residents.length -
+                  filteredResidents.length -
                     1
                     ? 'border-b border-slate-100 dark:border-slate-800'
                     : '',
@@ -716,7 +1029,6 @@ export default function ResidentTable({
                         resident,
                       )
                     }
-                    title="Full details"
                     className="flex h-8 w-8 items-center justify-center rounded-md text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800"
                   >
                     <MoreHorizontal
@@ -731,7 +1043,6 @@ export default function ResidentTable({
                         resident,
                       )
                     }
-                    title="Delete resident"
                     className="flex h-8 w-8 items-center justify-center rounded-md text-slate-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30"
                   >
                     <Trash2
@@ -743,15 +1054,300 @@ export default function ResidentTable({
             ),
           )}
 
-          {residents.length ===
+          {filteredResidents.length ===
             0 &&
             !quickOpen && (
               <div className="px-6 py-14 text-center text-sm text-slate-400">
-                Rezidentlar topilmadi.
+                No matching residents.
               </div>
             )}
         </div>
       </div>
+    </div>
+  );
+}
+
+function FilterBar({
+  value,
+  onChange,
+  onClear,
+}: {
+  value:
+    Filters;
+
+  onChange: (
+    value:
+      Filters,
+  ) => void;
+
+  onClear:
+    () => void;
+}) {
+  return (
+    <div className="border-b border-slate-100 bg-slate-50/70 px-4 py-3 dark:border-slate-800 dark:bg-slate-950/40">
+      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8">
+        <FilterInput
+          value={
+            value.companyName
+          }
+          placeholder="Nomi"
+          onChange={(
+            next,
+          ) =>
+            onChange({
+              ...value,
+              companyName:
+                next,
+            })
+          }
+        />
+
+        <FilterInput
+          value={
+            value.tin
+          }
+          placeholder="STIR"
+          onChange={(
+            next,
+          ) =>
+            onChange({
+              ...value,
+              tin:
+                next,
+            })
+          }
+        />
+
+        <FilterInput
+          value={
+            value.activity
+          }
+          placeholder="Faoliyat"
+          onChange={(
+            next,
+          ) =>
+            onChange({
+              ...value,
+              activity:
+                next,
+            })
+          }
+        />
+
+        <FilterSelect
+          value={
+            value.exporter
+          }
+          options={[
+            {
+              value:
+                'ALL',
+              label:
+                'Eksportyor: All',
+            },
+            {
+              value:
+                'YES',
+              label:
+                'Eksportyor: Yes',
+            },
+            {
+              value:
+                'NO',
+              label:
+                'Eksportyor: No',
+            },
+          ]}
+          onChange={(
+            next,
+          ) =>
+            onChange({
+              ...value,
+              exporter:
+                next as
+                  | 'ALL'
+                  | 'YES'
+                  | 'NO',
+            })
+          }
+        />
+
+        <FilterInput
+          value={
+            value.founderCountry
+          }
+          placeholder="Davlat"
+          onChange={(
+            next,
+          ) =>
+            onChange({
+              ...value,
+              founderCountry:
+                next,
+            })
+          }
+        />
+
+        <FilterInput
+          value={
+            value.district
+          }
+          placeholder="Hudud"
+          onChange={(
+            next,
+          ) =>
+            onChange({
+              ...value,
+              district:
+                next,
+            })
+          }
+        />
+
+        <FilterInput
+          value={
+            value.focalPoint
+          }
+          placeholder="Focal point"
+          onChange={(
+            next,
+          ) =>
+            onChange({
+              ...value,
+              focalPoint:
+                next,
+            })
+          }
+        />
+
+        <div className="flex gap-2">
+          <FilterSelect
+            value={
+              value.status
+            }
+            options={[
+              {
+                value:
+                  '',
+                label:
+                  'Holati: All',
+              },
+              ...statusOptions,
+            ]}
+            onChange={(
+              next,
+            ) =>
+              onChange({
+                ...value,
+                status:
+                  next,
+              })
+            }
+          />
+
+          <button
+            type="button"
+            onClick={
+              onClear
+            }
+            className="h-9 shrink-0 rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-500 transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800"
+          >
+            Clear
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FilterInput({
+  value,
+  placeholder,
+  onChange,
+}: {
+  value: string;
+  placeholder: string;
+  onChange: (
+    value:
+      string,
+  ) => void;
+}) {
+  return (
+    <input
+      value={
+        value
+      }
+      placeholder={
+        placeholder
+      }
+      onChange={(
+        event,
+      ) =>
+        onChange(
+          event.target
+            .value,
+        )
+      }
+      className="h-9 w-full rounded-lg border border-slate-200 bg-white px-2.5 text-xs text-slate-700 outline-none placeholder:text-slate-400 focus:border-emerald-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+    />
+  );
+}
+
+function FilterSelect({
+  value,
+  options,
+  onChange,
+}: {
+  value: string;
+  options: {
+    value: string;
+    label: string;
+  }[];
+  onChange: (
+    value:
+      string,
+  ) => void;
+}) {
+  return (
+    <div className="relative min-w-0 flex-1">
+      <select
+        value={
+          value
+        }
+        onChange={(
+          event,
+        ) =>
+          onChange(
+            event.target
+              .value,
+          )
+        }
+        className="h-9 w-full appearance-none rounded-lg border border-slate-200 bg-white px-2.5 pr-7 text-xs text-slate-700 outline-none focus:border-emerald-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+      >
+        {options.map(
+          (
+            option,
+          ) => (
+            <option
+              key={
+                option.value
+              }
+              value={
+                option.value
+              }
+            >
+              {
+                option.label
+              }
+            </option>
+          ),
+        )}
+      </select>
+
+      <ChevronDown
+        size={12}
+        className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400"
+      />
     </div>
   );
 }
