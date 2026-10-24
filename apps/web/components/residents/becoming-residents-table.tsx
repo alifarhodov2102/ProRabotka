@@ -774,11 +774,11 @@ export default function BecomingResidentsTable({
                 }
               />
 
-              <QuickInput
-                type="date"
+              <FlexibleDateInput
                 value={
                   draft.appliedAt
                 }
+                placeholder="YYYY-MM-DD"
                 onChange={(
                   value,
                 ) =>
@@ -1013,32 +1013,24 @@ export default function BecomingResidentsTable({
                   }
                 />
 
-                <div className="flex min-h-14 items-center px-1">
-                  <input
-                    type="date"
-                    value={
-                      application.appliedAt
-                        ? application.appliedAt.slice(
-                            0,
-                            10,
-                          )
-                        : ''
-                    }
-                    onChange={(
-                      event,
-                    ) =>
-                      void patch(
-                        application,
-                        {
-                          appliedAt:
-                            event.target.value ||
-                            null,
-                        },
-                      )
-                    }
-                    className="h-9 w-full rounded-md border border-transparent bg-transparent px-2 text-xs text-slate-600 outline-none hover:border-slate-200 focus:border-emerald-500 dark:text-slate-300"
-                  />
-                </div>
+                <FlexibleEditableDate
+                  value={
+                    application.appliedAt ||
+                    ''
+                  }
+                  onSave={(
+                    value,
+                  ) =>
+                    patch(
+                      application,
+                      {
+                        appliedAt:
+                          value ||
+                          null,
+                      },
+                    )
+                  }
+                />
 
                 <EditableInput
                   value={
@@ -1504,6 +1496,387 @@ function EditableInput({
         )}
       />
     </div>
+  );
+}
+
+function FlexibleDateInput({
+  value,
+  onChange,
+  placeholder = 'YYYY-MM-DD',
+}: {
+  value: string;
+
+  onChange: (
+    value: string,
+  ) => void;
+
+  placeholder?: string;
+}) {
+  const [
+    draft,
+    setDraft,
+  ] =
+    useState(
+      value,
+    );
+
+  function commit() {
+    const normalized =
+      normalizeDateInput(
+        draft,
+      );
+
+    if (
+      normalized ===
+      null
+    ) {
+      setDraft(
+        value,
+      );
+
+      return;
+    }
+
+    setDraft(
+      normalized,
+    );
+
+    onChange(
+      normalized,
+    );
+  }
+
+  return (
+    <div className="px-1">
+      <input
+        type="text"
+        inputMode="numeric"
+        value={
+          draft
+        }
+        placeholder={
+          placeholder
+        }
+        onChange={(
+          event,
+        ) =>
+          setDraft(
+            event.target
+              .value,
+          )
+        }
+        onPaste={(
+          event,
+        ) => {
+          const pasted =
+            event.clipboardData.getData(
+              'text',
+            );
+
+          const normalized =
+            normalizeDateInput(
+              pasted,
+            );
+
+          if (
+            normalized !==
+            null
+          ) {
+            event.preventDefault();
+
+            setDraft(
+              normalized,
+            );
+
+            onChange(
+              normalized,
+            );
+          }
+        }}
+        onBlur={
+          commit
+        }
+        onKeyDown={(
+          event,
+        ) => {
+          if (
+            event.key ===
+            'Enter'
+          ) {
+            commit();
+
+            event.currentTarget.blur();
+          }
+
+          if (
+            event.key ===
+            'Escape'
+          ) {
+            setDraft(
+              value,
+            );
+
+            event.currentTarget.blur();
+          }
+        }}
+        className="h-8 w-full rounded-md border border-slate-200 bg-white px-2 text-center text-xs font-medium text-slate-800 outline-none placeholder:text-slate-400 focus:border-emerald-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
+      />
+    </div>
+  );
+}
+
+function FlexibleEditableDate({
+  value,
+  onSave,
+}: {
+  value: string;
+
+  onSave: (
+    value: string,
+  ) => Promise<void>;
+}) {
+  const [
+    draft,
+    setDraft,
+  ] =
+    useState(
+      value
+        ? value.slice(
+            0,
+            10,
+          )
+        : '',
+    );
+
+  async function commit() {
+    const normalized =
+      normalizeDateInput(
+        draft,
+      );
+
+    if (
+      normalized ===
+      null
+    ) {
+      setDraft(
+        value
+          ? value.slice(
+              0,
+              10,
+            )
+          : '',
+      );
+
+      return;
+    }
+
+    const original =
+      value
+        ? value.slice(
+            0,
+            10,
+          )
+        : '';
+
+    setDraft(
+      normalized,
+    );
+
+    if (
+      normalized ===
+      original
+    ) {
+      return;
+    }
+
+    await onSave(
+      normalized,
+    );
+  }
+
+  return (
+    <div className="flex min-h-14 items-center px-1">
+      <input
+        type="text"
+        inputMode="numeric"
+        value={
+          draft
+        }
+        placeholder="YYYY-MM-DD"
+        onChange={(
+          event,
+        ) =>
+          setDraft(
+            event.target
+              .value,
+          )
+        }
+        onPaste={(
+          event,
+        ) => {
+          const pasted =
+            event.clipboardData.getData(
+              'text',
+            );
+
+          const normalized =
+            normalizeDateInput(
+              pasted,
+            );
+
+          if (
+            normalized !==
+            null
+          ) {
+            event.preventDefault();
+
+            setDraft(
+              normalized,
+            );
+
+            void onSave(
+              normalized,
+            );
+          }
+        }}
+        onBlur={() =>
+          void commit()
+        }
+        onKeyDown={(
+          event,
+        ) => {
+          if (
+            event.key ===
+            'Enter'
+          ) {
+            event.currentTarget.blur();
+          }
+
+          if (
+            event.key ===
+            'Escape'
+          ) {
+            setDraft(
+              value
+                ? value.slice(
+                    0,
+                    10,
+                  )
+                : '',
+            );
+
+            event.currentTarget.blur();
+          }
+        }}
+        className="h-9 w-full rounded-md border border-transparent bg-transparent px-2 text-center text-xs font-medium text-slate-600 outline-none transition hover:border-slate-200 focus:border-emerald-500 focus:bg-white dark:text-slate-300 dark:focus:bg-slate-950"
+      />
+    </div>
+  );
+}
+
+function normalizeDateInput(
+  value: string,
+) {
+  const clean =
+    value.trim();
+
+  if (!clean) {
+    return '';
+  }
+
+  const iso =
+    clean.match(
+      /^(\d{4})-(\d{1,2})-(\d{1,2})$/,
+    );
+
+  if (iso) {
+    const [
+      ,
+      year,
+      month,
+      day,
+    ] = iso;
+
+    const normalized =
+      `${year}-${month.padStart(
+        2,
+        '0',
+      )}-${day.padStart(
+        2,
+        '0',
+      )}`;
+
+    return isValidDateValue(
+      normalized,
+    )
+      ? normalized
+      : null;
+  }
+
+  const european =
+    clean.match(
+      /^(\d{1,2})[./-](\d{1,2})[./-](\d{4})$/,
+    );
+
+  if (european) {
+    const [
+      ,
+      day,
+      month,
+      year,
+    ] = european;
+
+    const normalized =
+      `${year}-${month.padStart(
+        2,
+        '0',
+      )}-${day.padStart(
+        2,
+        '0',
+      )}`;
+
+    return isValidDateValue(
+      normalized,
+    )
+      ? normalized
+      : null;
+  }
+
+  return null;
+}
+
+function isValidDateValue(
+  value: string,
+) {
+  const [
+    year,
+    month,
+    day,
+  ] =
+    value
+      .split(
+        '-',
+      )
+      .map(
+        Number,
+      );
+
+  const date =
+    new Date(
+      year,
+      month -
+        1,
+      day,
+    );
+
+  return (
+    date.getFullYear() ===
+      year &&
+    date.getMonth() ===
+      month -
+        1 &&
+    date.getDate() ===
+      day
   );
 }
 
