@@ -3,6 +3,8 @@
 import {
   Check,
   ChevronDown,
+  Minus,
+  Plus,
   Save,
 } from 'lucide-react';
 
@@ -78,6 +80,14 @@ export default function ResidentExcelView({
       string | null
     >(null);
 
+  const [
+    scale,
+    setScale,
+  ] =
+    useState(
+      0.8,
+    );
+
   async function patchResident(
     residentId:
       string,
@@ -140,21 +150,110 @@ export default function ResidentExcelView({
           </p>
         </div>
 
-        {savingId && (
-          <div className="flex items-center gap-1.5 text-xs text-slate-400">
-            <Save
-              size={
-                13
-              }
-            />
+        <div className="flex shrink-0 items-center gap-3">
+          {savingId && (
+            <div className="hidden items-center gap-1.5 text-xs text-slate-400 sm:flex">
+              <Save
+                size={
+                  13
+                }
+              />
 
-            Saving...
+              Saving...
+            </div>
+          )}
+
+          <div className="flex items-center overflow-hidden rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-950">
+            <button
+              type="button"
+              onClick={() =>
+                setScale(
+                  (current) =>
+                    Math.max(
+                      0.6,
+                      Number(
+                        (current -
+                          0.1).toFixed(
+                          1,
+                        ),
+                      ),
+                    ),
+                )
+              }
+              disabled={
+                scale <=
+                0.6
+              }
+              className="flex h-8 w-8 items-center justify-center text-slate-500 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-30 dark:text-slate-400 dark:hover:bg-slate-800"
+              title="Zoom out"
+              aria-label="Zoom out Excel view"
+            >
+              <Minus
+                size={
+                  14
+                }
+              />
+            </button>
+
+            <button
+              type="button"
+              onClick={() =>
+                setScale(
+                  0.8,
+                )
+              }
+              className="flex h-8 min-w-[54px] items-center justify-center border-x border-slate-200 px-2 text-xs font-medium tabular-nums text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+              title="Reset to 80%"
+            >
+              {Math.round(
+                scale *
+                  100,
+              )}
+              %
+            </button>
+
+            <button
+              type="button"
+              onClick={() =>
+                setScale(
+                  (current) =>
+                    Math.min(
+                      1,
+                      Number(
+                        (current +
+                          0.1).toFixed(
+                          1,
+                        ),
+                      ),
+                    ),
+                )
+              }
+              disabled={
+                scale >=
+                1
+              }
+              className="flex h-8 w-8 items-center justify-center text-slate-500 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-30 dark:text-slate-400 dark:hover:bg-slate-800"
+              title="Zoom in"
+              aria-label="Zoom in Excel view"
+            >
+              <Plus
+                size={
+                  14
+                }
+              />
+            </button>
           </div>
-        )}
+        </div>
       </div>
 
       <div className="overflow-auto">
-        <div className="min-w-[1510px] bg-white dark:bg-slate-950">
+        <div
+          className="min-w-[1510px] bg-white dark:bg-slate-950"
+          style={{
+            zoom:
+              scale,
+          }}
+        >
           <div className="grid grid-cols-[72px_360px_130px_220px_110px_190px_190px_190px_250px_150px] border-b border-slate-300 dark:border-slate-700">
             <div className="col-span-10 flex h-12 items-center justify-center border-b border-slate-300 bg-white px-4 font-serif text-[17px] font-bold text-slate-950 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
               Sirdaryo viloyati IT-Park rezidentlari
