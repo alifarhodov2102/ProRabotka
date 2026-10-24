@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  CalendarDays,
   Check,
   ChevronDown,
   Minus,
@@ -10,6 +11,7 @@ import {
 
 import {
   useEffect,
+  useRef,
   useState,
 } from 'react';
 
@@ -85,7 +87,7 @@ export default function ResidentExcelView({
     setScale,
   ] =
     useState(
-      0.8,
+      0.7,
     );
 
   async function patchResident(
@@ -141,18 +143,18 @@ export default function ResidentExcelView({
     <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
       <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-4 py-3 dark:border-slate-800">
         <div>
-          <p className="text-sm font-medium text-slate-800 dark:text-slate-200">
+          <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
             Excel view
           </p>
 
           <p className="mt-0.5 text-xs text-slate-400 dark:text-slate-500">
-            Edit cells directly. Changes are saved to ProRabotka.
+            Edit resident data directly in the table.
           </p>
         </div>
 
         <div className="flex shrink-0 items-center gap-3">
           {savingId && (
-            <div className="hidden items-center gap-1.5 text-xs text-slate-400 sm:flex">
+            <div className="hidden items-center gap-1.5 text-xs font-medium text-slate-400 sm:flex">
               <Save
                 size={
                   13
@@ -163,7 +165,7 @@ export default function ResidentExcelView({
             </div>
           )}
 
-          <div className="flex items-center overflow-hidden rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-950">
+          <div className="flex items-center overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-950">
             <button
               type="button"
               onClick={() =>
@@ -199,11 +201,11 @@ export default function ResidentExcelView({
               type="button"
               onClick={() =>
                 setScale(
-                  0.8,
+                  0.7,
                 )
               }
-              className="flex h-8 min-w-[54px] items-center justify-center border-x border-slate-200 px-2 text-xs font-medium tabular-nums text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
-              title="Reset to 80%"
+              className="flex h-8 min-w-[54px] items-center justify-center border-x border-slate-200 px-2 text-xs font-semibold tabular-nums text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+              title="Reset to 70%"
             >
               {Math.round(
                 scale *
@@ -255,18 +257,18 @@ export default function ResidentExcelView({
           }}
         >
           <div className="grid grid-cols-[72px_360px_130px_220px_110px_190px_190px_190px_250px_150px] border-b border-slate-300 dark:border-slate-700">
-            <div className="col-span-10 flex h-12 items-center justify-center border-b border-slate-300 bg-white px-4 font-serif text-[17px] font-bold text-slate-950 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
+            <div className="col-span-10 flex h-12 items-center justify-center border-b border-slate-300 bg-white px-4 font-serif text-[18px] font-bold text-slate-950 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
               Sirdaryo viloyati IT-Park rezidentlari
             </div>
           </div>
 
-          <div className="sticky top-0 z-20 grid grid-cols-[72px_360px_130px_220px_110px_190px_190px_190px_250px_150px] bg-[#356b5a] text-[12px] font-semibold text-white shadow-sm">
+          <div className="sticky top-0 z-20 grid grid-cols-[72px_360px_130px_220px_110px_190px_190px_190px_250px_150px] bg-[#356b5a] text-[12px] font-bold text-white shadow-sm">
             {[
               'T/r',
               'Nomi',
               'STIR',
               'Faoliyat turi',
-              'Exportyor',
+              'Eksportyor',
               "Ta'sischi davlat",
               'Hudud',
               "Rezident bo'lgan sana",
@@ -290,7 +292,7 @@ export default function ResidentExcelView({
 
           {residents.length ===
           0 ? (
-            <div className="px-6 py-16 text-center text-sm text-slate-400">
+            <div className="px-6 py-16 text-center text-sm font-medium text-slate-400">
               No residents.
             </div>
           ) : (
@@ -327,10 +329,6 @@ export default function ResidentExcelView({
           )}
         </div>
       </div>
-
-      <div className="border-t border-slate-100 bg-slate-50 px-4 py-2 text-[11px] text-slate-400 dark:border-slate-800 dark:bg-slate-950/50 dark:text-slate-500">
-        Tip: Tab bilan keyingi katakka o‘ting. Text kataklari focusdan chiqqanda saqlanadi.
-      </div>
     </div>
   );
 }
@@ -361,7 +359,7 @@ function ExcelRow({
   return (
     <div
       className={[
-        'grid grid-cols-[72px_360px_130px_220px_110px_190px_190px_190px_250px_150px] text-[13px] text-slate-800 dark:text-slate-200',
+        'grid grid-cols-[72px_360px_130px_220px_110px_190px_190px_190px_250px_150px] text-[13px] font-medium text-slate-800 dark:text-slate-200',
 
         index %
           2 ===
@@ -386,6 +384,7 @@ function ExcelRow({
           resident.companyName
         }
         required
+        strong
         onSave={(
           value,
         ) =>
@@ -533,7 +532,7 @@ function StaticCell({
     ReactNode;
 }) {
   return (
-    <div className="flex min-h-14 items-center justify-center border-b border-r border-slate-300 px-2 font-medium dark:border-slate-700">
+    <div className="flex min-h-14 items-center justify-center border-b border-r border-slate-300 px-2 font-semibold dark:border-slate-700">
       {children}
     </div>
   );
@@ -545,6 +544,7 @@ function TextCell({
   required = false,
   mono = false,
   multiline = false,
+  strong = false,
 }: {
   value: string;
 
@@ -560,6 +560,9 @@ function TextCell({
     boolean;
 
   multiline?:
+    boolean;
+
+  strong?:
     boolean;
 }) {
   const [
@@ -630,7 +633,7 @@ function TextCell({
           onBlur={() =>
             void save()
           }
-          className="min-h-14 w-full resize-none bg-transparent px-2.5 py-2 text-center text-[13px] leading-5 outline-none transition focus:bg-emerald-50/60 dark:focus:bg-emerald-950/20"
+          className="min-h-14 w-full resize-none bg-transparent px-2.5 py-2 text-center text-[13px] font-medium leading-5 outline-none transition duration-150 hover:bg-slate-50 focus:bg-emerald-50/70 focus:ring-2 focus:ring-inset focus:ring-emerald-300/60 dark:hover:bg-slate-900/60 dark:focus:bg-emerald-950/25 dark:focus:ring-emerald-900"
         />
       ) : (
         <input
@@ -659,10 +662,14 @@ function TextCell({
             }
           }}
           className={[
-            'h-14 w-full bg-transparent px-2.5 text-center text-[13px] outline-none transition focus:bg-emerald-50/60 dark:focus:bg-emerald-950/20',
+            'h-14 w-full bg-transparent px-2.5 text-center text-[13px] font-medium outline-none transition duration-150 hover:bg-slate-50 focus:bg-emerald-50/70 focus:ring-2 focus:ring-inset focus:ring-emerald-300/60 dark:hover:bg-slate-900/60 dark:focus:bg-emerald-950/25 dark:focus:ring-emerald-900',
 
             mono
               ? 'font-mono'
+              : '',
+
+            strong
+              ? 'font-semibold'
               : '',
           ].join(
             ' ',
@@ -772,7 +779,7 @@ function CountryCell({
             event.currentTarget.blur();
           }
         }}
-        className="h-14 w-full bg-transparent px-2.5 text-center text-[13px] font-medium text-slate-900 outline-none"
+        className="h-14 w-full bg-transparent px-2.5 text-center text-[13px] font-semibold text-slate-900 outline-none transition duration-150 focus:bg-white/40 focus:ring-2 focus:ring-inset focus:ring-slate-500/20"
       />
     </div>
   );
@@ -801,18 +808,18 @@ function BooleanCell({
           )
         }
         className={[
-          'flex h-6 w-6 items-center justify-center rounded-md border transition',
+          'flex h-7 w-7 items-center justify-center rounded-md border transition duration-150 active:scale-95',
 
           value
-            ? 'border-emerald-600 bg-emerald-600 text-white'
-            : 'border-slate-300 bg-white text-transparent dark:border-slate-600 dark:bg-slate-900',
+            ? 'border-emerald-600 bg-emerald-600 text-white shadow-sm'
+            : 'border-slate-300 bg-white text-transparent hover:border-slate-400 dark:border-slate-600 dark:bg-slate-900',
         ].join(
           ' ',
         )}
       >
         <Check
           size={
-            14
+            15
           }
         />
       </button>
@@ -833,6 +840,11 @@ function DateCell({
   ) =>
     Promise<void>;
 }) {
+  const inputRef =
+    useRef<HTMLInputElement | null>(
+      null,
+    );
+
   const dateValue =
     value
       ? value.slice(
@@ -841,9 +853,68 @@ function DateCell({
         )
       : '';
 
+  const formatted =
+    dateValue
+      ? new Date(
+          `${dateValue}T00:00:00`,
+        ).toLocaleDateString(
+          'en-GB',
+          {
+            day:
+              '2-digit',
+
+            month:
+              '2-digit',
+
+            year:
+              'numeric',
+          },
+        )
+      : 'Set date';
+
+  function openPicker() {
+    const input =
+      inputRef.current;
+
+    if (!input) {
+      return;
+    }
+
+    try {
+      input.showPicker();
+    } catch {
+      input.focus();
+      input.click();
+    }
+  }
+
   return (
-    <div className="flex min-h-14 items-center border-b border-r border-slate-300 px-2 dark:border-slate-700">
+    <div className="relative flex min-h-14 items-center border-b border-r border-slate-300 px-2 dark:border-slate-700">
+      <button
+        type="button"
+        onClick={
+          openPicker
+        }
+        className="flex h-10 w-full items-center justify-center gap-2 rounded-lg px-2 text-[13px] font-semibold text-slate-700 transition duration-150 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-300/60 dark:text-slate-200 dark:hover:bg-slate-800 dark:focus:ring-emerald-900"
+      >
+        <span>
+          {
+            formatted
+          }
+        </span>
+
+        <CalendarDays
+          size={
+            15
+          }
+          className="shrink-0 text-slate-400"
+        />
+      </button>
+
       <input
+        ref={
+          inputRef
+        }
         type="date"
         value={
           dateValue
@@ -856,7 +927,11 @@ function DateCell({
               .value,
           )
         }
-        className="h-10 w-full bg-transparent text-center text-[13px] outline-none"
+        className="pointer-events-none absolute h-px w-px opacity-0"
+        tabIndex={
+          -1
+        }
+        aria-hidden="true"
       />
     </div>
   );
@@ -894,11 +969,11 @@ function StatusCell({
           )
         }
         className={[
-          'h-7 w-full appearance-none rounded-full px-3 pr-7 text-center text-[10px] font-bold text-white outline-none',
+          'h-8 w-full appearance-none rounded-full px-3 pr-8 text-center text-[10px] font-bold text-white shadow-sm outline-none transition duration-150 focus:ring-2 focus:ring-offset-1',
 
           active
-            ? 'bg-emerald-700'
-            : 'bg-red-700',
+            ? 'bg-emerald-700 focus:ring-emerald-400'
+            : 'bg-red-700 focus:ring-red-400',
         ].join(
           ' ',
         )}
