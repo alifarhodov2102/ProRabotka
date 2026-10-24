@@ -8,8 +8,13 @@ import {
   Patch,
   Post,
   Put,
+  Res,
   UseGuards,
 } from '@nestjs/common';
+
+import type {
+  Response,
+} from 'express';
 
 import { ResidentsService } from './residents.service.js';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
@@ -24,6 +29,37 @@ export class ResidentsController {
   @Get()
   findAll() {
     return this.residentsService.findAll();
+  }
+
+  @Get('export')
+  async exportExcel(
+    @Res()
+    response: Response,
+  ) {
+    const buffer =
+      await this.residentsService.exportExcel();
+
+    const date =
+      new Date()
+        .toISOString()
+        .slice(
+          0,
+          10,
+        );
+
+    response.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
+
+    response.setHeader(
+      'Content-Disposition',
+      `attachment; filename="sirdaryo-residents-${date}.xlsx"`,
+    );
+
+    response.end(
+      buffer,
+    );
   }
 
   @Get(':id')

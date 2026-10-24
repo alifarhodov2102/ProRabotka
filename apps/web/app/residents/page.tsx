@@ -7,6 +7,7 @@ import {
 } from 'react';
 
 import {
+  Download,
   Plus,
   Search,
 } from 'lucide-react';
@@ -19,6 +20,8 @@ import ResidentTable, {
   type Resident,
 } from '@/components/residents/resident-table';
 
+import ResidentExcelView from '@/components/residents/resident-excel-view';
+
 import ResidentModal from '@/components/residents/resident-modal';
 
 import QuarterlyReports from '@/components/residents/quarterly-reports';
@@ -30,6 +33,8 @@ import SectionSpaces from '@/components/spaces/section-spaces';
 import {
   ApiError,
   apiFetch,
+  apiUrl,
+  getToken,
 } from '@/lib/api';
 
 const emptyForm = {
@@ -54,6 +59,7 @@ export default function ResidentsPage() {
   ] = useState<
     | 'overview'
     | 'list'
+    | 'excel'
     | 'reports'
     | 'spaces'
   >('overview');
@@ -89,6 +95,11 @@ export default function ResidentsPage() {
   const [
     saving,
     setSaving,
+  ] = useState(false);
+
+  const [
+    exporting,
+    setExporting,
   ] = useState(false);
 
   const [
@@ -411,6 +422,87 @@ export default function ResidentsPage() {
     }
   }
 
+  async function downloadExcel() {
+    try {
+      setExporting(
+        true,
+      );
+
+      setError('');
+
+      const token =
+        getToken();
+
+      const response =
+        await fetch(
+          apiUrl(
+            '/residents/export',
+          ),
+          {
+            headers:
+              token
+                ? {
+                    Authorization:
+                      `Bearer ${token}`,
+                  }
+                : {},
+          },
+        );
+
+      if (
+        !response.ok
+      ) {
+        throw new Error();
+      }
+
+      const blob =
+        await response.blob();
+
+      const url =
+        window.URL.createObjectURL(
+          blob,
+        );
+
+      const anchor =
+        document.createElement(
+          'a',
+        );
+
+      const today =
+        new Date()
+          .toISOString()
+          .slice(
+            0,
+            10,
+          );
+
+      anchor.href =
+        url;
+
+      anchor.download =
+        `sirdaryo-residents-${today}.xlsx`;
+
+      document.body.appendChild(
+        anchor,
+      );
+
+      anchor.click();
+      anchor.remove();
+
+      window.URL.revokeObjectURL(
+        url,
+      );
+    } catch {
+      setError(
+        'Could not download the Excel file.',
+      );
+    } finally {
+      setExporting(
+        false,
+      );
+    }
+  }
+
   function archiveResident(
     resident:
       Resident,
@@ -516,21 +608,44 @@ export default function ResidentsPage() {
 
           {tab !==
             'spaces' && (
-            <button
-              type="button"
-              onClick={
-                openCreate
-              }
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 text-sm font-medium text-white transition hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
-            >
-              <Plus
-                size={
-                  16
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <button
+                type="button"
+                disabled={
+                  exporting
                 }
-              />
+                onClick={() =>
+                  void downloadExcel()
+                }
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+              >
+                <Download
+                  size={
+                    16
+                  }
+                />
 
-              Add resident
-            </button>
+                {exporting
+                  ? 'Downloading...'
+                  : 'Download Excel'}
+              </button>
+
+              <button
+                type="button"
+                onClick={
+                  openCreate
+                }
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 text-sm font-medium text-white transition hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
+              >
+                <Plus
+                  size={
+                    16
+                  }
+                />
+
+                Add resident
+              </button>
+            </div>
           )}
         </section>
 
@@ -545,6 +660,11 @@ export default function ResidentsPage() {
               [
                 'list',
                 'Resident list',
+              ],
+
+              [
+                'excel',
+                'Excel view',
               ],
 
               [
@@ -660,6 +780,21 @@ export default function ResidentsPage() {
                   }
                 />
               </div>
+            )}
+
+            {tab ===
+              'excel' && (
+              <ResidentExcelView
+                residents={
+                  residents
+                }
+                onChanged={
+                  loadResidents
+                }
+                onError={
+                  setError
+                }
+              />
             )}
 
             {tab ===
