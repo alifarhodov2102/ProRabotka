@@ -1,35 +1,18 @@
 'use client';
 
-import {
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
-
-import type {
-  ReactNode,
-} from 'react';
-
-import {
-  Download,
-  Plus,
-  Search,
-  UsersRound,
-} from 'lucide-react';
+import { Download, Plus, Search } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 
 import AppShell from '@/components/app-shell';
-
-import TalentCard from '@/components/talents/talent-card';
-
+import ConfirmModal from '@/components/ui/confirm-modal';
+import TalentExcelView from '@/components/talents/talent-excel-view';
 import TalentModal from '@/components/talents/talent-modal';
-
-import {
+import TalentTable from '@/components/talents/talent-table';
+import type {
   LanguageLevel,
   Talent,
   TalentFormValues,
-  TalentStatus,
 } from '@/components/talents/types';
-
 import {
   ApiError,
   apiFetch,
@@ -37,108 +20,38 @@ import {
   getToken,
 } from '@/lib/api';
 
-type StatusFilter =
-  | 'ALL'
-  | TalentStatus;
-
-type LanguageFilter =
-  | 'ALL'
-  | 'ENGLISH'
-  | 'RUSSIAN'
-  | 'UZBEK';
-
 export default function TalentsPage() {
-  const [
-    talents,
-    setTalents,
-  ] =
-    useState<Talent[]>(
-      [],
-    );
-
-  const [
-    loading,
-    setLoading,
-  ] =
-    useState(true);
-
-  const [
-    error,
-    setError,
-  ] =
-    useState('');
-
-  const [
-    search,
-    setSearch,
-  ] =
-    useState('');
-
-  const [
-    statusFilter,
-    setStatusFilter,
-  ] =
-    useState<StatusFilter>(
-      'ALL',
-    );
-
-  const [
-    languageFilter,
-    setLanguageFilter,
-  ] =
-    useState<LanguageFilter>(
-      'ALL',
-    );
-
-  const [
-    modalOpen,
-    setModalOpen,
-  ] =
-    useState(false);
-
-  const [
-    saving,
-    setSaving,
-  ] =
-    useState(false);
-
-  const [
-    exporting,
-    setExporting,
-  ] =
-    useState(false);
+  const [tab, setTab] = useState<'list' | 'excel'>('list');
+  const [talents, setTalents] = useState<Talent[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [search, setSearch] = useState('');
+  const [modalOpen, setModalOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<Talent | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   async function loadTalents() {
     try {
-      setLoading(
-        true,
-      );
-
+      setLoading(true);
       setError('');
 
-      const data =
-        await apiFetch<Talent[]>(
-          '/talents',
-        );
+      const data = await apiFetch<Talent[]>('/talents');
 
       setTalents(
-        data,
+        [...data].sort(
+          (first, second) =>
+            new Date(first.createdAt).getTime() -
+            new Date(second.createdAt).getTime(),
+        ),
       );
     } catch (err) {
-      if (
-        err instanceof
-          ApiError &&
-        err.status !==
-          401
-      ) {
-        setError(
-          err.message,
-        );
+      if (err instanceof ApiError && err.status !== 401) {
+        setError(err.message);
       }
     } finally {
-      setLoading(
-        false,
-      );
+      setLoading(false);
     }
   }
 
@@ -146,332 +59,163 @@ export default function TalentsPage() {
     void loadTalents();
   }, []);
 
-  const filteredTalents =
-    useMemo(() => {
-      const query =
-        search
-          .trim()
-          .toLowerCase();
+  const filteredTalents = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    if (!query) return talents;
 
-      return talents.filter(
-        (
-          talent,
-        ) => {
-          if (
-            statusFilter !==
-              'ALL' &&
-            talent.status !==
-              statusFilter
-          ) {
-            return false;
-          }
+    return talents.filter((talent) => {
+      const haystack = [
+        talent.fullName,
+        talent.phone,
+        talent.email,
+        talent.telegram,
+        talent.location,
+        talent.experienceYears,
+        talent.status,
+        ...talent.languages.map(
+          (language) => `${language.language} ${language.level}`,
+        ),
+      ]
+        .filter((value) => value !== null && value !== undefined)
+        .join(' ')
+        .toLowerCase();
 
-          if (
-            languageFilter !==
-            'ALL'
-          ) {
-            const languageName =
-              languageFilter ===
-              'ENGLISH'
-                ? 'english'
-                : languageFilter ===
-                    'RUSSIAN'
-                  ? 'russian'
-                  : 'uzbek';
+      return haystack.includes(query);
+    });
+  }, [talents, search]);
 
-            const hasLanguage =
-              talent.languages.some(
-                (
-                  item,
-                ) =>
-                  item.language
-                    .trim()
-                    .toLowerCase() ===
-                  languageName,
-              );
-
-            if (!hasLanguage) {
-              return false;
-            }
-          }
-
-          if (!query) {
-            return true;
-          }
-
-          const haystack = [
-            talent.fullName,
-            talent.phone,
-            talent.email,
-            talent.telegram,
-            talent.location,
-
-            ...talent.languages.map(
-              (
-                language,
-              ) =>
-                language.language,
-            ),
-          ]
-            .filter(Boolean)
-            .join(' ')
-            .toLowerCase();
-
-          return haystack.includes(
-            query,
-          );
-        },
-      );
-    }, [
-      talents,
-      search,
-      statusFilter,
-      languageFilter,
-    ]);
-
-  async function createTalent(
-    form:
-      TalentFormValues,
-  ) {
+  async function createTalent(form: TalentFormValues) {
     try {
-      setSaving(
-        true,
-      );
-
+      setSaving(true);
       setError('');
 
-      const talent =
-        await apiFetch<Talent>(
-          '/talents',
-          {
-            method:
-              'POST',
+      const talent = await apiFetch<Talent>('/talents', {
+        method: 'POST',
+        body: JSON.stringify(buildTalentPayload(form)),
+      });
 
-            body:
-              JSON.stringify(
-                buildTalentPayload(
-                  form,
-                ),
-              ),
-          },
-        );
+      const languages: { language: string; level: LanguageLevel }[] = [];
 
-      const languages: {
-        language: string;
+      if (form.englishLevel) {
+        languages.push({ language: 'English', level: form.englishLevel });
+      }
+      if (form.russianLevel) {
+        languages.push({ language: 'Russian', level: form.russianLevel });
+      }
+      if (form.uzbekLevel) {
+        languages.push({ language: 'Uzbek', level: form.uzbekLevel });
+      }
 
-        level:
-          LanguageLevel;
-      }[] = [];
-
-      if (
-        form.englishLevel
-      ) {
-        languages.push({
-          language:
-            'English',
-
-          level:
-            form.englishLevel,
+      for (const language of languages) {
+        await apiFetch(`/talents/${talent.id}/languages`, {
+          method: 'POST',
+          body: JSON.stringify(language),
         });
       }
 
-      if (
-        form.russianLevel
-      ) {
-        languages.push({
-          language:
-            'Russian',
-
-          level:
-            form.russianLevel,
-        });
-      }
-
-      if (
-        form.uzbekLevel
-      ) {
-        languages.push({
-          language:
-            'Uzbek',
-
-          level:
-            form.uzbekLevel,
-        });
-      }
-
-      for (
-        const language of
-        languages
-      ) {
-        await apiFetch(
-          `/talents/${talent.id}/languages`,
-          {
-            method:
-              'POST',
-
-            body:
-              JSON.stringify(
-                language,
-              ),
-          },
-        );
-      }
-
-      setModalOpen(
-        false,
-      );
-
+      setModalOpen(false);
       await loadTalents();
     } catch (err) {
-      if (
-        err instanceof
-        ApiError
-      ) {
-        setError(
-          err.message,
-        );
-      }
+      if (err instanceof ApiError) setError(err.message);
     } finally {
-      setSaving(
-        false,
-      );
+      setSaving(false);
+    }
+  }
+
+  async function deleteTalent() {
+    if (!deleteTarget) return;
+
+    try {
+      setDeleteLoading(true);
+      setError('');
+      await apiFetch(`/talents/${deleteTarget.id}`, { method: 'DELETE' });
+      setDeleteTarget(null);
+      await loadTalents();
+    } catch (err) {
+      if (err instanceof ApiError) setError(err.message);
+    } finally {
+      setDeleteLoading(false);
     }
   }
 
   async function exportExcel() {
     try {
-      setExporting(
-        true,
-      );
-
+      setExporting(true);
       setError('');
 
-      const token =
-        getToken();
+      const token = getToken();
+      const response = await fetch(apiUrl('/talents/export'), {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
 
-      const response =
-        await fetch(
-          apiUrl(
-            '/talents/export',
-          ),
-          {
-            headers:
-              token
-                ? {
-                    Authorization:
-                      `Bearer ${token}`,
-                  }
-                : {},
-          },
-        );
+      if (!response.ok) throw new Error();
 
-      if (
-        !response.ok
-      ) {
-        throw new Error();
-      }
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      const today = new Date().toISOString().slice(0, 10);
 
-      const blob =
-        await response.blob();
-
-      const url =
-        window.URL.createObjectURL(
-          blob,
-        );
-
-      const anchor =
-        document.createElement(
-          'a',
-        );
-
-      const today =
-        new Date()
-          .toISOString()
-          .slice(
-            0,
-            10,
-          );
-
-      anchor.href =
-        url;
-
-      anchor.download =
-        `talents-${today}.xlsx`;
-
-      document.body.appendChild(
-        anchor,
-      );
-
+      anchor.href = url;
+      anchor.download = `talents-${today}.xlsx`;
+      document.body.appendChild(anchor);
       anchor.click();
       anchor.remove();
-
-      window.URL.revokeObjectURL(
-        url,
-      );
+      window.URL.revokeObjectURL(url);
     } catch {
-      setError(
-        'Could not download the Excel file.',
-      );
+      setError('Could not download the Excel file.');
     } finally {
-      setExporting(
-        false,
-      );
+      setExporting(false);
     }
   }
 
   return (
     <AppShell>
-      <div className="min-w-0 space-y-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div className="min-w-0 space-y-7">
+        <section className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+            <p className="text-sm text-slate-400 dark:text-slate-500">
+              Workspace
+            </p>
+            <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
               Talents
             </h1>
-
             <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-              Internal candidate
-              pool for company
-              hiring requests.
+              Manage the internal candidate pool in one clean table.
             </p>
           </div>
 
           <div className="flex flex-col gap-2 sm:flex-row">
             <button
               type="button"
-              disabled={
-                exporting
-              }
-              onClick={() =>
-                void exportExcel()
-              }
+              disabled={exporting}
+              onClick={() => void exportExcel()}
               className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
             >
-              <Download
-                size={15}
-              />
-
-              {exporting
-                ? 'Downloading...'
-                : 'Download Excel'}
+              <Download size={15} />
+              {exporting ? 'Downloading...' : 'Download Excel'}
             </button>
 
             <button
               type="button"
-              onClick={() =>
-                setModalOpen(
-                  true,
-                )
-              }
+              onClick={() => setModalOpen(true)}
               className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 text-sm font-medium text-white transition hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
             >
-              <Plus
-                size={15}
-              />
-
+              <Plus size={15} />
               Add talent
             </button>
           </div>
-        </div>
+        </section>
+
+        <section className="overflow-x-auto border-b border-slate-200 dark:border-slate-800">
+          <div className="flex min-w-max gap-6">
+            <TabButton active={tab === 'list'} onClick={() => setTab('list')}>
+              Talent list
+            </TabButton>
+            <TabButton active={tab === 'excel'} onClick={() => setTab('excel')}>
+              Excel view
+            </TabButton>
+          </div>
+        </section>
 
         {error && (
           <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-400">
@@ -479,245 +223,77 @@ export default function TalentsPage() {
           </div>
         )}
 
-        <div className="space-y-3">
-          <div className="relative">
-            <Search
-              size={16}
-              className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
-            />
-
-            <input
-              value={
-                search
-              }
-              onChange={(
-                event,
-              ) =>
-                setSearch(
-                  event
-                    .target
-                    .value,
-                )
-              }
-              placeholder="Search by name, phone, Telegram, location or language..."
-              className="h-11 w-full rounded-xl border border-slate-200 bg-white pl-10 pr-4 text-[16px] text-slate-800 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-100 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-slate-600 dark:focus:ring-slate-800 sm:text-sm"
-            />
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            <FilterButton
-              active={
-                statusFilter ===
-                'ALL'
-              }
-              onClick={() =>
-                setStatusFilter(
-                  'ALL',
-                )
-              }
-            >
-              All
-            </FilterButton>
-
-            <FilterButton
-              active={
-                statusFilter ===
-                'AVAILABLE'
-              }
-              onClick={() =>
-                setStatusFilter(
-                  'AVAILABLE',
-                )
-              }
-            >
-              Available
-            </FilterButton>
-
-            <FilterButton
-              active={
-                statusFilter ===
-                'OPEN_TO_OFFERS'
-              }
-              onClick={() =>
-                setStatusFilter(
-                  'OPEN_TO_OFFERS',
-                )
-              }
-            >
-              Open to offers
-            </FilterButton>
-
-            <FilterButton
-              active={
-                statusFilter ===
-                'EMPLOYED'
-              }
-              onClick={() =>
-                setStatusFilter(
-                  'EMPLOYED',
-                )
-              }
-            >
-              Employed
-            </FilterButton>
-
-            <div className="mx-1 hidden h-8 w-px bg-slate-200 dark:bg-slate-800 sm:block" />
-
-            <FilterButton
-              active={
-                languageFilter ===
-                'ENGLISH'
-              }
-              onClick={() =>
-                setLanguageFilter(
-                  languageFilter ===
-                    'ENGLISH'
-                    ? 'ALL'
-                    : 'ENGLISH',
-                )
-              }
-            >
-              English
-            </FilterButton>
-
-            <FilterButton
-              active={
-                languageFilter ===
-                'RUSSIAN'
-              }
-              onClick={() =>
-                setLanguageFilter(
-                  languageFilter ===
-                    'RUSSIAN'
-                    ? 'ALL'
-                    : 'RUSSIAN',
-                )
-              }
-            >
-              Russian
-            </FilterButton>
-
-            <FilterButton
-              active={
-                languageFilter ===
-                'UZBEK'
-              }
-              onClick={() =>
-                setLanguageFilter(
-                  languageFilter ===
-                    'UZBEK'
-                    ? 'ALL'
-                    : 'UZBEK',
-                )
-              }
-            >
-              Uzbek
-            </FilterButton>
-          </div>
+        <div className="flex h-10 w-full max-w-sm items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 dark:border-slate-800 dark:bg-slate-900">
+          <Search size={16} className="text-slate-400" />
+          <input
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search talents..."
+            className="w-full bg-transparent text-sm text-slate-800 outline-none placeholder:text-slate-400 dark:text-slate-200"
+          />
         </div>
 
-        {!loading && (
-          <div className="flex items-center justify-between">
-            <p className="text-xs text-slate-400 dark:text-slate-500">
-              {
-                filteredTalents.length
-              }{' '}
-              {filteredTalents.length ===
-              1
-                ? 'candidate'
-                : 'candidates'}
-            </p>
-          </div>
-        )}
-
         {loading ? (
-          <div className="py-24 text-center text-sm text-slate-400">
+          <div className="py-20 text-center text-sm text-slate-400">
             Loading talents...
           </div>
-        ) : filteredTalents.length ===
-          0 ? (
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-white px-5 py-20 text-center dark:border-slate-800 dark:bg-slate-900">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 dark:bg-slate-800">
-              <UsersRound
-                size={21}
-              />
-            </div>
-
-            <p className="mt-4 text-sm font-medium text-slate-700 dark:text-slate-200">
-              No talents found
-            </p>
-
-            <p className="mt-1 max-w-sm text-xs leading-5 text-slate-400">
-              Add your first
-              candidate or change
-              the current filters.
-            </p>
-          </div>
+        ) : tab === 'list' ? (
+          <TalentTable
+            talents={filteredTalents}
+            onChanged={loadTalents}
+            onDelete={setDeleteTarget}
+            onError={setError}
+          />
         ) : (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {filteredTalents.map(
-              (
-                talent,
-              ) => (
-                <TalentCard
-                  key={
-                    talent.id
-                  }
-                  talent={
-                    talent
-                  }
-                />
-              ),
-            )}
-          </div>
+          <TalentExcelView
+            talents={filteredTalents}
+            onChanged={loadTalents}
+            onError={setError}
+          />
         )}
 
         <TalentModal
-          open={
-            modalOpen
-          }
-          saving={
-            saving
-          }
-          onClose={() =>
-            setModalOpen(
-              false,
-            )
-          }
-          onSubmit={
-            createTalent
-          }
+          open={modalOpen}
+          saving={saving}
+          onClose={() => setModalOpen(false)}
+          onSubmit={createTalent}
+        />
+
+        <ConfirmModal
+          open={deleteTarget !== null}
+          variant="delete"
+          loading={deleteLoading}
+          title="Delete talent?"
+          description={`${deleteTarget?.fullName ?? ''} will be permanently deleted. This action cannot be undone.`}
+          confirmText="Delete talent"
+          onClose={() => {
+            if (!deleteLoading) setDeleteTarget(null);
+          }}
+          onConfirm={deleteTalent}
         />
       </div>
     </AppShell>
   );
 }
 
-function FilterButton({
+function TabButton({
   active,
   onClick,
   children,
 }: {
   active: boolean;
-
-  onClick:
-    () => void;
-
-  children:
-    ReactNode;
+  onClick: () => void;
+  children: React.ReactNode;
 }) {
   return (
     <button
       type="button"
-      onClick={
-        onClick
-      }
+      onClick={onClick}
       className={[
-        'h-8 rounded-lg px-3 text-xs font-medium transition',
-
+        'border-b-2 px-1 pb-3 text-sm transition',
         active
-          ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
-          : 'border border-slate-200 bg-white text-slate-500 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800',
+          ? 'border-slate-900 font-medium text-slate-900 dark:border-slate-100 dark:text-slate-100'
+          : 'border-transparent text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-300',
       ].join(' ')}
     >
       {children}
@@ -725,39 +301,15 @@ function FilterButton({
   );
 }
 
-function buildTalentPayload(
-  form:
-    TalentFormValues,
-) {
+function buildTalentPayload(form: TalentFormValues) {
   return {
-    fullName:
-      form.fullName,
-
-    phone:
-      form.phone ||
-      null,
-
-    email:
-      form.email ||
-      null,
-
-    telegram:
-      form.telegram ||
-      null,
-
-    location:
-      form.location ||
-      null,
-
-    experienceYears:
-      form.experienceYears ||
-      null,
-
-    status:
-      form.status,
-
-    notes:
-      form.notes ||
-      null,
+    fullName: form.fullName,
+    phone: form.phone || null,
+    email: form.email || null,
+    telegram: form.telegram || null,
+    location: form.location || null,
+    experienceYears: form.experienceYears || null,
+    status: form.status,
+    notes: form.notes || null,
   };
 }
