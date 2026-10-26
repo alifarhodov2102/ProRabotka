@@ -74,44 +74,6 @@ function decodeFileName(
   }
 }
 
-const fileStorage =
-  diskStorage({
-    destination: (
-      _request,
-      _file,
-      callback,
-    ) => {
-      fs.mkdirSync(
-        uploadDirectory,
-        {
-          recursive:
-            true,
-        },
-      );
-
-      callback(
-        null,
-        uploadDirectory,
-      );
-    },
-
-    filename: (
-      _request,
-      file,
-      callback,
-    ) => {
-      const extension =
-        path.extname(
-          file.originalname,
-        );
-
-      callback(
-        null,
-        `${randomUUID()}${extension}`,
-      );
-    },
-  });
-
 @UseGuards(
   JwtAuthGuard,
 )
@@ -164,7 +126,42 @@ export class DocumentsController {
       'file',
       {
         storage:
-          fileStorage,
+          diskStorage({
+            destination: (
+              _request,
+              _file,
+              callback,
+            ) => {
+              fs.mkdirSync(
+                uploadDirectory,
+                {
+                  recursive:
+                    true,
+                },
+              );
+
+              callback(
+                null,
+                uploadDirectory,
+              );
+            },
+
+            filename: (
+              _request,
+              file,
+              callback,
+            ) => {
+              const extension =
+                path.extname(
+                  file.originalname,
+                );
+
+              callback(
+                null,
+                `${randomUUID()}${extension}`,
+              );
+            },
+          }),
 
         limits: {
           fileSize:
@@ -202,44 +199,6 @@ export class DocumentsController {
       file,
       request.user.id,
       body,
-    );
-  }
-
-  @Post(':id/replace')
-  @UseInterceptors(
-    FileInterceptor(
-      'file',
-      {
-        storage:
-          fileStorage,
-
-        limits: {
-          fileSize:
-            25 *
-            1024 *
-            1024,
-        },
-      },
-    ),
-  )
-  replace(
-    @Param('id')
-    id: string,
-
-    @UploadedFile()
-    file:
-      Express.Multer.File,
-  ) {
-    if (file) {
-      file.originalname =
-        decodeFileName(
-          file.originalname,
-        );
-    }
-
-    return this.documentsService.replaceFile(
-      id,
-      file,
     );
   }
 
