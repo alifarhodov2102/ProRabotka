@@ -317,42 +317,6 @@ export default function TalentModal({
                   }
                 />
               </Field>
-
-              <Field label="Experience">
-                <div className="relative">
-                  <input
-                    inputMode="numeric"
-                    min="0"
-                    max="100"
-                    value={
-                      form.experienceYears
-                    }
-                    onChange={(
-                      event,
-                    ) =>
-                      update(
-                        'experienceYears',
-                        event.target.value
-                          .replace(
-                            /\D/g,
-                            '',
-                          )
-                          .slice(
-                            0,
-                            2,
-                          ),
-                      )
-                    }
-                    placeholder="3"
-                    className={`${inputClass} pr-16`}
-                  />
-
-                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">
-                    years
-                  </span>
-                </div>
-              </Field>
-
               <Field label="Status">
                 <SelectWrap>
                   <select
@@ -431,20 +395,7 @@ export default function TalentModal({
                   }
                 />
 
-                <LanguageField
-                  label="Uzbek"
-                  value={
-                    form.uzbekLevel
-                  }
-                  onChange={(
-                    value,
-                  ) =>
-                    update(
-                      'uzbekLevel',
-                      value,
-                    )
-                  }
-                />
+
               </div>
             </div>
 

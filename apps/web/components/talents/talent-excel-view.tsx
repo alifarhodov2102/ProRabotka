@@ -75,7 +75,7 @@ const languageOptions: {
 ];
 
 const grid =
-  'grid-cols-[68px_300px_190px_180px_180px_120px_150px_150px_150px_170px_145px_150px]';
+  'grid-cols-[68px_300px_190px_180px_180px_150px_150px_170px_145px_150px]';
 
 export default function TalentExcelView({
   talents,
@@ -363,7 +363,7 @@ export default function TalentExcelView({
 
       <div className="overflow-auto">
         <div
-          className="min-w-[1975px] bg-white dark:bg-slate-950"
+          className="min-w-[1620px] bg-white dark:bg-slate-950"
           style={{
             zoom:
               scale,
@@ -372,7 +372,7 @@ export default function TalentExcelView({
           <div
             className={`grid ${grid} border-b border-slate-300 dark:border-slate-700`}
           >
-            <div className="col-span-12 flex h-12 items-center justify-center border-b border-slate-300 bg-white px-4 font-serif text-[18px] font-bold text-slate-950 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
+            <div className="col-span-10 flex h-12 items-center justify-center border-b border-slate-300 bg-white px-4 font-serif text-[18px] font-bold text-slate-950 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
               IT Park Sirdaryo — Talents
             </div>
           </div>
@@ -386,10 +386,8 @@ export default function TalentExcelView({
               'Phone',
               'Telegram',
               'Location',
-              'Experience',
               'English',
               'Russian',
-              'Uzbek',
               'Status',
               'Added',
               'CV',
@@ -523,27 +521,9 @@ export default function TalentExcelView({
                     }
                   />
 
-                  <NumberCell
-                    value={
-                      talent.experienceYears
-                    }
-                    onSave={(
-                      value,
-                    ) =>
-                      patchTalent(
-                        talent.id,
-                        {
-                          experienceYears:
-                            value,
-                        },
-                      )
-                    }
-                  />
-
                   {[
                     'English',
                     'Russian',
-                    'Uzbek',
                   ].map(
                     (
                       language,
@@ -719,61 +699,6 @@ function TextCell({
             'Enter'
           ) {
             event.currentTarget.blur();
-          }
-        }}
-        className="h-14 w-full bg-transparent px-2.5 text-center text-[13px] font-semibold outline-none hover:bg-slate-50 focus:bg-emerald-50/70 focus:ring-2 focus:ring-inset focus:ring-emerald-300/60 dark:hover:bg-slate-900/60 dark:focus:bg-emerald-950/25"
-      />
-    </div>
-  );
-}
-
-function NumberCell({
-  value,
-  onSave,
-}: {
-  value:
-    | number
-    | null
-    | undefined;
-
-  onSave: (
-    value:
-      | number
-      | null,
-  ) =>
-    Promise<void>;
-}) {
-  return (
-    <div className="flex min-h-14 items-stretch border-b border-r border-slate-300 dark:border-slate-700">
-      <input
-        type="number"
-        min={0}
-        max={100}
-        defaultValue={
-          value ??
-          ''
-        }
-        onBlur={(
-          event,
-        ) => {
-          const clean =
-            event.target.value
-              .trim();
-
-          const next =
-            clean
-              ? Number(
-                  clean,
-                )
-              : null;
-
-          if (
-            next !==
-            value
-          ) {
-            void onSave(
-              next,
-            );
           }
         }}
         className="h-14 w-full bg-transparent px-2.5 text-center text-[13px] font-semibold outline-none hover:bg-slate-50 focus:bg-emerald-50/70 focus:ring-2 focus:ring-inset focus:ring-emerald-300/60 dark:hover:bg-slate-900/60 dark:focus:bg-emerald-950/25"

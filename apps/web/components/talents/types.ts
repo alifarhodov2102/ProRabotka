@@ -97,7 +97,7 @@ export type TalentFormValues = {
   telegram: string;
 
   location: string;
-  experienceYears: string;
+  experienceYears?: string;
 
   status: TalentStatus;
 
@@ -111,7 +111,7 @@ export type TalentFormValues = {
     | ''
     | LanguageLevel;
 
-  uzbekLevel:
+  uzbekLevel?:
     | ''
     | LanguageLevel;
 };

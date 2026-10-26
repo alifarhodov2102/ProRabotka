@@ -273,7 +273,6 @@ export default function TalentsPage() {
             talent.phone,
             talent.telegram,
             talent.location,
-            talent.experienceYears,
             talent.status,
             formatDateForSearch(
               talent.createdAt,
@@ -344,11 +343,6 @@ export default function TalentsPage() {
                 location:
                   form.location ||
                   null,
-
-                experienceYears:
-                  form.experienceYears ||
-                  null,
-
                 status:
                   form.status,
 
@@ -391,17 +385,6 @@ export default function TalentsPage() {
         });
       }
 
-      if (
-        form.uzbekLevel
-      ) {
-        languages.push({
-          language:
-            'Uzbek',
-
-          level:
-            form.uzbekLevel,
-        });
-      }
 
       for (
         const language of

@@ -40,10 +40,8 @@ type QuickTalent = {
   phone: string;
   telegram: string;
   location: string;
-  experienceYears: string;
   englishLevel: '' | LanguageLevel;
   russianLevel: '' | LanguageLevel;
-  uzbekLevel: '' | LanguageLevel;
   status: TalentStatus;
 };
 
@@ -62,10 +60,8 @@ const emptyQuickTalent:
   phone: '',
   telegram: '',
   location: '',
-  experienceYears: '',
   englishLevel: '',
   russianLevel: '',
-  uzbekLevel: '',
   status: 'AVAILABLE',
 };
 
@@ -128,7 +124,7 @@ const languageOptions: {
 ];
 
 const grid =
-  'grid-cols-[58px_2fr_1.25fr_1.2fr_1.2fr_0.9fr_1fr_1fr_1fr_1.25fr_1fr_1.15fr_82px]';
+  'grid-cols-[58px_2fr_1.25fr_1.2fr_1.2fr_1fr_1fr_1.25fr_1fr_1.15fr_82px]';
 
 export default function TalentTable({
   talents,
@@ -450,14 +446,6 @@ export default function TalentTable({
                 location:
                   quick.location.trim() ||
                   null,
-
-                experienceYears:
-                  quick.experienceYears
-                    ? Number(
-                        quick.experienceYears,
-                      )
-                    : null,
-
                 status:
                   quick.status,
               }),
@@ -472,10 +460,6 @@ export default function TalentTable({
         [
           'Russian',
           quick.russianLevel,
-        ],
-        [
-          'Uzbek',
-          quick.uzbekLevel,
         ],
       ] as const;
 
@@ -794,7 +778,7 @@ export default function TalentTable({
 
       <div className="overflow-x-auto">
         <div
-          className="min-w-[1780px]"
+          className="min-w-[1510px]"
           style={{
             zoom:
               scale,
@@ -823,20 +807,12 @@ export default function TalentTable({
               Location
             </div>
 
-            <div className="text-center">
-              Experience
-            </div>
-
             <div>
               English
             </div>
 
             <div>
               Russian
-            </div>
-
-            <div>
-              Uzbek
             </div>
 
             <div>
@@ -926,23 +902,6 @@ export default function TalentTable({
                 }
               />
 
-              <QuickInput
-                type="number"
-                value={
-                  quick.experienceYears
-                }
-                placeholder="Years"
-                onChange={(
-                  value,
-                ) =>
-                  setQuick({
-                    ...quick,
-                    experienceYears:
-                      value,
-                  })
-                }
-              />
-
               <QuickSelect
                 value={
                   quick.englishLevel
@@ -978,27 +937,6 @@ export default function TalentTable({
                   setQuick({
                     ...quick,
                     russianLevel:
-                      value as
-                      | ''
-                      | LanguageLevel,
-                  })
-                }
-              />
-
-              <QuickSelect
-                value={
-                  quick.uzbekLevel
-                }
-                options={
-                  languageOptions
-                }
-                emptyLabel="—"
-                onChange={(
-                  value,
-                ) =>
-                  setQuick({
-                    ...quick,
-                    uzbekLevel:
                       value as
                       | ''
                       | LanguageLevel,
@@ -1178,27 +1116,9 @@ export default function TalentTable({
                   }
                 />
 
-                <EditableNumber
-                  value={
-                    talent.experienceYears
-                  }
-                  onSave={(
-                    value,
-                  ) =>
-                    updateTalent(
-                      talent.id,
-                      {
-                        experienceYears:
-                          value,
-                      },
-                    )
-                  }
-                />
-
                 {[
                   'English',
                   'Russian',
-                  'Uzbek',
                 ].map(
                   (
                     language,
@@ -1506,61 +1426,6 @@ function EditableText({
         ].join(
           ' ',
         )}
-      />
-    </div>
-  );
-}
-
-function EditableNumber({
-  value,
-  onSave,
-}: {
-  value:
-    | number
-    | null
-    | undefined;
-
-  onSave: (
-    value:
-      | number
-      | null,
-  ) =>
-    Promise<void>;
-}) {
-  return (
-    <div className="flex min-h-14 items-center px-1">
-      <input
-        type="number"
-        min={0}
-        max={100}
-        defaultValue={
-          value ??
-          ''
-        }
-        onBlur={(
-          event,
-        ) => {
-          const clean =
-            event.target.value
-              .trim();
-
-          const next =
-            clean
-              ? Number(
-                  clean,
-                )
-              : null;
-
-          if (
-            next !==
-            value
-          ) {
-            void onSave(
-              next,
-            );
-          }
-        }}
-        className="h-9 w-full rounded-md border border-transparent bg-transparent px-2 text-center text-sm text-slate-600 outline-none hover:border-slate-200 focus:border-emerald-500 focus:bg-white dark:text-slate-300 dark:focus:bg-slate-950"
       />
     </div>
   );
