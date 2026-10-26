@@ -24,18 +24,13 @@ import {
 const emptyForm:
   TalentFormValues = {
   fullName: '',
-
   phone: '',
   email: '',
   telegram: '',
-
   location: '',
   experienceYears: '',
-
   status: 'AVAILABLE',
-
   notes: '',
-
   englishLevel: '',
   russianLevel: '',
   uzbekLevel: '',
@@ -183,7 +178,6 @@ export default function TalentModal({
         current,
       ) => ({
         ...current,
-
         [key]:
           value,
       }),
@@ -215,7 +209,7 @@ export default function TalentModal({
             <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
               {talent
                 ? 'Update the candidate details.'
-                : 'Add the key details now. You can upload documents later.'}
+                : 'Add the key details now. CV can be uploaded from the list.'}
             </p>
           </div>
 
@@ -252,9 +246,7 @@ export default function TalentModal({
                 ) =>
                   update(
                     'fullName',
-                    event
-                      .target
-                      .value,
+                    event.target.value,
                   )
                 }
                 placeholder="Ali Karimov"
@@ -276,9 +268,7 @@ export default function TalentModal({
                   ) =>
                     update(
                       'phone',
-                      event
-                        .target
-                        .value,
+                      event.target.value,
                     )
                   }
                   placeholder="+998..."
@@ -298,9 +288,7 @@ export default function TalentModal({
                   ) =>
                     update(
                       'telegram',
-                      event
-                        .target
-                        .value,
+                      event.target.value,
                     )
                   }
                   placeholder="@username"
@@ -320,9 +308,7 @@ export default function TalentModal({
                   ) =>
                     update(
                       'location',
-                      event
-                        .target
-                        .value,
+                      event.target.value,
                     )
                   }
                   placeholder="Gulistan"
@@ -346,9 +332,7 @@ export default function TalentModal({
                     ) =>
                       update(
                         'experienceYears',
-                        event
-                          .target
-                          .value
+                        event.target.value
                           .replace(
                             /\D/g,
                             '',
@@ -369,29 +353,6 @@ export default function TalentModal({
                 </div>
               </Field>
 
-              <Field label="Email">
-                <input
-                  type="email"
-                  value={
-                    form.email
-                  }
-                  onChange={(
-                    event,
-                  ) =>
-                    update(
-                      'email',
-                      event
-                        .target
-                        .value,
-                    )
-                  }
-                  placeholder="name@email.com"
-                  className={
-                    inputClass
-                  }
-                />
-              </Field>
-
               <Field label="Status">
                 <SelectWrap>
                   <select
@@ -403,9 +364,7 @@ export default function TalentModal({
                     ) =>
                       update(
                         'status',
-                        event
-                          .target
-                          .value as TalentStatus,
+                        event.target.value as TalentStatus,
                       )
                     }
                     className={`${inputClass} appearance-none pr-10`}
@@ -500,9 +459,7 @@ export default function TalentModal({
                 ) =>
                   update(
                     'notes',
-                    event
-                      .target
-                      .value,
+                    event.target.value,
                   )
                 }
                 placeholder="Optional note..."
@@ -617,11 +574,7 @@ function LanguageField({
   ) => void;
 }) {
   return (
-    <Field
-      label={
-        label
-      }
-    >
+    <Field label={label}>
       <SelectWrap>
         <select
           value={
@@ -631,9 +584,7 @@ function LanguageField({
             event,
           ) =>
             onChange(
-              event
-                .target
-                .value as
+              event.target.value as
                 | ''
                 | LanguageLevel,
             )
@@ -671,7 +622,6 @@ function LanguageField({
 
 function findLanguage(
   talent: Talent,
-
   language: string,
 ):
   | ''

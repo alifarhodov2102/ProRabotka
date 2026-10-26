@@ -33,6 +33,8 @@ export type TalentDocument = {
 
   description?: string | null;
 
+  talentId?: string | null;
+
   createdAt: string;
   updatedAt: string;
 
@@ -87,7 +89,11 @@ export type TalentFormValues = {
   fullName: string;
 
   phone: string;
+
+  // Kept in the data model for old records/profile compatibility,
+  // but no longer shown in the main Talents UI.
   email: string;
+
   telegram: string;
 
   location: string;
