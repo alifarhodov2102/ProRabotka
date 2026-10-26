@@ -20,7 +20,7 @@ import ResidentTable, {
   type Resident,
 } from '@/components/residents/resident-table';
 
-import ResidentExcelView from '@/components/residents/resident-excel-view';
+import SpreadsheetWorkspace from '@/components/residents/spreadsheet-workspace';
 
 import BecomingResidentsTable, {
   type ResidentApplication,
@@ -838,12 +838,18 @@ export default function ResidentsPage() {
 
             {tab ===
               'excel' && (
-              <ResidentExcelView
+              <SpreadsheetWorkspace
                 residents={
                   residents
                 }
-                onChanged={
+                applications={
+                  applications
+                }
+                onResidentsChanged={
                   loadResidents
+                }
+                onApplicationsChanged={
+                  loadAll
                 }
                 onError={
                   setError
